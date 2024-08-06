@@ -54,7 +54,7 @@ Turistbureauet SkanTravels efterspørger en mobilapplikation, som viser spænden
 
 Design:  
 (Logo)farver guideline (sådan ca) (farver inspireret af skandinaviske flag):  
-![][image1]\#1862e7
+![](https://github.com/Mercantec-GHC/h4-projekt-gruppe-5-1/blob/main/Docs/bl%C3%A5.png?raw=true)\#1862e7
 
 ![][image2]\#ffffff  
 ![][image3]\#db2e24  
