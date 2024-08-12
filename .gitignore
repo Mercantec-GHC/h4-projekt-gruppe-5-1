@@ -3,3 +3,7 @@
 /API/obj
 /API/bin
 .vscode
+/SKSBookingAPI/bin
+/SKSBookingAPI/.vs
+/SKSBookingAPI/obj
+SKSBookingAPI/appsettings.Development.json

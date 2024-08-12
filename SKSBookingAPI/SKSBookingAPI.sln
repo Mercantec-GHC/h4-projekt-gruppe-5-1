@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SKSBookingAPI", "SKSBookingAPI.csproj", "{D49A0CB1-5205-458A-83B0-3FD163CDE633}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D49A0CB1-5205-458A-83B0-3FD163CDE633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D49A0CB1-5205-458A-83B0-3FD163CDE633}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D49A0CB1-5205-458A-83B0-3FD163CDE633}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D49A0CB1-5205-458A-83B0-3FD163CDE633}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {67589440-7F29-4FE1-80BC-8E90792A4020}
+	EndGlobalSection
+EndGlobal

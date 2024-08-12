@@ -1,0 +1,6 @@
+@SKSBookingAPI_HostAddress = http://localhost:5183
+
+GET {{SKSBookingAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
