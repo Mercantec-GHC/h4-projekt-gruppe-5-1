@@ -17,7 +17,7 @@ namespace SKSBookingAPI.Controllers {
             return Ok("The server is live!");
         }
 
-        [HttpGet("DB")]
+        [HttpGet("db")]
         public IActionResult GetStatusDB() {
             if (_context.Database.CanConnect()) {
                 return Ok("The database and server are live!");
