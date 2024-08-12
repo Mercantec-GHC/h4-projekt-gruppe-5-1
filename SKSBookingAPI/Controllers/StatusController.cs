@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SKSBookingAPI.Context;
 
 namespace SKSBookingAPI.Controllers {
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] // = api/controllernavn (præfix) -> api/status
     [ApiController]
     public class StatusController : ControllerBase {
         private readonly AppDBContext _context;

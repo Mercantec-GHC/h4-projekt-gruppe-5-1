@@ -41,7 +41,6 @@ namespace SKSBookingAPI
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
             app.Run();
