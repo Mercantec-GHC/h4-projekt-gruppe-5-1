@@ -8,11 +8,11 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /SKSBookingAPI
+WORKDIR /src
 COPY ["SKSBookingAPI.csproj", "."]
 RUN dotnet restore "./SKSBookingAPI.csproj"
 COPY . .
-WORKDIR "/SKSBookingAPI/."
+WORKDIR "/src/."
 RUN dotnet build "./SKSBookingAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
