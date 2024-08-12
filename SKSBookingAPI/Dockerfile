@@ -12,7 +12,7 @@ WORKDIR /src
 COPY ["SKSBookingAPI.csproj", "."]
 RUN dotnet restore "./SKSBookingAPI.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/SKSBookingAPI/."
 RUN dotnet build "./SKSBookingAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
