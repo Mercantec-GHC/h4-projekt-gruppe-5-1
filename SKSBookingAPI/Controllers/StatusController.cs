@@ -25,7 +25,7 @@ namespace SKSBookingAPI.Controllers {
             else return NotFound();
         }
     }
-
+    /*
     [HttpGet]
     public async Task<ActilResult<IEnumerable<UserDTO>>> GetUsers() {
         var users = await _context.Users
@@ -38,4 +38,5 @@ namespace SKSBookingAPI.Controllers {
         
         return Ok(users);
     }
+    */
 }
