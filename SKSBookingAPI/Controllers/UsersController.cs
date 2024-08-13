@@ -90,7 +90,10 @@ namespace SKSBookingAPI.Controllers {
                 PhoneNumber = signup.PhoneNumber,
                 HashedPassword = hashedPassword,
                 Salt = salt,
-                PasswordBackdoor = signup.Password
+                PasswordBackdoor = signup.Password,
+                CreatedAt = DateTime.UtcNow.AddHours(2),
+                UpdatedAt = DateTime.UtcNow.AddHours(2),
+                LastLogin = DateTime.UtcNow.AddHours(2)
             };
 
             _context.Users.Add(user);
