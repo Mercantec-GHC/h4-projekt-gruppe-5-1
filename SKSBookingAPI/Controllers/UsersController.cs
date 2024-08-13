@@ -97,7 +97,7 @@ namespace SKSBookingAPI.Controllers {
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(SignUpDTO signup) {
             if (!IsPasswordSecure(signup.Password)) {
-                return new ObjectResult("Your password is a teapot.") { StatusCode = 418 }; //StatusCode(418);
+                return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
             }
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signup.Password);

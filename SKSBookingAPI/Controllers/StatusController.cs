@@ -25,18 +25,4 @@ namespace SKSBookingAPI.Controllers {
             else return NotFound();
         }
     }
-    /*
-    [HttpGet]
-    public async Task<ActilResult<IEnumerable<UserDTO>>> GetUsers() {
-        var users = await _context.Users
-            .Select(users => new UserDTO {
-                Id = users.Id,
-                Email = users.Email,
-                Username = users.Username
-            })
-            .ToListAsync();
-        
-        return Ok(users);
-    }
-    */
 }
