@@ -11,5 +11,6 @@ namespace SKSBookingAPI.Context
             : base(options)
         {
         }
+        public DbSet<SKSBookingAPI.Models.Rental> Rental { get; set; } = default!;
     }
 }
