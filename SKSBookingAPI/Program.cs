@@ -1,7 +1,10 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SKSBookingAPI.Context;
 using System;
+using System.Text;
 
 namespace SKSBookingAPI
 {
@@ -12,6 +15,25 @@ namespace SKSBookingAPI
             // Add services to the container.
             IConfiguration Configuration = builder.Configuration;
 
+            // Configure JWT Authentication
+            builder.Services.AddAuthentication(x => {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x => {
+                x.TokenValidationParameters = new TokenValidationParameters {
+                    ValidIssuer = Configuration["JwtSettings:Issuer"],
+                    ValidAudience = Configuration["JwtSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"])),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true
+                };
+            });
+
+            // Configure connection string
             string connectionString = Configuration.GetConnectionString("DefaultConnection")
             ?? Environment.GetEnvironmentVariable("DefaultConnection");
 
@@ -30,19 +52,9 @@ namespace SKSBookingAPI
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            /*
-            if (app.Environment.IsDevelopment()) {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-            */
-
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
             app.MapControllers();
-
             app.Run();
         }
     }
