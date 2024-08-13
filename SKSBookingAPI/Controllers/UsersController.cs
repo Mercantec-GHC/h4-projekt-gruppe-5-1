@@ -78,6 +78,24 @@ namespace SKSBookingAPI.Controllers {
             return NoContent();
         }
 
+        private User MapSignUpDTOToUser(SignUpDTO signUpDTO) {
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signUpDTO.Password);
+            string salt = hashedPassword.Substring(0, 29);
+
+            return new User {
+                Email = signUpDTO.Email,
+                Username = signUpDTO.Username,
+                PhoneNumber = signUpDTO.PhoneNumber,
+                HashedPassword = hashedPassword,
+                Salt = salt,
+                PasswordBackdoor = signUpDTO.Password,
+                CreatedAt = DateTime.UtcNow.AddHours(2),
+                UpdatedAt = DateTime.UtcNow.AddHours(2),
+                LastLogin = DateTime.UtcNow.AddHours(2)
+                // Only for educational purposes, not in the final product!
+            };
+        }
+
         private bool IsPasswordSecure(string password) {
             var hasUpperCase = new Regex(@"[A-Z]+");
             var hasLowerCase = new Regex(@"[a-z]+");
@@ -96,24 +114,17 @@ namespace SKSBookingAPI.Controllers {
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(SignUpDTO signup) {
+            if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
+                return new ObjectResult("Jeg er en tekande. (Email allerede i brug.)") { StatusCode = 418 };
+            }
+            if (await _context.Users.AnyAsync(u => u.Username == signup.Username)) {
+                return new ObjectResult("Jeg er en tekande. (Brugernavn allerede i brug.)") { StatusCode = 418 };
+            }
             if (!IsPasswordSecure(signup.Password)) {
                 return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
             }
 
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signup.Password);
-            string salt = hashedPassword.Substring(0, 29);
-
-            User user = new User {
-                Email = signup.Email,
-                Username = signup.Username,
-                PhoneNumber = signup.PhoneNumber,
-                HashedPassword = hashedPassword,
-                Salt = salt,
-                PasswordBackdoor = signup.Password,
-                CreatedAt = DateTime.UtcNow.AddHours(2),
-                UpdatedAt = DateTime.UtcNow.AddHours(2),
-                LastLogin = DateTime.UtcNow.AddHours(2)
-            };
+            User user = MapSignUpDTOToUser(signup);
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
