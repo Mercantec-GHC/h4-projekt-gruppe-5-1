@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -77,10 +78,28 @@ namespace SKSBookingAPI.Controllers {
             return NoContent();
         }
 
+        private bool IsPasswordSecure(string password) {
+            var hasUpperCase = new Regex(@"[A-Z]+");
+            var hasLowerCase = new Regex(@"[a-z]+");
+            var hasDigits = new Regex(@"[0-9]+");
+            var hasSpecialChar = new Regex(@"[\W_]+");
+            var hasMinimum8Chars = new Regex(@".{8,}");
+
+            return hasUpperCase.IsMatch(password)
+                   && hasLowerCase.IsMatch(password)
+                   && hasDigits.IsMatch(password)
+                   && hasSpecialChar.IsMatch(password)
+                   && hasMinimum8Chars.IsMatch(password);
+        }
+
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(SignUpDTO signup) {
+            if (!IsPasswordSecure(signup.Password)) {
+                return new ObjectResult("Your password is a teapot.") { StatusCode = 418 }; //StatusCode(418);
+            }
+
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signup.Password);
             string salt = hashedPassword.Substring(0, 29);
 
