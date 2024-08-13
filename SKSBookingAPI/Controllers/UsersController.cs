@@ -24,10 +24,11 @@ namespace SKSBookingAPI.Controllers {
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers() {
             var users = await _context.Users
             .Select(user => new UserDTO {
-                 ID = user.ID,
-                 Email = user.Email,
-                 Username = user.Username,
-                 PhoneNumber = user.PhoneNumber
+                ID = user.ID,
+                Name = user.Name,
+                Email = user.Email,
+                Username = user.Username,
+                PhoneNumber = user.PhoneNumber
             })
             .ToListAsync();
 
@@ -45,6 +46,7 @@ namespace SKSBookingAPI.Controllers {
 
             var userdto = new UserDTO {
                 ID = user.ID,
+                Name = user.Name,
                 Email = user.Email,
                 Username = user.Username,
                 PhoneNumber = user.PhoneNumber
@@ -83,6 +85,7 @@ namespace SKSBookingAPI.Controllers {
             string salt = hashedPassword.Substring(0, 29);
 
             return new User {
+                Name = signUpDTO.Name,
                 Email = signUpDTO.Email,
                 Username = signUpDTO.Username,
                 PhoneNumber = signUpDTO.PhoneNumber,
