@@ -36,7 +36,8 @@ namespace SKSBookingAPI.Controllers {
                 Name = user.Name,
                 Email = user.Email,
                 Username = user.Username,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                Rentals = user.RentalProperties
             })
             .ToListAsync();
 
@@ -58,7 +59,8 @@ namespace SKSBookingAPI.Controllers {
                 Name = user.Name,
                 Email = user.Email,
                 Username = user.Username,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                Rentals = user.RentalProperties
             };
 
             return userdto;
@@ -118,6 +120,7 @@ namespace SKSBookingAPI.Controllers {
             string salt = hashedPassword.Substring(0, 29);
 
             return new User {
+                UserType = signUpDTO.UserType,
                 Name = signUpDTO.Name,
                 Email = signUpDTO.Email,
                 Username = signUpDTO.Username,

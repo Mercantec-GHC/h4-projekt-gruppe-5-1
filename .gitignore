@@ -7,3 +7,4 @@
 /SKSBookingAPI/.vs
 /SKSBookingAPI/obj
 SKSBookingAPI/appsettings.Development.json
+SKSBookingAPI/AppDBContext.dgml

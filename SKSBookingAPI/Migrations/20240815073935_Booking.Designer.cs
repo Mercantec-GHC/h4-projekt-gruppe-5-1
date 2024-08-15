@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SKSBookingAPI.Context;
@@ -11,9 +12,11 @@ using SKSBookingAPI.Context;
 namespace SKSBookingAPI.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240815073935_Booking")]
+    partial class Booking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,35 +24,6 @@ namespace SKSBookingAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("SKSBookingAPI.Models.Booking", b =>
-                {
-                    b.Property<int>("BookingID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BookingID"));
-
-                    b.Property<DateTime>("BookedFrom")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("BookedUntil")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("RentalID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserRentingID")
-                        .HasColumnType("integer");
-
-                    b.HasKey("BookingID");
-
-                    b.HasIndex("RentalID");
-
-                    b.HasIndex("UserRentingID");
-
-                    b.ToTable("Bookings");
-                });
 
             modelBuilder.Entity("SKSBookingAPI.Models.Rental", b =>
                 {
@@ -135,9 +109,6 @@ namespace SKSBookingAPI.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<byte>("UserType")
-                        .HasColumnType("smallint");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
@@ -145,25 +116,6 @@ namespace SKSBookingAPI.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("SKSBookingAPI.Models.Booking", b =>
-                {
-                    b.HasOne("SKSBookingAPI.Models.Rental", "Rental")
-                        .WithMany()
-                        .HasForeignKey("RentalID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SKSBookingAPI.Models.User", "UserRenting")
-                        .WithMany()
-                        .HasForeignKey("UserRentingID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Rental");
-
-                    b.Navigation("UserRenting");
                 });
 
             modelBuilder.Entity("SKSBookingAPI.Models.Rental", b =>

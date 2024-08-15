@@ -6,8 +6,7 @@ using SKSBookingAPI.Context;
 using System;
 using System.Text;
 
-namespace SKSBookingAPI
-{
+namespace SKSBookingAPI {
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
