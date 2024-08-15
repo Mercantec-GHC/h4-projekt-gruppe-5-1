@@ -8,7 +8,7 @@ namespace SKSBookingAPI.Models {
         public required bool IsVisibleToGuests { get; set; }
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
-        public required int UserId { get; set; }
+        public required int UserID { get; set; }
         //public required User Owner { get; set; }
     }
 
@@ -23,8 +23,18 @@ namespace SKSBookingAPI.Models {
 
     }
 
+    public class CreateRentalDTO {
+        public required string Address { get; set; }
+        public required float PriceDaily { get; set; }
+        public required string Description { get; set; }
+        public required bool IsVisibleToGuests { get; set; }
+        public DateTime AvailableFrom { get; set; }
+        public DateTime AvailableTo { get; set; }
+        public required int UserID { get; set; }
+    }
+
     //public class RentalImage
     //{
-        //public string Image { get; set; }
+    //public string Image { get; set; }
     //}
 }

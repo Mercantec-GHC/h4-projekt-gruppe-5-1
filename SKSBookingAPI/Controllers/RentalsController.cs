@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SKSBookingAPI.Context;
@@ -73,30 +75,25 @@ namespace SKSBookingAPI.Controllers {
 
         // POST: api/Rentals
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("{userId}")]
-        public async Task<ActionResult<Rental>> PostRental(Rental rental, int userId) {
+        [HttpPost]
+        public async Task<ActionResult<Rental>> PostRental(CreateRentalDTO rental) {
 
-            Rental nyRental = MapRentalToRental(rental, userId);
-
-            _context.Rental.Add(nyRental);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("NewRental", new { id = nyRental.ID }, nyRental);
-        }
-
-        private Rental MapRentalToRental(Rental rental, int id) {
-            
-            return new Rental {
+            Rental nyRental = new Rental {
                 Address = rental.Address,
                 Description = rental.Description,
                 PriceDaily = rental.PriceDaily,
                 IsVisibleToGuests = rental.IsVisibleToGuests,
                 AvailableFrom = rental.AvailableFrom,
                 AvailableTo = rental.AvailableTo,
-                UserId = id,
+                UserID = rental.UserID,
                 CreatedAt = DateTime.UtcNow.AddHours(2),
                 UpdatedAt = DateTime.UtcNow.AddHours(2)
             };
+
+            _context.Rental.Add(nyRental);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetRental", new { id = nyRental.ID }, nyRental);
         }
 
         // DELETE: api/Rentals/5
