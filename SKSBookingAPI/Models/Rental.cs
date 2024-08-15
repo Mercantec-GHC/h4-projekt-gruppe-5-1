@@ -8,7 +8,8 @@ namespace SKSBookingAPI.Models {
         public required bool IsVisibleToGuests { get; set; }
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
-        public required UserRentingDTO Owner { get; set; }
+        public required int user_id { get; set; }
+        public required User Owner { get; set; }
     }
 
     public class RentalDTO

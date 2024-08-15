@@ -20,8 +20,18 @@ namespace SKSBookingAPI.Controllers {
 
         // GET: api/Rentals
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Rental>>> GetRental() {
-            return await _context.Rental.ToListAsync();
+        public async Task<ActionResult<IEnumerable<RentalDTO>>> GetRental() {
+            var rentals = await _context.Rental
+            .Select(rental => new RentalDTO {
+                Address = rental.Address,
+                Description = rental.Description,
+                AvailableFrom = rental.AvailableFrom,
+                AvailableTo = rental.AvailableTo,
+                //Owner = rental.Owner,
+            })
+            .ToListAsync();
+
+            return Ok(rentals);
         }
 
         // GET: api/Rentals/5
@@ -65,10 +75,28 @@ namespace SKSBookingAPI.Controllers {
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Rental>> PostRental(Rental rental) {
-            _context.Rental.Add(rental);
+
+            Rental nyRental = MapRentalToRental(rental);
+
+            _context.Rental.Add(nyRental);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRental", new { id = rental.ID }, rental);
+            return CreatedAtAction("NewRental", new { id = nyRental.ID }, nyRental);
+        }
+
+        private Rental MapRentalToRental(Rental rental) {
+            
+            return new Rental {
+                Address = rental.Address,
+                Description = rental.Description,
+                PriceDaily = rental.PriceDaily,
+                IsVisibleToGuests = rental.IsVisibleToGuests,
+                AvailableFrom = rental.AvailableFrom,
+                AvailableTo = rental.AvailableTo,
+                Owner = rental.Owner,
+                CreatedAt = DateTime.UtcNow.AddHours(2),
+                UpdatedAt = DateTime.UtcNow.AddHours(2)
+            };
         }
 
         // DELETE: api/Rentals/5
