@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol;
 using SKSBookingAPI.Context;
 using SKSBookingAPI.Models;
 
@@ -176,6 +177,7 @@ namespace SKSBookingAPI.Controllers {
                 return Unauthorized(new { message = "Invalid email or password." });
             }
             var token = GenerateJwtToken(user);
+
             return Ok(new { token, user.Username, user.ID });
         }
 
@@ -199,5 +201,102 @@ namespace SKSBookingAPI.Controllers {
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+        // TODO Fredag - Indsæt test rolletjek, og juster hvad test endpoints giver afhængigt af det, fx kan brugere ikke lave lejligheder, og kun admins se liste af brugere
+        // Idéen er til sidst få det bundet til brugertokens i stedet for en HTML parameter/hente brugertype fra DB ud fra login
+        // Der er gentaget kode her, lad være med at tænke over det :)
+
+        [HttpGet("testauth")]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(byte? authID) {
+            if (authID != 2) {
+                return Forbid();
+            }
+
+            var users = await _context.Users
+            .Select(user => new UserDTO {
+                ID = user.ID,
+                Name = user.Name,
+                Email = user.Email,
+                Username = user.Username,
+                PhoneNumber = user.PhoneNumber,
+                Rentals = user.RentalProperties
+            })
+            .ToListAsync();
+
+            return Ok(users);
+        }
+
+        [HttpPost("testauth")]
+        public async Task<ActionResult<User>> PostUser(SignUpDTO signup, byte? authID) {
+            
+            if (signup.UserType != 0 && authID != 2) {
+                return Forbid();
+            }
+            if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
+                return new ObjectResult("Jeg er en tekande. (Email allerede i brug.)") { StatusCode = 418 };
+            }
+            if (await _context.Users.AnyAsync(u => u.Username == signup.Username)) {
+                return new ObjectResult("Jeg er en tekande. (Brugernavn allerede i brug.)") { StatusCode = 418 };
+            }
+            if (!IsPasswordSecure(signup.Password)) {
+                return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
+            }
+
+            User user = MapSignUpDTOToUser(signup);
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetUser", new { id = user.ID }, user);
+        }
+
+        [HttpDelete("testauth/{id}")]
+        public async Task<IActionResult> DeleteUser(int id, byte? authID) {
+            if (authID != 2) {
+                return Forbid();
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) {
+                return NotFound();
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpGet("testauthtoken")]
+        public async Task<ActionResult<string>> GetUsers(string token) {
+            //TokenValidationParameters parameters = new TokenValidationParameters();
+            //new JwtSecurityTokenHandler().ValidateToken(token, , out SecurityToken validatedToken);
+
+            // Token skal nok valideres først
+            SecurityToken readToken = new JwtSecurityTokenHandler().ReadToken(token);
+            string attachedID = (readToken as JwtSecurityToken).Claims.First(c => c.Type == "sub").Value;
+
+            return attachedID;
+
+            
+            /*
+            var users = await _context.Users
+            .Select(user => new UserDTO {
+                ID = user.ID,
+                Name = user.Name,
+                Email = user.Email,
+                Username = user.Username,
+                PhoneNumber = user.PhoneNumber,
+                Rentals = user.RentalProperties
+            })
+            .ToListAsync();
+
+            return Ok(users);
+            */
+        }
+
+
+        //new JwtSecurityTokenHandler().ReadToken
     }
 }
