@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SKSBookingAPI.Context;
+using SKSBookingAPI.Migrations;
 using SKSBookingAPI.Models;
 
 namespace SKSBookingAPI.Controllers {
@@ -22,14 +23,14 @@ namespace SKSBookingAPI.Controllers {
 
         // GET: api/Rentals
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RentalDTO>>> GetRental() {
+        public async Task<ActionResult<IEnumerable<AllRentalsDTO>>> GetRental() {
             var rentals = await _context.Rental
-            .Select(rental => new RentalDTO {
+            .Select(rental => new AllRentalsDTO {
+                ID = rental.ID,
                 Address = rental.Address,
-                Description = rental.Description,
+                PriceDaily = rental.PriceDaily,
                 AvailableFrom = rental.AvailableFrom,
                 AvailableTo = rental.AvailableTo,
-                //Owner = rental.Owner,
             })
             .ToListAsync();
 
@@ -38,14 +39,21 @@ namespace SKSBookingAPI.Controllers {
 
         // GET: api/Rentals/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Rental>> GetRental(int id) {
+        public async Task<ActionResult<RentalDTO>> GetRental(int id) {
             var rental = await _context.Rental.FindAsync(id);
 
             if (rental == null) {
                 return NotFound();
             }
+            var userdto = new RentalDTO {
+                Address = rental.Address,
+                Description = rental.Description,
+                PriceDaily = rental.PriceDaily,
+                AvailableFrom = rental.AvailableFrom,
+                AvailableTo = rental.AvailableTo,
+            };
 
-            return rental;
+            return userdto;
         }
 
         // PUT: api/Rentals/5
