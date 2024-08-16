@@ -6,4 +6,12 @@
         public required DateTime BookedFrom { get; set; }
         public required DateTime BookedUntil { get; set; }
     }
+
+    public class BookingDTO
+    {
+        public int BookingID { get; set; }
+        public Rental Rental { get; set; }
+        public DateTime BookedFrom { get; set; }
+        public DateTime BookedUntil { get; set; }
+    }
 }
