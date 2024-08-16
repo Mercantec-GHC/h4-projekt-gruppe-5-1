@@ -269,7 +269,7 @@ namespace SKSBookingAPI.Controllers {
         }
 
         [HttpGet("testauthtoken")]
-        public async Task<ActionResult<string>> GetUsers(string token) {
+        public async Task<ActionResult<string>> GetIDFromToken(string token) {
             //TokenValidationParameters parameters = new TokenValidationParameters();
             //new JwtSecurityTokenHandler().ValidateToken(token, , out SecurityToken validatedToken);
 
@@ -278,25 +278,6 @@ namespace SKSBookingAPI.Controllers {
             string attachedID = (readToken as JwtSecurityToken).Claims.First(c => c.Type == "sub").Value;
 
             return attachedID;
-
-            
-            /*
-            var users = await _context.Users
-            .Select(user => new UserDTO {
-                ID = user.ID,
-                Name = user.Name,
-                Email = user.Email,
-                Username = user.Username,
-                PhoneNumber = user.PhoneNumber,
-                Rentals = user.RentalProperties
-            })
-            .ToListAsync();
-
-            return Ok(users);
-            */
         }
-
-
-        //new JwtSecurityTokenHandler().ReadToken
     }
 }

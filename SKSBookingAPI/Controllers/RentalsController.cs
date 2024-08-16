@@ -80,7 +80,6 @@ namespace SKSBookingAPI.Controllers {
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Rental>> PostRental(CreateRentalDTO rental) {
-
             Rental nyRental = new Rental {
                 Address = rental.Address,
                 Description = rental.Description,
@@ -129,13 +128,13 @@ namespace SKSBookingAPI.Controllers {
                 return NotFound();
             }
 
+            if (rental.IsVisibleToGuests == false && authID == null) {
+                return Forbid();
+            }
+
             var user = await _context.Users.FindAsync(rental.UserID);
             if (user == null) {
                 return NotFound();
-            }
-
-            if (rental.IsVisibleToGuests == false && authID == null) {
-                return Forbid();
             }
 
             UserRentingDTO userdto = new UserRentingDTO {
