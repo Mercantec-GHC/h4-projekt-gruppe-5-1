@@ -39,21 +39,39 @@ namespace SKSBookingAPI.Controllers {
 
         // GET: api/Rentals/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RentalDTO>> GetRental(int id) {
+        public async Task<ActionResult<RentalDTO>> GetRental(int id, byte? authID) {
             var rental = await _context.Rental.FindAsync(id);
 
             if (rental == null) {
                 return NotFound();
             }
-            var userdto = new RentalDTO {
+
+            if (rental.IsVisibleToGuests == false && authID == null) {
+                return Forbid();
+            }
+
+            var user = await _context.Users.FindAsync(rental.UserID);
+
+            if (user == null) {
+                return NotFound();
+            }
+
+            UserRentingDTO userdto = new UserRentingDTO {
+                Name = user.Name,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            var rentalDto = new RentalDTO {
                 Address = rental.Address,
                 Description = rental.Description,
                 PriceDaily = rental.PriceDaily,
                 AvailableFrom = rental.AvailableFrom,
                 AvailableTo = rental.AvailableTo,
+                Owner = userdto
             };
 
-            return userdto;
+            return rentalDto;
         }
 
         // PUT: api/Rentals/5

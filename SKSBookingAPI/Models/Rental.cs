@@ -9,7 +9,7 @@ namespace SKSBookingAPI.Models {
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
         public required int UserID { get; set; }
-        public required User Owner { get; set; }
+        //public required User Owner { get; set; }
     }
 
     public class RentalDTO {
