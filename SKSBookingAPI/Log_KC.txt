@@ -1,0 +1,6 @@
+﻿Uge 34: Freja
+	Ingen databaseforbindelse endnu
+	Koordinator på markører, ikke omvendt endnu
+	Hvis man ikke er logget ind, tager den en til loginsiden i stedet for profil
+	Prøv at have søgebar i bunden af navigations-/kortside
+	Ændring af brugerinformation/kontoinformation samlet eller splittet - prøver samlet
