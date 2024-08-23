@@ -1,7 +1,12 @@
 ﻿using System.Collections;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SKSBookingAPI.Models {
     public class Rental : Common {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
         public required string Address { get; set; }
         public required float PriceDaily { get; set; }
         public required string Description { get; set; }
@@ -12,9 +17,9 @@ namespace SKSBookingAPI.Models {
         //public required User Owner { get; set; }
     }
 
-    public class RentalDTO
-    {
+    public class RentalDTO {
         public string Address { get; set; }
+        public float PriceDaily { get; set; }
         public string Description { get; set; }
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }

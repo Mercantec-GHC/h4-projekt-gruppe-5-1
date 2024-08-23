@@ -36,6 +36,7 @@ namespace SKSBookingAPI.Controllers {
             return Ok(rentals);
         }
 
+
         // GET: api/Rentals/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Rental>> GetRental(int id) {
@@ -47,6 +48,7 @@ namespace SKSBookingAPI.Controllers {
 
             return rental;
         }
+
 
         // PUT: api/Rentals/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -73,11 +75,11 @@ namespace SKSBookingAPI.Controllers {
             return NoContent();
         }
 
+
         // POST: api/Rentals
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Rental>> PostRental(CreateRentalDTO rental) {
-
             Rental nyRental = new Rental {
                 Address = rental.Address,
                 Description = rental.Description,
@@ -96,6 +98,7 @@ namespace SKSBookingAPI.Controllers {
             return CreatedAtAction("GetRental", new { id = nyRental.ID }, nyRental);
         }
 
+
         // DELETE: api/Rentals/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRental(int id) {
@@ -112,6 +115,69 @@ namespace SKSBookingAPI.Controllers {
 
         private bool RentalExists(int id) {
             return _context.Rental.Any(e => e.ID == id);
+        }
+
+
+
+        // AUTH TEST
+
+        [HttpGet("authtest/{id}")]
+        public async Task<ActionResult<RentalDTO>> GetRental(int id, byte? authID) {
+            var rental = await _context.Rental.FindAsync(id);
+            if (rental == null) {
+                return NotFound();
+            }
+
+            if (rental.IsVisibleToGuests == false && authID == null) {
+                return Forbid();
+            }
+
+            var user = await _context.Users.FindAsync(rental.UserID);
+            if (user == null) {
+                return NotFound();
+            }
+
+            UserRentingDTO userdto = new UserRentingDTO {
+                Name = user.Name,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            RentalDTO rentalDTO = new RentalDTO {
+                Address = rental.Address,
+                PriceDaily = rental.PriceDaily,
+                Description = rental.Description,
+                AvailableFrom = rental.AvailableFrom,
+                AvailableTo = rental.AvailableTo,
+                Owner = userdto
+            };
+
+            return rentalDTO;
+        }
+
+
+        [HttpPost("authtest")]
+        public async Task<ActionResult<Rental>> PostRental(CreateRentalDTO rental, byte? authID) {
+            if (authID != 1 && authID != 2) {
+                return Forbid();
+            }
+
+            Rental nyRental = new Rental {
+                Address = rental.Address,
+                Description = rental.Description,
+                PriceDaily = rental.PriceDaily,
+                IsVisibleToGuests = rental.IsVisibleToGuests,
+                AvailableFrom = rental.AvailableFrom,
+                AvailableTo = rental.AvailableTo,
+                UserID = rental.UserID,
+                CreatedAt = DateTime.UtcNow.AddHours(2),
+                UpdatedAt = DateTime.UtcNow.AddHours(2)
+            };
+
+            _context.Rental.Add(nyRental);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetRental", new { id = nyRental.ID }, nyRental);
         }
     }
 }

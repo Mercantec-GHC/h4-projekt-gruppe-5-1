@@ -1,5 +1,11 @@
-﻿namespace SKSBookingAPI.Models {
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace SKSBookingAPI.Models {
     public class User : Common { // Indsæt billede!
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
         public byte UserType { get; set; }
         public required string Name { get; set; }
         public required string Email { get; set; }
@@ -12,6 +18,7 @@
         public string? PasswordBackdoor { get; set; }
         // Only for educational purposes, not in the final product!
     }
+
     public class UserDTO {
         public int ID { get; set; }
         public string Name { get; set; }
