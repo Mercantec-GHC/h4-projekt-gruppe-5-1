@@ -68,9 +68,9 @@ class MyAppState extends ChangeNotifier {
     }
   }
 
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(String name, String email, String password, String phoneNumber, String username) async {
     try {
-      var response = await apiService.createUser(name, email, password);
+      var response = await apiService.createUser(name, email, password, phoneNumber, username);
       if (response.containsKey('id')) {
         print('User created with ID: ${response['id']}');
       }

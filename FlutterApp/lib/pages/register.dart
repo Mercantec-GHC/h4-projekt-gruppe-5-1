@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
+import '../api.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback onLogin;
@@ -14,9 +15,11 @@ class RegisterPage extends StatefulWidget {
 
 class RegisterPageState extends State<RegisterPage> {
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
 
   bool passwordMatch = true;
 
@@ -36,6 +39,16 @@ class RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Name',
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: TextFormField(
+              controller: usernameController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Username',
               ),
             ),
           ),
@@ -67,16 +80,26 @@ class RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: passwordMatch ? Colors.grey : Colors.red,
+                    color: passwordMatch ? const Color.fromARGB(255, 0, 0, 0) : Colors.red,
                   )
                 ),
                 labelText: 'Confirm Password',
                 labelStyle: TextStyle(
-                  color: passwordMatch ? Colors.grey : Colors.red,
+                  color: passwordMatch ? const Color.fromARGB(255, 0, 0, 0) : Colors.red,
                 )
               ),
               obscureText: true,
             )
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: TextFormField(
+              controller: phoneNumberController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Phone Number',
+              ),
+            ),
           ),
           ElevatedButton.icon(
                 onPressed: () async {
@@ -86,10 +109,12 @@ class RegisterPageState extends State<RegisterPage> {
 
                   if (passwordMatch) {
                     String name = nameController.text;
-                    String email = passwordController.text;
+                    String username = usernameController.text;
+                    String email = emailController.text;
                     String password = passwordController.text;
+                    String phoneNumber = phoneNumberController.text;
 
-                    await appState.register(name, email, password);
+                    await appState.register(name, email, password, phoneNumber, username);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Passwords do not match')),
