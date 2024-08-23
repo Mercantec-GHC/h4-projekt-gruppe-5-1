@@ -64,11 +64,21 @@ namespace SKSBookingAPI.Controllers {
         // POST: api/Bookings
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Booking>> PostBooking(Booking booking) {
-            _context.Bookings.Add(booking);
+        public async Task<ActionResult<Booking>> PostBooking(CreateBookingDTO booking)
+        {
+            Booking nyBooking = new Booking
+            {
+                BookingID = booking.BookingID,
+                UserRenting = booking.UserRenting,
+                Rental = booking.Rental,
+                BookedFrom = booking.BookedFrom,
+                BookedUntil = booking.BookedUntil,
+            };
+
+            _context.Bookings.Add(nyBooking);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBooking", new { id = booking.BookingID }, booking);
+            return CreatedAtAction("GetBooking", new { id = nyBooking.BookingID }, nyBooking);
         }
 
         // DELETE: api/Bookings/5
