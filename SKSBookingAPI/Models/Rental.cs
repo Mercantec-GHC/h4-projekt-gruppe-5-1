@@ -17,8 +17,7 @@ namespace SKSBookingAPI.Models {
         //public required User Owner { get; set; }
     }
 
-    public class RentalDTO
-    {
+    public class RentalDTO {
         public string Address { get; set; }
         public float PriceDaily { get; set; }
         public string Description { get; set; }
