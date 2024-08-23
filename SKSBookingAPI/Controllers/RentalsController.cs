@@ -40,15 +40,11 @@ namespace SKSBookingAPI.Controllers {
 
         // GET: api/Rentals/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RentalDTO>> GetRental(int id, byte? authID) {
+        public async Task<ActionResult<RentalDTO>> GetRental(int id) {
             var rental = await _context.Rental.FindAsync(id);
 
             if (rental == null) {
                 return NotFound();
-            }
-
-            if (rental.IsVisibleToGuests == false && authID == null) {
-                return Forbid();
             }
 
             var user = await _context.Users.FindAsync(rental.UserID);

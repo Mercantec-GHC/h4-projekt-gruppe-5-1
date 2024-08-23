@@ -21,7 +21,6 @@ namespace SKSBookingAPI.Models {
         public string Address { get; set; }
         public float PriceDaily { get; set; }
         public string Description { get; set; }
-        public float PriceDaily { get; set; }
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
         public UserRentingDTO Owner { get; set; }
