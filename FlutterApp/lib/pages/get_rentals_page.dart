@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/rental_model.dart';
 
-Future<List<RentalApartmentThumb>> fetchApartment(String id) async {
+Future<List<RentalApartment>> fetchApartment(String id) async {
   if (id == "") {
-    throw Exception("Please enter ID");
+    throw Exception("No ID");
   }
 
   final response = await http.get(Uri.parse('https://localhost:7014/api/Rentals/$id'));
   if (response.statusCode == 200) {
-    final List<RentalApartmentThumb> apartment = <RentalApartmentThumb>[
-      RentalApartmentThumb.fromJson(jsonDecode(response.body) as Map<String, dynamic>)
+    final List<RentalApartment> apartment = <RentalApartment>[
+      RentalApartment.fromJson(jsonDecode(response.body) as Map<String, dynamic>)
     ];
 
     return apartment;
@@ -28,7 +28,7 @@ Future<List<RentalApartmentThumb>> fetchApartments() async {
     List<dynamic> jsonRentals = jsonDecode(response.body) as List<dynamic>;
     final List<RentalApartmentThumb> rentals = List.empty(growable: true);
     
-    for (var i = 0; i < response.body.length; i++) { // body.length er længden af json string, fiks :P
+    for (var i = 0; i < jsonRentals.length; i++) {
       rentals.add(RentalApartmentThumb.fromJson(jsonRentals[i]));
     }
 
@@ -48,7 +48,7 @@ class GetRentalsPage extends StatefulWidget {
 
 class _GetRentalsPageState extends State<GetRentalsPage> {
   List<RentalApartmentThumb> rentalList = List.empty(growable: true);
-  final TextEditingController _rentalIDController = TextEditingController();
+  //final TextEditingController _rentalIDController = TextEditingController();
 
   @override
   void initState() {
@@ -62,9 +62,10 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
       body: Center(
         child: Column(
           children: [
+            /*
             Flexible(
-              flex: 1,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Flexible(
                     child: SizedBox(
@@ -90,10 +91,11 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
               )
             ),
             const SizedBox(height: 15),
+            */
             Flexible(
-              flex: 1,
               child: Row(
-              mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
                     child: ElevatedButton(
@@ -112,9 +114,10 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
             Expanded(
               flex: 8,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
+                  Flexible(
                     child: ListView.builder(
                       itemCount: rentalList.length,
                       itemBuilder: (context, index) {
