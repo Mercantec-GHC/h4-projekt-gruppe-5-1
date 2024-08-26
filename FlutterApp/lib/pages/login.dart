@@ -4,8 +4,9 @@ import 'auth_state.dart';
 import '../main.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key, required void Function() onCreateUser})
-      : super(key: key);
+  final VoidCallback onCreateUser;
+
+  const LoginPage({super.key, required this.onCreateUser});
 
   @override
   State<LoginPage> createState() => _LoginState();
@@ -16,6 +17,12 @@ class _LoginState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   late final VoidCallback onCreateUser;
+
+  @override
+  void initState() {
+    super.initState();
+    onCreateUser = widget.onCreateUser;
+  }
 
   @override
   Widget build(BuildContext context) {
