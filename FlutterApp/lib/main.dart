@@ -2,6 +2,7 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:sks_booking/api.dart';
 import 'package:provider/provider.dart';
+import 'package:sks_booking/pages/renter_homepage.dart';
 
 import 'pages/login.dart';
 import 'pages/register.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         title: 'SKS Booking',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(202, 195, 165, 100)),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(198, 48, 48, 48)),
         ),
         home: MyHomePage(),
       ),
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   final ApiService apiService = ApiService(baseUrl: 'https://localhost:7014/api');
   var current = WordPair.random();
-  var backgroundColor = Color.fromARGB(202, 195, 165, 100);
+  var backgroundColor = Color.fromARGB(198, 48, 48, 48);
 
   void getNext() {
     current = WordPair.random();
@@ -122,6 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 3:
         page = UpdatePage();
         break;
+      case 4:
+        page = RenterHomepage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
 }
@@ -142,11 +146,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.home),
-                  label: Text('Home'),
+                  label: Text('Get Rentals'),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.update),
                   label: Text('Update'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.home), 
+                  label: Text('Homepage')
                 ),
               ],
               selectedIndex: selectedIndex,
