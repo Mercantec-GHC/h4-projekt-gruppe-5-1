@@ -8,3 +8,9 @@
 /SKSBookingAPI/obj
 SKSBookingAPI/appsettings.Development.json
 SKSBookingAPI/AppDBContext.dgml
+*.cc
+*.h
+/FlutterApp/linux
+/FlutterApp/macos
+*.cc
+*.cmake

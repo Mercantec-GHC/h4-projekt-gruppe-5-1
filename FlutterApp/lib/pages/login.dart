@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'auth_state.dart';
+import '../api.dart' as api;
 import '../main.dart';
 
 class LoginPage extends StatefulWidget {
@@ -26,6 +26,7 @@ class _LoginState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
     return Scaffold(
         appBar: AppBar(
           title: Text('Login'),
@@ -72,12 +73,11 @@ class _LoginState extends State<LoginPage> {
                 padding: const EdgeInsets.all(20),
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    final authState =
-                        Provider.of<AuthState>(context, listen: false);
-                    await authState.logIn(
-                        emailController.text, passwordController.text);
+                    String email = emailController.text;
+                    String password = passwordController.text;
+                    await appState.login(email, password);
 
-                    if (authState.isLoggedIn) {
+                    if (api.loggedIn) {
                       // Navigate to another page
                       Navigator.pushReplacement(
                         context,

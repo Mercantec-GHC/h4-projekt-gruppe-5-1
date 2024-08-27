@@ -8,6 +8,12 @@ import 'pages/login.dart';
 import 'pages/register.dart';
 import 'pages/update_user.dart';
 import 'pages/get_rentals_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+AndroidOptions _getAndroidOptions() => const AndroidOptions(
+      encryptedSharedPreferences: true,
+    );
+final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
 
 void main() {
   runApp(MyApp());
@@ -22,9 +28,11 @@ class MyApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         title: 'SKS Booking',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(198, 48, 48, 48)),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color.fromARGB(198, 48, 48, 48)),
         ),
         home: MyHomePage(),
       ),
@@ -33,7 +41,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  final ApiService apiService = ApiService(baseUrl: 'https://localhost:7014/api');
+  final ApiService apiService =
+      ApiService(baseUrl: 'https://localhost:7014/api');
   var current = WordPair.random();
   var backgroundColor = Color.fromARGB(198, 48, 48, 48);
 
@@ -61,17 +70,19 @@ class MyAppState extends ChangeNotifier {
   Future<void> login(String email, String password) async {
     try {
       var response = await apiService.loginUser(email, password);
-      if (response.containsKey('token')) {
-        changeBackgroundColor(Colors.green);
+      if (response.id != 0) {
+        storage.write(key: 'token', value: response.token);
       }
     } catch (e) {
       print('login failed: $e');
     }
   }
 
-  Future<void> register(String name, String email, String password, String phoneNumber, String username) async {
+  Future<void> register(String name, String email, String password,
+      String phoneNumber, String username) async {
     try {
-      var response = await apiService.createUser(name, email, password, phoneNumber, username);
+      var response = await apiService.createUser(
+          name, email, password, phoneNumber, username);
       if (response.containsKey('id')) {
         print('User created with ID: ${response['id']}');
       }
@@ -87,7 +98,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   var selectedIndex = 0;
 
   void switchToRegisterPage() {
@@ -102,9 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
   // skal gjøres om til en Drawer. Det er måten vi kan få en "Burgerbar". Så må jeg bare finne ut hvordan jeg får den over på høyre side.
-
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
-}
+    }
     return Scaffold(
       body: Row(
         children: [
@@ -137,11 +145,11 @@ class _MyHomePageState extends State<MyHomePage> {
               extended: false,
               destinations: [
                 NavigationRailDestination(
-                  icon: Icon(Icons.login), 
+                  icon: Icon(Icons.login),
                   label: Text('Login'),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.create), 
+                  icon: Icon(Icons.create),
                   label: Text('Create User'),
                 ),
                 NavigationRailDestination(
@@ -153,9 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   label: Text('Update'),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.home), 
-                  label: Text('Homepage')
-                ),
+                    icon: Icon(Icons.home), label: Text('Homepage')),
               ],
               selectedIndex: selectedIndex,
               onDestinationSelected: (value) {
