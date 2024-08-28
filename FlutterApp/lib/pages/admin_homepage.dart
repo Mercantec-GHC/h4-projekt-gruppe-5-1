@@ -13,17 +13,54 @@ class AdminHomepage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(217, 217, 217, 100), // Background color for the container
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  
-                ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  print('hello');
+                },
+                icon: Icon(Icons.create),
+                label: Text('Create User'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  print('Troll');
+                },
+                icon: Icon(Icons.create),
+                label: Text('See Users'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  print('Tor');
+                },
+                icon: Icon(Icons.create),
+                label: Text('See reviews'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  print('Loke');
+                },
+                icon: Icon(Icons.create),
+                label: Text('See appartments'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  print('Odin');
+                },
+                icon: Icon(Icons.create),
+                label: Text('See adds'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  print('Frøya');
+                },
+                icon: Icon(Icons.create),
+                label: Text('Make adds'),
               ),
             ],
           ),

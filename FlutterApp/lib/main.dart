@@ -2,6 +2,8 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:sks_booking/api.dart';
 import 'package:provider/provider.dart';
+import 'package:sks_booking/pages/admin_homepage.dart';
+import 'package:sks_booking/pages/rental_homepage.dart';
 import 'package:sks_booking/pages/renter_homepage.dart';
 import 'api.dart' as api;
 import 'pages/login.dart';
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(198, 48, 48, 48)),
+              seedColor: const Color(0xff525252)),
         ),
         home: MyHomePage(),
       ),
@@ -44,7 +46,7 @@ class MyAppState extends ChangeNotifier {
   final ApiService apiService =
       ApiService(baseUrl: 'https://localhost:7014/api');
   var current = WordPair.random();
-  var backgroundColor = Color.fromARGB(198, 48, 48, 48);
+  var backgroundColor = Color(0xff525252);
 
   void getNext() {
     current = WordPair.random();
@@ -210,13 +212,33 @@ class _MyHomePageState extends State<MyHomePage> {
             _onItemTapped(3);
             Navigator.pop(context);
           },
-        )
+        ),
+        ListTile(
+          leading: Icon(Icons.home),
+          title: Text('Rental'),
+          selected: selectedIndex == 4,
+          onTap: () {
+            _onItemTapped(4);
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.home),
+          title: Text('Admin'),
+          selected: selectedIndex == 5,
+          onTap: () {
+            _onItemTapped(5);
+            Navigator.pop(context);
+          },
+        ),
       ];
       page = [
         LoginPage(onCreateUser: switchToRegisterPage),
         RegisterPage(onLogin: switchToLoginPage),
         GetRentalsPage(),
         RenterHomepage(),
+        RentalHomepage(),
+        AdminHomepage(),
       ];
     }
     return Scaffold(
