@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sks_booking/api.dart';
 import 'package:provider/provider.dart';
 import 'package:sks_booking/pages/renter_homepage.dart';
-
+import 'api.dart' as api;
 import 'pages/login.dart';
 import 'pages/register.dart';
 import 'pages/update_user.dart';
@@ -112,72 +112,128 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // skal gjøres om til en Drawer. Det er måten vi kan få en "Burgerbar". Så må jeg bare finne ut hvordan jeg får den over på høyre side.
+  void _onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    Widget page;
-    switch (selectedIndex) {
-      case 0:
-        page = LoginPage(onCreateUser: switchToRegisterPage);
-        break;
-      case 1:
-        page = RegisterPage(onLogin: switchToLoginPage);
-        break;
-      case 2:
-        page = GetRentalsPage();
-        break;
-      case 3:
-        page = UpdatePage();
-        break;
-      case 4:
-        page = RenterHomepage();
-        break;
-      default:
-        throw UnimplementedError('no widget for $selectedIndex');
+    bool isLoggedIn = api.loggedIn;
+    List<Widget> nav;
+    List<Widget> page;
+
+    if (isLoggedIn) {
+      nav = [
+        const DrawerHeader(
+          decoration: BoxDecoration(
+            color: Colors.blue,
+          ),
+          child: Text('Noget text her'),
+        ),
+        ListTile(
+          leading: Icon(Icons.account_circle),
+          title: Text('Drawer layout Item 1'),
+          selected: selectedIndex == 0,
+          onTap: () {
+            _onItemTapped(0);
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.accessibility),
+          title: Text('Drawer layout Item 2'),
+          selected: selectedIndex == 1,
+          onTap: () {
+            _onItemTapped(1);
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.account_box),
+          title: Text('Drawer layout Item 3'),
+          selected: selectedIndex == 2,
+          onTap: () {
+            _onItemTapped(2);
+            Navigator.pop(context);
+          },
+        )
+      ];
+      page = [
+        GetRentalsPage(),
+        UpdatePage(),
+        RenterHomepage(),
+      ];
+    } else {
+      nav = [
+        const DrawerHeader(
+          decoration: BoxDecoration(
+            color: Colors.blue,
+          ),
+          child: Text(
+              style: TextStyle(color: Colors.white, fontSize: 40),
+              'Noget text her'),
+        ),
+        ListTile(
+          leading: Icon(Icons.login),
+          title: Text('Login'),
+          selected: selectedIndex == 0,
+          onTap: () {
+            _onItemTapped(0);
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.create),
+          title: Text('New user'),
+          selected: selectedIndex == 1,
+          onTap: () {
+            _onItemTapped(1);
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.apartment),
+          title: Text('All apartments'),
+          selected: selectedIndex == 2,
+          onTap: () {
+            _onItemTapped(2);
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.home),
+          title: Text('Home'),
+          selected: selectedIndex == 3,
+          onTap: () {
+            _onItemTapped(3);
+            Navigator.pop(context);
+          },
+        )
+      ];
+      page = [
+        LoginPage(onCreateUser: switchToRegisterPage),
+        RegisterPage(onLogin: switchToLoginPage),
+        GetRentalsPage(),
+        RenterHomepage(),
+      ];
     }
     return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              extended: false,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.login),
-                  label: Text('Login'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.create),
-                  label: Text('Create User'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.home),
-                  label: Text('Get Rentals'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.update),
-                  label: Text('Update'),
-                ),
-                NavigationRailDestination(
-                    icon: Icon(Icons.home), label: Text('Homepage')),
-              ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (value) {
-                setState(() {
-                  selectedIndex = value;
-                });
-              },
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: appState.backgroundColor,
-              child: page,
-            ),
-          ),
-        ],
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 40),
+        centerTitle: true,
+        title: Text('SKS Booking'),
+      ),
+      endDrawer: Drawer(
+          elevation: 20.0,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: nav,
+          )),
+      body: Center(
+        child: page[selectedIndex],
       ),
     );
   }
