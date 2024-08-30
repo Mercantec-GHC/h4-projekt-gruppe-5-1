@@ -4,3 +4,10 @@
 	Hvis man ikke er logget ind, tager den en til loginsiden i stedet for profil
 	Prøv at have søgebar i bunden af navigations-/kortside
 	Ændring af brugerinformation/kontoinformation samlet eller splittet - prøver samlet
+
+Uge 35: Kjetil
+	Søgebar fælt sedter markør hvor end i verden det skulle være, men mappet zommer ikke ind på markør endnu
+	Må logge ind for at sætte favoritter
+	Ændringer af brugerinformation/kontoinformation samlet, ser godt ud og gir bedst brugeropplevelse - mangler profilbillede
+	Søgebar er fast i bunden af navigation og fungerer overens med mappet.
+	
