@@ -42,10 +42,21 @@ namespace SKSBookingAPI.Models {
         public string PhoneNumber { get; set; }
     }
 
-    public class UserRentingDTO
-    {
+    public class UserRentingDTO {
         public string Email { get; set; }
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
+    }
+
+    public class EditUserProfileDTO {
+        public string Name { get; set; }
+        public string PhoneNumber { get; set; }
+    }
+
+    public class EditUserAccountDTO {
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string OldPassword { get; set; }
     }
 }

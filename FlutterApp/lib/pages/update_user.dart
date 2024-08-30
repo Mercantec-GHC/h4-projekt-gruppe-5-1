@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../main.dart' as main;
 
-import '../main.dart';
+class UpdatePage extends StatefulWidget {
+  final VoidCallback password;
 
+  UpdatePage({required this.password});
+  @override
+  UpdatePageState createState() => UpdatePageState();
+}
 
-class UpdatePage extends StatelessWidget {
-
+class UpdatePageState extends State<UpdatePage> {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    var appState = context.watch<main.MyAppState>();
+    //var storage = main.storage;
 
-    return Center(
+    return Scaffold(
+        body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -25,52 +32,30 @@ class UpdatePage extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10),
-            child: TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Email',
-              ),
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Address',
+                ),
+              )),
+          ElevatedButton.icon(
+            onPressed: () {
+              appState.toggleFavorite();
+            },
+            icon: Icon(Icons.login),
+            label: Text('Save changes'),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ElevatedButton.icon(
+              onPressed: widget.password,
+              icon: Icon(Icons.password),
+              label: Text('Change account informations'),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(10), 
-            child: TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Password',
-              ),
-            )
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10), 
-            child: TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Confirm Password',
-              ),
-            )
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10), 
-            child: TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Adress',
-              ),
-            )
-          ),
-          ElevatedButton.icon(
-                onPressed: () {
-                  appState.toggleFavorite();
-                },
-                icon: Icon(Icons.login),
-                label: Text('Update User'),
-              ),
         ],
       ),
-
-    );
-
+    ));
   }
 }

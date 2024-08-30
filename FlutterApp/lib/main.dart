@@ -4,6 +4,7 @@ import 'package:sks_booking/api.dart';
 import 'package:provider/provider.dart';
 import 'package:sks_booking/pages/admin_homepage.dart';
 import 'package:sks_booking/pages/rental_homepage.dart';
+import 'package:sks_booking/pages/password_change.dart';
 import 'package:sks_booking/pages/renter_homepage.dart';
 import 'api.dart' as api;
 import 'pages/login.dart';
@@ -114,6 +115,18 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void switchToChangePassword() {
+    setState(() {
+      selectedIndex = 3;
+    });
+  }
+
+  void switchToUpdateUser() {
+    setState(() {
+      selectedIndex = 1;
+    });
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
@@ -135,8 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Text('Noget text her'),
         ),
         ListTile(
-          leading: Icon(Icons.account_circle),
-          title: Text('Drawer layout Item 1'),
+          leading: Icon(Icons.apartment),
+          title: Text('All apartments'),
           selected: selectedIndex == 0,
           onTap: () {
             _onItemTapped(0);
@@ -144,8 +157,8 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         ListTile(
-          leading: Icon(Icons.accessibility),
-          title: Text('Drawer layout Item 2'),
+          leading: Icon(Icons.person),
+          title: Text('Profile'),
           selected: selectedIndex == 1,
           onTap: () {
             _onItemTapped(1);
@@ -153,8 +166,8 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         ListTile(
-          leading: Icon(Icons.account_box),
-          title: Text('Drawer layout Item 3'),
+          leading: Icon(Icons.home),
+          title: Text('Home'),
           selected: selectedIndex == 2,
           onTap: () {
             _onItemTapped(2);
@@ -164,8 +177,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ];
       page = [
         GetRentalsPage(),
-        UpdatePage(),
+        UpdatePage(
+          password: switchToChangePassword,
+        ),
         RenterHomepage(),
+        PasswordChanger(
+          onUpdate: switchToUpdateUser,
+        ),
       ];
     } else {
       nav = [

@@ -6,11 +6,14 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using BCrypt.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using NuGet.Common;
 using NuGet.Protocol;
 using SKSBookingAPI.Context;
 using SKSBookingAPI.Models;
@@ -68,30 +71,121 @@ namespace SKSBookingAPI.Controllers {
         }
 
 
-        // PUT: api/Users/5
+        // PUT: api/Users/5 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user) {
-            if (id != user.ID) {
-                return BadRequest();
+        public async Task<ActionResult> UserProfile(int id, EditUserProfileDTO editUser) {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null) {
+                return NotFound();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            try {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException) {
-                if (!UserExists(id)) {
-                    return NotFound();
+            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
+                authHeader = authHeader.Substring("Bearer ".Length).Trim();
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(authHeader);
+
+                if (jwtSecurityToken.Payload.Sub == id.ToString()) {
+                    user.Name = editUser.Name;
+                    user.PhoneNumber = editUser.PhoneNumber;
+                    user.UpdatedAt = DateTime.UtcNow.AddHours(2);
+
+                    _context.Entry(user).State = EntityState.Modified;
+
+                    try {
+                        await _context.SaveChangesAsync();
+                    } catch (DbUpdateConcurrencyException) {
+                        if (!UserExists(id)) {
+                            return NotFound();
+                        } else {
+                            throw;
+                        }
+                    }
+
+                    return Ok("User profile updated successfully.");
+                } else {
+                    return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
-                else {
-                    throw;
-                }
+            } else {
+                return Unauthorized();
             }
-
-            return NoContent();
         }
+
+        //ikke færdigt endnu
+        /*[Authorize]
+        [HttpPut("account/{id}")]
+        public async Task<ActionResult> UserAccount(int id, EditUserAccountDTO editUser)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+
+            if (authHeader != null && authHeader.StartsWith("Bearer "))
+            {
+                authHeader = authHeader.Substring("Bearer ".Length).Trim();
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(authHeader);
+
+                if (jwtSecurityToken.Payload.Sub == id.ToString())
+                {
+                    
+                    if(editUser.Password != null)
+                    {
+                        if(!BCrypt.Net.BCrypt.Verify(editUser.OldPassword, user.HashedPassword))
+                        {
+
+                        }
+                        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(editUser.Password);
+
+                        user.Name = editUser.Name;
+                        user.PhoneNumber = editUser.PhoneNumber;
+                        user.UpdatedAt = DateTime.UtcNow.AddHours(2);
+                    }
+                    user.Name = editUser.Name;
+                    user.PhoneNumber = editUser.PhoneNumber;
+                    user.UpdatedAt = DateTime.UtcNow.AddHours(2);
+
+                    _context.Entry(user).State = EntityState.Modified;
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!UserExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    return Ok("User profile updated successfully.");
+                }
+                else
+                {
+                    return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
+                }
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }//*/
 
 
         // POST: api/Users
