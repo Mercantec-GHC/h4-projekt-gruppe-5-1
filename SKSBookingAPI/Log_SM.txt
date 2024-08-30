@@ -20,3 +20,17 @@
 		Freja: Blive færdig med Lejeboliglisteside, fortsætte på lejeboligside
 		Christian: Ændring af brugerdata
 		Kjetil: Arbejde videre med kort API
+
+	Fredag ->
+		Holde retrospektiv, merge vores kode og holde møder med udviklergruppe og kundegruppe
+
+
+	Retrospektiv: 
+		Gået godt med arbejdet
+		Kommunikation har været meget bedre - har haft godt styr på, hvor andre er, og hvad de arbejder med
+		Godt med to møder dagligt - giver et godt overblik og giver mulighed for potentiel hjælp
+
+		Opgaver til fremtiden: Finpudsning af lejeboligliste, implementering af brugerprivilegier, delt designtema, arbejde på generelt UI og flow, 
+		billedeuploads, muligvis lejekalender, opsætning af brugerprofiler, udlejer på lejeboligside, brugersøgning + mere på adminside,
+		arbejde videre på redigering af brugere, login og logout, brug af kortdata, begrænsning af billedestørrelse på lejeboligside
+

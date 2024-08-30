@@ -132,5 +132,3 @@ class RentalApartmentThumb extends StatelessWidget {
     );
   }
 }
-
-
