@@ -1,3 +1,7 @@
 ﻿Uge 33: Freja
 	Torsdag: Efterspurgt møde med kundegruppe (4). Arrangeret møde Fredag kl. 10
 	Fredag: Kunde godt tilfreds, nævner ønske om billedeuploads og geotagging. Billeder bliver set på senere når vi udvikler app'en, og geotagging når vi integrerer telefonen.
+
+uge 35: Christian
+	Torsdag: Efterspurgt møde med kundegruppe (4). Arrangeret møde Fredag kl. 10
+	Fredag: Kunde godt tilfreds, nævner ønske om billedeuploads, geotagging og design på app'en. Billeder bliver set på senere når vi udvikler app'en, og geotagging når vi integrerer telefonen. Design kommer i 	næste uge, hvor vi også får billeder op.
