@@ -1,4 +1,8 @@
-﻿Uge 35: Freja
+Uge: 33: Kjetil
+	Hele ugen gik i opstart af vores serverside programmering.
+Uge: 34: Christian
+	Hele ugen gik i opstart af vores frontend flutter programmering.
+Uge 35: Freja
 	Mandag: Haft scrummøde, planlagt opgaver for i dag ->
 		Freja: Søgning på lejligheder og visning af dem
 		Christian: Login
