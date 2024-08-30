@@ -1,5 +1,7 @@
 Uge: 32: Kjetil
 	Ugen gik på at lave opgaven så ikke så meget mere end at få vide hvad for en gruppe fik vores opgave
+Uge: 33: Christian 
+	Vi fik afleveret vores opgave til udvikler gruppen (6)
 Uge 34: Freja
 	Ingen databaseforbindelse endnu
 	Koordinator på markører, ikke omvendt endnu
