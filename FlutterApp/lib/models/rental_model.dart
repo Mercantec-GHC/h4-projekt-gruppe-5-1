@@ -28,36 +28,13 @@ class RentalApartment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(8),
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text('Drawer Header'),
-          ),
-          ListTile(
-            title: const Text('Item 1'),
-            onTap: () {
-              // Update the state of the app.
-              // ...
-            },
-          ),
-          ListTile(
-            title: const Text('Item 2'),
-            onTap: () {
-              // Update the state of the app.
-              // ...
-            },
-          ),
-        ],
-      ),
-    );
+    return Container();
   }
 }
+
+
+
+// ---------- THUMB ----------
 
 class RentalApartmentThumb extends StatelessWidget {
   final num id;
@@ -66,6 +43,7 @@ class RentalApartmentThumb extends StatelessWidget {
   final DateTime availableFrom;
   final DateTime availableTo;
   final bool isAvailable;
+  final Function(num) callback;
 
   RentalApartmentThumb({
     required this.id,
@@ -73,16 +51,18 @@ class RentalApartmentThumb extends StatelessWidget {
     required this.priceDaily,
     required this.availableFrom,
     required this.availableTo,
-    required this.isAvailable
+    required this.isAvailable,
+    required this.callback
   });
 
-  RentalApartmentThumb.fromJson(Map<String, dynamic> json) :
+  RentalApartmentThumb.fromJson(Map<String, dynamic> json, Function(num) cb) :
     id = json['id'] as num,
     address = json['address'] as String,
     priceDaily = json['priceDaily'] as num,
     availableFrom = DateTime.parse(json['availableFrom']),
     availableTo = DateTime.parse(json['availableTo']),
-    isAvailable = DateTime.now().isBefore(DateTime.parse(json['availableTo']));
+    isAvailable = DateTime.now().isBefore(DateTime.parse(json['availableTo'])),
+    callback = cb;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +72,9 @@ class RentalApartmentThumb extends StatelessWidget {
         style: TextButton.styleFrom(
 
         ),
-        onPressed: () => {print("$id")}, 
+        onPressed: () => {
+          callback(id)
+        }, 
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -150,3 +132,5 @@ class RentalApartmentThumb extends StatelessWidget {
     );
   }
 }
+
+
