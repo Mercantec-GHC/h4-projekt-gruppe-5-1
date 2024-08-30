@@ -5,3 +5,18 @@
 		Kjetil: Sider til hjem og brugere
 
 		Mål for ugen er at have login og tokens ordentligt integreret, opsætning af brugerprofiler og ordentlig søgning på lejligheder
+
+	Tirsdag ->
+		Freja: Lejeboliglisteside
+		Christian: Login
+		Kjetil: Administrationsside
+
+	Onsdag ->
+		Freja: Lejeboliglisteside
+		Christian: Login
+		Kjetil: Kort API
+
+	Torsdag ->
+		Freja: Blive færdig med Lejeboliglisteside, fortsætte på lejeboligside
+		Christian: Ændring af brugerdata
+		Kjetil: Arbejde videre med kort API
