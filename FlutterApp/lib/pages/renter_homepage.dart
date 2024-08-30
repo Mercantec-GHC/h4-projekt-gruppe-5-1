@@ -1,12 +1,11 @@
 import 'dart:convert';
-
-import '../main.dart';
 import 'package:flutter/material.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:location/location.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/foundation.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_map/flutter_map.dart';
+import 'dart:io' show Platform;
 
 class RenterHomepage extends StatefulWidget {
   @override
@@ -14,11 +13,7 @@ class RenterHomepage extends StatefulWidget {
 }
 
 class _RenterHomePageState extends State<RenterHomepage> {
-
-  MapboxMapController? mapController;
-  LocationData? _currentLocation;
-  final String _mapboxAccessToken = 'pk.eyJ1Ijoia2pldGlsdCIsImEiOiJjbTBkbjlzYTMwYmQxMmxxdG5qdjVobXhvIn0.nkiAAAuQiI9yDJnFCCrVsw';
-  final String _mapboxPlacesApiUrl = 'https://api.mapbox.com/styles/v1/kjetilt/cm0do0oll001d01pi8yeq4hty/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2pldGlsdCIsImEiOiJjbTBkbjlzYTMwYmQxMmxxdG5qdjVobXhvIn0.nkiAAAuQiI9yDJnFCCrVsw';
+  LatLng? _currentLocation;
 
   @override
   void initState() {
@@ -27,6 +22,8 @@ class _RenterHomePageState extends State<RenterHomepage> {
   }
 
   Future<void> _getCurrentLocation() async {
+    LocationData? locationData;
+
     Location location = Location();
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -34,7 +31,7 @@ class _RenterHomePageState extends State<RenterHomepage> {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
-      if(!_serviceEnabled){
+      if (!_serviceEnabled) {
         return;
       }
     }
@@ -47,16 +44,20 @@ class _RenterHomePageState extends State<RenterHomepage> {
       }
     }
 
-    _currentLocation = await location.getLocation();
+    locationData = await location.getLocation();
+
+
     setState(() {
-      
+      if (locationData != null) {
+        _currentLocation = LatLng(locationData.latitude!, locationData.longitude!);
+      }
     });
   }
 
   Future<void> _searchPlaces(String query) async {
     if (_currentLocation != null) {
       final url = Uri.parse(
-        '$_mapboxPlacesApiUrl$query.json?proximity=${_currentLocation!.longitude},${_currentLocation!.latitude}&access_token=$_mapboxAccessToken'
+        'https://nominatim.openstreetmap.org/search?format=json&q=$query&limit=10'
       );
 
       final response = await http.get(url);
@@ -68,10 +69,6 @@ class _RenterHomePageState extends State<RenterHomepage> {
         throw Exception('Failed to load places');
       }
     }
-  }
-
-  void _onMapCreated(MapboxMapController controller) {
-    mapController = controller;
   }
 
   @override
@@ -130,27 +127,27 @@ class _RenterHomePageState extends State<RenterHomepage> {
           'assets/logo.png',
           width: 100,
           height: 100,
+        ),
+        SizedBox(width: 10),
+        Container(
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
           ),
-          SizedBox(width: 10),
-          Container(
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5)
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Text for Image 1',
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
-                Text(
-                  'More text for image 1',
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Text for Image 1',
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+              Text(
+                'More text for image 1',
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ],
           ),
+        ),
       ],
     );
   }
@@ -211,24 +208,35 @@ class _RenterHomePageState extends State<RenterHomepage> {
   }
 
   Widget _buildMapSection() {
-    return Container(
-      height: 300,
-      child: _currentLocation == null ? Center(child: CircularProgressIndicator())
-      : MapboxMap(
-        accessToken: _mapboxAccessToken,
-        initialCameraPosition: CameraPosition(
-          target: LatLng(
-            _currentLocation!.latitude!,
-            _currentLocation!.longitude!,
+  return Container(
+    height: 300,
+    child: _currentLocation == null
+        ? Center(child: CircularProgressIndicator())
+        : FlutterMap(
+            options: MapOptions(
+              initialCenter: LatLng(47.497913, 19.040236),
+              initialZoom: 12.0,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                subdomains: ['a', 'b', 'c'],
+              ),
+              MarkerLayer(
+                markers: [
+                  if (_currentLocation != null)
+                    Marker(
+                      width: 80.0,
+                      height: 80.0,
+                      point: _currentLocation!,
+                      child: Icon(Icons.location_on, color: Colors.red, size: 40),
+                    ),
+                ],
+              ),
+            ],
           ),
-          zoom: 12.0,
-        ),
-        onMapCreated: _onMapCreated,
-        myLocationEnabled: true,
-        myLocationTrackingMode: MyLocationTrackingMode.Tracking,
-      ),
-    );
-  }
+  );
+}
 
   Widget _buildSearchBar() {
     return Padding(

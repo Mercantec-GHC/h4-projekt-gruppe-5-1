@@ -19,7 +19,6 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
-  mapbox_gl: ^0.14.0
   location: ^6.0.2
 
 dev_dependencies:
