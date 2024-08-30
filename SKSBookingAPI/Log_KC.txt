@@ -1,4 +1,6 @@
-﻿Uge 34: Freja
+Uge: 32: Kjetil
+	Ugen gik på at lave opgaven så ikke så meget mere end at få vide hvad for en gruppe fik vores opgave
+Uge 34: Freja
 	Ingen databaseforbindelse endnu
 	Koordinator på markører, ikke omvendt endnu
 	Hvis man ikke er logget ind, tager den en til loginsiden i stedet for profil
