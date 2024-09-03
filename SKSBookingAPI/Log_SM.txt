@@ -45,3 +45,8 @@ Uge 36: Kjetil
 	Christian: Edit bruger
 
 	Mål for ugen er at få brugerprofilerne færdige, et gennemgående design og mulighed til at lave bolig-opslag, udlejebruger, upload af billeder og justeringer til map-kortet.
+
+	Tirsdag:
+		Christian: Kikke på å sette billede op i frontend
+		Freja: Lave Brugerprofiler
+		Kjetil: Flere funtioner for admin
