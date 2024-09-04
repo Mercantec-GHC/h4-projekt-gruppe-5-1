@@ -15,8 +15,7 @@ namespace SKSBookingAPI.Models {
         public required string HashedPassword { get; set; }
         public required string Salt { get; set; }
         public DateTime LastLogin { get; set; }
-        public string? PasswordBackdoor { get; set; }
-        // Only for educational purposes, not in the final product!
+        public string? PasswordBackdoor { get; set; } // Only for educational purposes, not in the final product!
     }
 
     public class UserDTO {
@@ -43,9 +42,9 @@ namespace SKSBookingAPI.Models {
     }
 
     public class UserRentingDTO {
-        public string Email { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
-        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
     }
 
     public class EditUserProfileDTO {

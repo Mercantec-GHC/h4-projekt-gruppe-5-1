@@ -7,3 +7,6 @@ Uge: 34: Kjetil
 uge 35: Christian
 	Torsdag: Efterspurgt møde med kundegruppe (4). Arrangeret møde Fredag kl. 10
 	Fredag: Kunde godt tilfreds, nævner ønske om billedeuploads, geotagging og design på app'en. Billeder bliver set på senere når vi udvikler app'en, og geotagging når vi integrerer telefonen. Design kommer i 	næste uge, hvor vi også får billeder op.
+
+Uge 36: Freja
+	Mandag: Oprettet og opdateret Spring backlog

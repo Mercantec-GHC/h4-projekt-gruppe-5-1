@@ -1,13 +1,54 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:expandable_text/expandable_text.dart';
 
 import '../models/rental_model.dart';
+import '../models/user_data_model.dart';
+import '../pages/user_profile_page.dart';
 
-class ViewRentalPage extends StatelessWidget {
+class ViewRentalPage extends StatefulWidget {
   const ViewRentalPage({super.key, required this.rental});
-
   final RentalApartment rental;
+
+  @override
+  State<ViewRentalPage> createState() => _ViewRentalPageState();
+}
+
+class _ViewRentalPageState extends State<ViewRentalPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<UserData> fetchUser(num id) async {
+    final response = await http.get(Uri.parse('https://localhost:7014/api/Users/$id'));
+    if (response.statusCode == 200) {
+      final UserData user = UserData.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+
+      return user;
+    }
+    else {
+      throw Exception("Failed to fetch user with id $id");
+    }
+  }
+
+  void prepareUserPageByID(num id) {
+    fetchUser(id).then((result) {
+      createUserPage(result);
+    });
+  }
+
+  void createUserPage(UserData user) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserProfilePage(user: user)
+      )
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +57,8 @@ class ViewRentalPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color(0xFFCAC3A5),
         leading: TextButton(
-          style: ButtonStyle(
-            padding: WidgetStatePropertyAll(EdgeInsets.all(0))
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.all(0)
           ),
           onPressed: () { Navigator.pop(context); }, 
           child: Icon(
@@ -30,27 +71,29 @@ class ViewRentalPage extends StatelessWidget {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: RTop(address: rental.address),
-                    ),
-                    SizedBox(height: 8),
-                    Flexible(child: RImageBig()),
-                    SizedBox(height: 8),
-                    RImagesSmall(), // Hvis billedet bliver lavet til en "carousel", fjern dette
-                    SizedBox(height: 12),
-                    //RDescription(text: rental.description),
-                    RDescription(text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
-                    SizedBox(height: 8),
-                    RAvailability(priceDaily: rental.priceDaily, availableFrom: rental.availableFrom, availableTo: rental.availableTo, isAvailable: rental.isAvailable),
-                  ],
-                )
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Flexible(
+                    child: RTop(address: widget.rental.address),
+                  ),
+                  SizedBox(height: 8),
+                  RImageBig(),
+                  SizedBox(height: 8),
+                  RImagesSmall(), // Hvis billedet bliver lavet til en "carousel", fjern dette
+                  SizedBox(height: 12),
+                  //RDescription(text: widget.rental.description),
+                  RDescription(text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
+                  SizedBox(height: 8),
+                  RAvailability(priceDaily: widget.rental.priceDaily, availableFrom: widget.rental.availableFrom, availableTo: widget.rental.availableTo, isAvailable: widget.rental.isAvailable),
+                  SizedBox(height: 8),
+                  ROwner(name: widget.rental.renterName, email: widget.rental.renterEmail, getUser: () { prepareUserPageByID(widget.rental.renterID); })
+                ],
               )
+            )
           );
         }
       )
@@ -98,10 +141,13 @@ class RImageBig extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 16/9,
-      child: Container(
-        color: Colors.grey[800]
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 350),
+      child: AspectRatio(
+        aspectRatio: 16/9,
+        child: Container(
+          color: Colors.grey[800]
+        )
       )
     );
   }
@@ -114,7 +160,9 @@ class RImagesSmall extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 350),
+      child: Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -124,6 +172,7 @@ class RImagesSmall extends StatelessWidget {
         SizedBox(width: 8),
         Flexible(child: RImageSmallInstance()),
       ],
+      )
     );
   }
 }
@@ -157,16 +206,16 @@ class RDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment(0, 0),
-      padding: EdgeInsets.fromLTRB(10, 6, 10, 6),
+      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
       decoration: BoxDecoration(
         color: Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(12)
       ),
       child: ExpandableText(
         text,
-        expandText: "show more",
-        collapseText: "show less",
-        maxLines: 3,
+        expandText: "vis mere",
+        collapseText: "vis mindre",
+        maxLines: 4,
         linkColor: Colors.blue,
         animation: true,
         animationDuration: Duration(milliseconds: 500),
@@ -194,7 +243,7 @@ class RAvailability extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(10, 6, 10, 6),
+      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
       decoration: BoxDecoration(
         color: Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(12)
@@ -242,8 +291,59 @@ class RAvailableFalse extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Ikke tilgængelig", style: TextStyle(fontSize: 16, color: Colors.red[800])),
-        DateTime.now().isAfter(from) ? Text("Kan lejes fra ${DateFormat("d/M").format(from)}") : Container()
+        DateTime.now().isBefore(from) ? Text("Kan lejes fra ${DateFormat("d/M").format(from)}") : Container()
       ]
+    );
+  }
+}
+
+class ROwner extends StatelessWidget {
+  const ROwner({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.getUser
+  });
+
+  final String name;
+  final String email;
+  final Function() getUser;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(0),
+      color: Color(0xFFCAC3A5),
+      child: ExpansionTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        backgroundColor: null,
+        collapsedBackgroundColor: null,
+        iconColor: Colors.grey[800],
+        collapsedIconColor: Colors.grey[800],
+        
+        leading: Icon(
+          Icons.circle,
+          color: Colors.grey,
+          size: 48
+        ),
+        title: Text(name),
+        subtitle: Text(email),
+        children: [
+          Material(
+            child: ListTile(
+              minTileHeight: 12,
+              title: Text('Vis profil', textAlign: TextAlign.center),
+              tileColor: Color(0xFFFFFFFF),
+              onTap: () { getUser(); },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -8,6 +8,9 @@ class RentalApartment extends StatelessWidget {
   final DateTime availableFrom;
   final DateTime availableTo;
   final bool isAvailable;
+  final num renterID;
+  final String renterName;
+  final String renterEmail;
 
   RentalApartment({
     required this.address,
@@ -15,7 +18,10 @@ class RentalApartment extends StatelessWidget {
     required this.description,
     required this.availableFrom,
     required this.availableTo,
-    required this.isAvailable
+    required this.isAvailable,
+    required this.renterID,
+    required this.renterName,
+    required this.renterEmail,
   });
 
   RentalApartment.fromJson(Map<String, dynamic> json) :
@@ -24,7 +30,10 @@ class RentalApartment extends StatelessWidget {
     description = json['description'] as String,
     availableFrom = DateTime.parse(json['availableFrom']),
     availableTo = DateTime.parse(json['availableTo']),
-    isAvailable = DateTime.now().isBefore(DateTime.parse(json['availableTo']));
+    isAvailable = DateTime.now().isBefore(DateTime.parse(json['availableTo'])),
+    renterID = json['owner']['id'] as num,
+    renterName = json['owner']['name'] as String,
+    renterEmail = json['owner']['email'] as String;
 
   @override
   Widget build(BuildContext context) {
@@ -67,50 +76,53 @@ class RentalApartmentThumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+      padding: EdgeInsets.fromLTRB(12, 4, 12, 4),
       child: TextButton(
         style: TextButton.styleFrom(
-
+          minimumSize: Size.zero,
+          padding: EdgeInsets.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         onPressed: () => {
           callback(id)
         }, 
         child: Center(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            //mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Flexible(
                 flex: 1,
                 child: Icon(
-                  Icons.square,
+                  Icons.rectangle,
                   color: Colors.black,
-                  size: 96,
+                  size: 64,
                 )
               ),
               Flexible(
                 flex: 2,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Row(
                       children: [
                         Flexible(
-                          child: Text(address, style: TextStyle(fontSize: 17))
+                          child: Text(address, style: TextStyle(fontSize: 15))
                         )
                       ],
                     ),
                     Row(
                       children: [
                         Flexible(
-                          child: Text("${priceDaily.toString()} kr./nat", style: TextStyle(fontSize: 15))
+                          child: Text("${priceDaily.toString()} kr./nat", style: TextStyle(fontSize: 14))
                         )
                       ],
                     ),
                     Row(
                       children: [
                         Flexible(
-                          child: Text("${DateFormat("d/M/y").format(availableFrom)} - ${DateFormat("d/M/y").format(availableTo)}", style: TextStyle(fontSize: 14))
+                          child: Text("${DateFormat("d/M/y").format(availableFrom)} - ${DateFormat("d/M/y").format(availableTo)}", style: TextStyle(fontSize: 12))
                         ),
                       ],
                     )
@@ -121,7 +133,7 @@ class RentalApartmentThumb extends StatelessWidget {
                 flex: 1,
                 child: Icon(
                   Icons.circle,
-                  size: 32,
+                  size: 24,
                   color: isAvailable ? Colors.green : Colors.red
                 )
               )

@@ -54,9 +54,9 @@ namespace SKSBookingAPI.Controllers {
             }
 
             UserRentingDTO userdto = new UserRentingDTO {
+                ID = user.ID,
                 Name = user.Name,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber
+                Email = user.Email
             };
 
             var rentalDto = new RentalDTO {
@@ -160,9 +160,9 @@ namespace SKSBookingAPI.Controllers {
             }
 
             UserRentingDTO userdto = new UserRentingDTO {
+                ID = user.ID,
                 Name = user.Name,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber
+                Email = user.Email
             };
 
             RentalDTO rentalDTO = new RentalDTO {
