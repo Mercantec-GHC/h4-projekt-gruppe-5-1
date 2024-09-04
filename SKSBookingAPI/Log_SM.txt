@@ -50,3 +50,8 @@ Uge 36: Kjetil
 		Christian: Kikke på å sette billede op i frontend
 		Freja: Lave Brugerprofiler
 		Kjetil: Flere funtioner for admin
+
+	Onsdag:
+	Kjetil: Utvidelse af maps-kortet
+	Freja: Kikke på cloudflare
+	Christian: Login
