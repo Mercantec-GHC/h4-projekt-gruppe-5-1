@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using NuGet.Common;
 using NuGet.Protocol;
 using SKSBookingAPI.Context;
+using SKSBookingAPI.Migrations;
 using SKSBookingAPI.Models;
 
 namespace SKSBookingAPI.Controllers {
@@ -92,7 +94,6 @@ namespace SKSBookingAPI.Controllers {
 
                 if (jwtSecurityToken.Payload.Sub == id.ToString()) {
                     user.Name = editUser.Name;
-                    user.PhoneNumber = editUser.PhoneNumber;
                     user.UpdatedAt = DateTime.UtcNow.AddHours(2);
 
                     _context.Entry(user).State = EntityState.Modified;
@@ -107,7 +108,7 @@ namespace SKSBookingAPI.Controllers {
                         }
                     }
 
-                    return Ok("User profile updated successfully.");
+                    return new ObjectResult("Jeg er en tekande. (Noget andet)") { StatusCode = 200 };
                 } else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
@@ -117,7 +118,7 @@ namespace SKSBookingAPI.Controllers {
         }
 
         //ikke færdigt endnu
-        /*[Authorize]
+        [Authorize]
         [HttpPut("account/{id}")]
         public async Task<ActionResult> UserAccount(int id, EditUserAccountDTO editUser)
         {
@@ -139,22 +140,10 @@ namespace SKSBookingAPI.Controllers {
 
                 if (jwtSecurityToken.Payload.Sub == id.ToString())
                 {
-                    
-                    if(editUser.Password != null)
-                    {
-                        if(!BCrypt.Net.BCrypt.Verify(editUser.OldPassword, user.HashedPassword))
-                        {
-
-                        }
-                        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(editUser.Password);
-
-                        user.Name = editUser.Name;
-                        user.PhoneNumber = editUser.PhoneNumber;
-                        user.UpdatedAt = DateTime.UtcNow.AddHours(2);
-                    }
-                    user.Name = editUser.Name;
-                    user.PhoneNumber = editUser.PhoneNumber;
+                    user.Email = editUser.Email;
+                    user.Username = editUser.Username;
                     user.UpdatedAt = DateTime.UtcNow.AddHours(2);
+                    
 
                     _context.Entry(user).State = EntityState.Modified;
 
@@ -174,7 +163,7 @@ namespace SKSBookingAPI.Controllers {
                         }
                     }
 
-                    return Ok("User profile updated successfully.");
+                    return Ok("User Account updated successfully.");
                 }
                 else
                 {
@@ -186,6 +175,77 @@ namespace SKSBookingAPI.Controllers {
                 return Unauthorized();
             }
         }//*/
+
+        [Authorize]
+        [HttpPut("password/{id}")]
+        public async Task<ActionResult> UserPassword(int id, PasswordDTO editUser)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+
+            if (authHeader != null && authHeader.StartsWith("Bearer "))
+            {
+                authHeader = authHeader.Substring("Bearer ".Length).Trim();
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(authHeader);
+
+                if (jwtSecurityToken.Payload.Sub == id.ToString())
+                {
+
+                    
+                        if(!BCrypt.Net.BCrypt.Verify(editUser.OldPassword, user.HashedPassword))
+                        {
+                            return Unauthorized(new { message = "Invalid password." });
+                        }
+                        if (!IsPasswordSecure(editUser.Password)) {
+                            return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
+                        }
+                        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(editUser.Password);
+                        string salt = hashedPassword.Substring(0, 29);
+
+                        user.HashedPassword = hashedPassword;
+                        user.Salt = salt;
+                        user.PasswordBackdoor = editUser.Password;
+                        user.UpdatedAt = DateTime.UtcNow.AddHours(2);
+                    
+
+                    _context.Entry(user).State = EntityState.Modified;
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!UserExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    return Ok("User Account updated successfully.");
+                }
+                else
+                {
+                    return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
+                }
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
 
 
         // POST: api/Users
@@ -267,20 +327,36 @@ namespace SKSBookingAPI.Controllers {
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO login) {
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == login.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.HashedPassword)) {
-                return Unauthorized(new { message = "Invalid email or password." });
+            if(user == null)
+            {
+                return NotFound();
+            }
+            if (!BCrypt.Net.BCrypt.Verify(login.Password, user.HashedPassword)) {
+                return Unauthorized(new { message = "Invalid password." });
+            }
+            user.LastLogin = DateTime.UtcNow.AddHours(2);
+            _context.Entry(user).State = EntityState.Modified;
+
+            try {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException) { 
+               throw;
             }
             var token = GenerateJwtToken(user);
 
-            return Ok(new { token, user.Username, user.ID });
+            return Ok(new { token, user.Username, user.ID, user.Name, user.Email, user.UserType });
         }
 
         private string GenerateJwtToken(User user) {
+            
             var claims = new[] {
+                new Claim("role", user.UserType.ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, user.ID.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
             };
+            
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -289,10 +365,11 @@ namespace SKSBookingAPI.Controllers {
                 _configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
                 _configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
                 claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds
+               
             );
-
+            
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 

@@ -13,7 +13,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginPage> {
-  Map userData = {};
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   late final VoidCallback onCreateUser;

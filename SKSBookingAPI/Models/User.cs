@@ -49,12 +49,16 @@ namespace SKSBookingAPI.Models {
 
     public class EditUserProfileDTO {
         public string Name { get; set; }
-        public string PhoneNumber { get; set; }
+        //public string image { get; set; }
     }
 
     public class EditUserAccountDTO {
-        public string UserName { get; set; }
+        public string Username { get; set; }
         public string Email { get; set; }
+    }
+
+    public class PasswordDTO
+    {
         public string Password { get; set; }
         public string OldPassword { get; set; }
     }

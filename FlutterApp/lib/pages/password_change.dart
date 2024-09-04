@@ -10,6 +10,12 @@ class PasswordChanger extends StatefulWidget {
 }
 
 class PasswordChangerState extends State<PasswordChanger> {
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController oldPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+
+  bool passwordMatch = true;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<main.MyAppState>();
@@ -22,17 +28,9 @@ class PasswordChangerState extends State<PasswordChanger> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.all(10),
-            child: TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Email',
-              ),
-            ),
-          ),
-          Padding(
               padding: const EdgeInsets.all(10),
               child: TextFormField(
+                controller: oldPasswordController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Old Password',
@@ -42,6 +40,7 @@ class PasswordChangerState extends State<PasswordChanger> {
           Padding(
               padding: const EdgeInsets.all(10),
               child: TextFormField(
+                controller: passwordController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'New Password',
@@ -51,18 +50,42 @@ class PasswordChangerState extends State<PasswordChanger> {
           Padding(
               padding: const EdgeInsets.all(10),
               child: TextFormField(
+                controller: confirmPasswordController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Confirm Password',
-                ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                      color: passwordMatch
+                          ? const Color.fromARGB(255, 0, 0, 0)
+                          : Colors.red,
+                    )),
+                    labelText: 'Confirm Password',
+                    labelStyle: TextStyle(
+                      color: passwordMatch
+                          ? const Color.fromARGB(255, 0, 0, 0)
+                          : Colors.red,
+                    )),
                 obscureText: true,
               )),
           ElevatedButton.icon(
-            onPressed: () {
-              appState.toggleFavorite();
+            onPressed: () async {
+              setState(() {
+                passwordMatch =
+                    passwordController.text == confirmPasswordController.text;
+              });
+
+              if (passwordMatch) {
+                String password = passwordController.text;
+                String oldpassword = oldPasswordController.text;
+
+                await appState.updateUserPassword(password, oldpassword);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Passwords do not match')),
+                );
+              }
             },
             icon: Icon(Icons.password),
-            label: Text('Save login informations'),
+            label: Text('Change password'),
           ),
           Padding(
             padding: const EdgeInsets.all(20),

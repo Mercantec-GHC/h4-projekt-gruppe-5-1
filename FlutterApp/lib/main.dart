@@ -34,8 +34,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xff525252)),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff525252)),
         ),
         home: MyHomePage(),
       ),
@@ -44,8 +43,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  final ApiService apiService =
-      ApiService(baseUrl: 'https://localhost:7014/api');
+  final ApiService apiService = ApiService(baseUrl: 'localhost:7014');
   var current = WordPair.random();
   var backgroundColor = Color(0xff525252);
 
@@ -72,10 +70,8 @@ class MyAppState extends ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     try {
-      var response = await apiService.loginUser(email, password);
-      if (response.id != 0) {
-        storage.write(key: 'token', value: response.token);
-      }
+      await apiService.loginUser(email, password);
+      notifyListeners();
     } catch (e) {
       print('login failed: $e');
     }
@@ -92,6 +88,39 @@ class MyAppState extends ChangeNotifier {
     } catch (e) {
       print('Registration failed: $e');
     }
+  }
+
+  Future<void> updateUser(String name) async {
+    try {
+      await apiService.updateUser(name);
+    } catch (e) {
+      print('Noget: $e');
+    }
+  }
+
+  Future<void> updateUserAccount(
+      String username, String email, String phoneNumber) async {
+    try {
+      var response = await apiService.updateUser(username);
+      if (response.contains('Noget')) {
+        print(response);
+      }
+    } catch (e) {
+      print('Noget: $e');
+    }
+  }
+
+  Future<void> updateUserPassword(String password, String oldPassword) async {
+    try {
+      await apiService.updatePassword(password, oldPassword);
+    } catch (e) {
+      print('Noget: $e');
+    }
+  }
+
+  void logOut() async {
+    await apiService.logoutUser();
+    notifyListeners();
   }
 }
 
@@ -135,7 +164,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final myAppState = Provider.of<MyAppState>(context);
     bool isLoggedIn = api.loggedIn;
+    print('main: $isLoggedIn');
     List<Widget> nav;
     List<Widget> page;
 
@@ -166,11 +197,20 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Home'),
+          leading: Icon(Icons.settings),
+          title: Text('Account'),
           selected: selectedIndex == 2,
           onTap: () {
             _onItemTapped(2);
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.home),
+          title: Text('Home'),
+          selected: selectedIndex == 3,
+          onTap: () {
+            _onItemTapped(3);
             Navigator.pop(context);
           },
         )
@@ -180,10 +220,10 @@ class _MyHomePageState extends State<MyHomePage> {
         UpdatePage(
           password: switchToChangePassword,
         ),
-        RenterHomepage(),
         PasswordChanger(
           onUpdate: switchToUpdateUser,
         ),
+        RenterHomepage(),
       ];
     } else {
       nav = [
@@ -267,11 +307,35 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('SKS Booking'),
       ),
       endDrawer: Drawer(
-          elevation: 20.0,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: nav,
-          )),
+        elevation: 20.0,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: nav,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FloatingActionButton(
+                onPressed: () {
+                  if (isLoggedIn) {
+                    myAppState.logOut();
+                  } else {
+                    setState(() {
+                      selectedIndex = 0;
+                    });
+                  }
+                  _onItemTapped(0);
+                  Navigator.pop(context);
+                },
+                child: Icon(isLoggedIn ? Icons.logout : Icons.login),
+              ),
+            ),
+          ],
+        ),
+      ),
       body: Center(
         child: page[selectedIndex],
       ),
