@@ -1,8 +1,8 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SKSBookingAPI.Context;
+using SKSBookingAPI.Service;
 using System;
 using System.Text;
 
@@ -33,15 +33,21 @@ namespace SKSBookingAPI {
             });
 
             // Configure connection string
-            string connectionString = Configuration.GetConnectionString("DefaultConnection")
-            ?? Environment.GetEnvironmentVariable("DefaultConnection");
+            string connectionString = Configuration.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("DefaultConnection");
 
             builder.Services.AddDbContext<AppDBContext>(options => {
                 options.UseNpgsql(connectionString);
             });
 
+            var accessKey = Configuration["S3ServiceSettings:AccessKey"] ?? Environment.GetEnvironmentVariable("ACCESS_KEY");
+            var secretKey = Configuration["S3ServiceSettings:SecretKey"] ?? Environment.GetEnvironmentVariable("SECRET_KEY");
+
+            builder.Services.AddSingleton(new S3BucketConfig {
+                AccessKey = accessKey,
+                SecretKey = secretKey
+            });
+
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
