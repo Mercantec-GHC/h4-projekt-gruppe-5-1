@@ -202,7 +202,7 @@ namespace SKSBookingAPI.Controllers {
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(SignUpDTO signup) {
+        public async Task<ActionResult<User>> PostUser([FromForm] SignUpDTO signup) {
             if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
                 return new ObjectResult("Jeg er en tekande. (Email allerede i brug.)") { StatusCode = 418 };
             }

@@ -20,7 +20,8 @@ namespace SKSBookingAPI.Service {
 
             var credentials = new BasicAWSCredentials(accessKey, secretKey);
             var config = new AmazonS3Config {
-                ServiceURL = "https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/s3",
+                //ServiceURL = "https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/s3",
+                ServiceURL = "https://7edebe7b5106f3bceb95ecd71d962f10.r2.cloudflarestorage.com/sks",
                 //AuthenticationRegion = "eu-north-1",
                 ForcePathStyle = true // Ensure the path style is used
             };
@@ -30,8 +31,9 @@ namespace SKSBookingAPI.Service {
         public async Task<string> UploadToS3(Stream fileStream, string uid, ImageUploadType type) {
             var request = new PutObjectRequest {
                 InputStream = fileStream,
-                BucketName = "sks-images",
-                Key = uid,
+                //BucketName = "sks-images",
+                BucketName = "sks",
+                Key = $"{type}/{uid}.png",
                 DisablePayloadSigning = true
             };
 
@@ -41,7 +43,8 @@ namespace SKSBookingAPI.Service {
                 throw new AmazonS3Exception($"Error uploading file to S3. HTTP Status Code: {response.HttpStatusCode}");
             }
 
-            var imageUrl = $"https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/object/public/sks-images/{type}/{uid}";
+            //var imageUrl = $"https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/object/public/sks-images/{type}/{uid}.png";
+            var imageUrl = $"https://sks.mercantec.tech/sks/{type}/{uid}.png";
             return imageUrl;
         }
     }
