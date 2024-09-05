@@ -7,6 +7,7 @@ namespace SKSBookingAPI.Models {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        public required string Title { get; set; }
         public required string Address { get; set; }
         public required float PriceDaily { get; set; }
         public required string Description { get; set; }
@@ -18,6 +19,7 @@ namespace SKSBookingAPI.Models {
     }
 
     public class RentalDTO {
+        public string Title { get; set; }
         public string Address { get; set; }
         public float PriceDaily { get; set; }
         public string Description { get; set; }
@@ -37,6 +39,7 @@ namespace SKSBookingAPI.Models {
     }
 
     public class CreateRentalDTO {
+        public required string Title { get; set; }
         public required string Address { get; set; }
         public required float PriceDaily { get; set; }
         public required string Description { get; set; }

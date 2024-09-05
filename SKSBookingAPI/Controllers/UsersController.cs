@@ -17,6 +17,7 @@ using NuGet.Common;
 using NuGet.Protocol;
 using SKSBookingAPI.Context;
 using SKSBookingAPI.Models;
+using SKSBookingAPI.Service;
 
 namespace SKSBookingAPI.Controllers {
     [Route("api/[controller]")]
@@ -24,10 +25,18 @@ namespace SKSBookingAPI.Controllers {
     public class UsersController : ControllerBase {
         private readonly AppDBContext _context;
         private readonly IConfiguration _configuration;
+        private readonly string _accessKey;
+        private readonly string _secretKey;
+        private readonly S3Service _s3Service;
 
-        public UsersController(AppDBContext context, IConfiguration configuration) {
+        public UsersController(AppDBContext context, IConfiguration configuration, S3BucketConfig config) {
             _context = context;
             _configuration = configuration;
+
+            _accessKey = config.AccessKey;
+            _secretKey = config.SecretKey;
+
+            _s3Service = new S3Service(_accessKey, _secretKey);
         }
 
         // GET: api/Users
@@ -41,7 +50,8 @@ namespace SKSBookingAPI.Controllers {
                 Email = user.Email,
                 Username = user.Username,
                 PhoneNumber = user.PhoneNumber,
-                Rentals = user.RentalProperties
+                Rentals = user.RentalProperties,
+                ProfilePictureURL = user.ProfilePictureURL
             })
             .ToListAsync();
 
@@ -64,7 +74,8 @@ namespace SKSBookingAPI.Controllers {
                 Email = user.Email,
                 Username = user.Username,
                 PhoneNumber = user.PhoneNumber,
-                Rentals = user.RentalProperties
+                Rentals = user.RentalProperties,
+                ProfilePictureURL = user.ProfilePictureURL
             };
 
             return userdto;
@@ -202,7 +213,21 @@ namespace SKSBookingAPI.Controllers {
                 return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
             }
 
-            User user = MapSignUpDTOToUser(signup);
+            string? pfpURL = null;
+            if (signup.ProfilePicture != null && signup.ProfilePicture.Length > 0) {
+
+                try {
+                    using (var fileStream = signup.ProfilePicture.OpenReadStream()) {
+                        var uid = Guid.NewGuid().ToString("N");
+                        pfpURL = await _s3Service.UploadToS3(fileStream, uid, ImageUploadType.profile);
+                    }
+                }
+                catch (Exception ex) {
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"Error uploading file: {ex.Message}");
+                }
+            }
+
+            User user = MapSignUpDTOToUser(signup, ref pfpURL);
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -210,13 +235,15 @@ namespace SKSBookingAPI.Controllers {
             return CreatedAtAction("GetUser", new { id = user.ID }, user);
         }
 
-        private User MapSignUpDTOToUser(SignUpDTO signUpDTO) {
+        private User MapSignUpDTOToUser(SignUpDTO signUpDTO, ref string? pfpURL) {
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signUpDTO.Password);
             string salt = hashedPassword.Substring(0, 29);
 
             return new User {
                 UserType = signUpDTO.UserType,
                 Name = signUpDTO.Name,
+                Biography = "",
+                ProfilePictureURL = pfpURL,
                 Email = signUpDTO.Email,
                 Username = signUpDTO.Username,
                 PhoneNumber = signUpDTO.PhoneNumber,
@@ -321,6 +348,7 @@ namespace SKSBookingAPI.Controllers {
             return Ok(users);
         }
 
+        /*
         [HttpPost("testauth")]
         public async Task<ActionResult<User>> PostUser(SignUpDTO signup, byte? authID) {
             
@@ -373,5 +401,6 @@ namespace SKSBookingAPI.Controllers {
 
             return attachedID;
         }
+        */
     }
 }

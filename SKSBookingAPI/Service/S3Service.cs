@@ -1,6 +1,7 @@
 ﻿using Amazon.Runtime;
 using Amazon.S3.Model;
 using Amazon.S3;
+using System.Diagnostics;
 
 namespace SKSBookingAPI.Service {
     public enum ImageUploadType {
@@ -20,17 +21,17 @@ namespace SKSBookingAPI.Service {
             var credentials = new BasicAWSCredentials(accessKey, secretKey);
             var config = new AmazonS3Config {
                 ServiceURL = "https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/s3",
-                AuthenticationRegion = "eu-north-1",
+                //AuthenticationRegion = "eu-north-1",
                 ForcePathStyle = true // Ensure the path style is used
             };
             _s3Client = new AmazonS3Client(credentials, config);
         }
 
-        public async Task<string> UploadToS3(Stream fileStream, string fileName, ImageUploadType type) {
+        public async Task<string> UploadToS3(Stream fileStream, string uid, ImageUploadType type) {
             var request = new PutObjectRequest {
                 InputStream = fileStream,
                 BucketName = "sks-images",
-                Key = fileName,
+                Key = uid,
                 DisablePayloadSigning = true
             };
 
@@ -40,7 +41,7 @@ namespace SKSBookingAPI.Service {
                 throw new AmazonS3Exception($"Error uploading file to S3. HTTP Status Code: {response.HttpStatusCode}");
             }
 
-            var imageUrl = $"https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/object/public/sks-images/{type}/{fileName}";
+            var imageUrl = $"https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/object/public/sks-images/{type}/{uid}";
             return imageUrl;
         }
     }

@@ -103,6 +103,7 @@ namespace SKSBookingAPI.Controllers {
         [HttpPost]
         public async Task<ActionResult<Rental>> PostRental(CreateRentalDTO rental) {
             Rental nyRental = new Rental {
+                Title = rental.Title,
                 Address = rental.Address,
                 Description = rental.Description,
                 PriceDaily = rental.PriceDaily,
@@ -185,6 +186,7 @@ namespace SKSBookingAPI.Controllers {
             }
 
             Rental nyRental = new Rental {
+                Title = rental.Title,
                 Address = rental.Address,
                 Description = rental.Description,
                 PriceDaily = rental.PriceDaily,
