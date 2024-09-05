@@ -142,6 +142,7 @@ namespace SKSBookingAPI.Controllers {
                 {
                     user.Email = editUser.Email;
                     user.Username = editUser.Username;
+                    user.PhoneNumber = editUser.PhoneNumber;
                     user.UpdatedAt = DateTime.UtcNow.AddHours(2);
                     
 
@@ -163,7 +164,7 @@ namespace SKSBookingAPI.Controllers {
                         }
                     }
 
-                    return Ok("User Account updated successfully.");
+                    return new ObjectResult("ok") { StatusCode = 200 };
                 }
                 else
                 {
@@ -233,8 +234,8 @@ namespace SKSBookingAPI.Controllers {
                             throw;
                         }
                     }
-
-                    return Ok("User Account updated successfully.");
+                    
+                    return new ObjectResult(user) { StatusCode = 200 };
                 }
                 else
                 {
@@ -345,7 +346,7 @@ namespace SKSBookingAPI.Controllers {
             }
             var token = GenerateJwtToken(user);
 
-            return Ok(new { token, user.Username, user.ID, user.Name, user.Email, user.UserType });
+            return Ok(new { token, user.Username, user.ID, user.Name, user.Email, user.UserType, user.PhoneNumber });
         }
 
         private string GenerateJwtToken(User user) {

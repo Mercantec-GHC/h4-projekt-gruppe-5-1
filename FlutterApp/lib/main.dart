@@ -1,4 +1,5 @@
-import 'package:english_words/english_words.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:sks_booking/api.dart';
 import 'package:provider/provider.dart';
@@ -11,12 +12,7 @@ import 'pages/login.dart';
 import 'pages/register.dart';
 import 'pages/update_user.dart';
 import 'pages/get_rentals_page.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-AndroidOptions _getAndroidOptions() => const AndroidOptions(
-  encryptedSharedPreferences: true,
-);
-final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
+import 'pages/account_update.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,7 +20,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -34,7 +29,6 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff525252)),
         ),
         home: MyHomePage(),
       ),
@@ -44,29 +38,7 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   final ApiService apiService = ApiService(baseUrl: 'localhost:7014');
-  var current = WordPair.random();
-  var backgroundColor = Color(0xff525252);
-
-  void getNext() {
-    current = WordPair.random();
-    notifyListeners();
-  }
-
-  var favorites = <WordPair>[];
-
-  void toggleFavorite() {
-    if (favorites.contains(current)) {
-      favorites.remove(current);
-    } else {
-      favorites.add(current);
-    }
-    notifyListeners();
-  }
-
-  void changeBackgroundColor(Color color) {
-    backgroundColor = color;
-    notifyListeners();
-  }
+  late var success = false;
 
   Future<void> login(String email, String password) async {
     try {
@@ -101,10 +73,7 @@ class MyAppState extends ChangeNotifier {
   Future<void> updateUserAccount(
       String username, String email, String phoneNumber) async {
     try {
-      var response = await apiService.updateUser(username);
-      if (response.contains('Noget')) {
-        print(response);
-      }
+      await apiService.updateAccount(email, username, phoneNumber);
     } catch (e) {
       print('Noget: $e');
     }
@@ -122,6 +91,11 @@ class MyAppState extends ChangeNotifier {
     await apiService.logoutUser();
     notifyListeners();
   }
+
+  Future<Map<String, dynamic>> user() async {
+    var user = await apiService.getUser();
+    return user;
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -131,6 +105,32 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Hent brugerdata og sæt navn i drawer-menuen
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    final myAppState = Provider.of<MyAppState>(context, listen: false);
+
+    try {
+      // Hent brugerdata
+      var userData = await myAppState.user();
+
+      setState(() {
+        // Sæt brugernavn i userName
+        userName = userData['name'] ??
+            'Bruger'; // Fallback til 'Bruger', hvis name er null
+      });
+    } catch (e) {
+      print('Fejl ved hentning af brugerdata: $e');
+    }
+  }
 
   void switchToRegisterPage() {
     setState(() {
@@ -146,13 +146,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void switchToChangePassword() {
     setState(() {
-      selectedIndex = 3;
+      selectedIndex = 4;
     });
   }
 
   void switchToUpdateUser() {
     setState(() {
-      selectedIndex = 1;
+      selectedIndex = 2;
     });
   }
 
@@ -166,21 +166,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final myAppState = Provider.of<MyAppState>(context);
     bool isLoggedIn = api.loggedIn;
-    print('main: $isLoggedIn');
+
     List<Widget> nav;
     List<Widget> page;
 
     if (isLoggedIn) {
       nav = [
-        const DrawerHeader(
-          decoration: BoxDecoration(
-            color: Colors.blue,
+        DrawerHeader(
+          decoration: const BoxDecoration(
+            color: Color(0xFFCAC3A5),
           ),
-          child: Text('Noget text her'),
+          child: Text(
+              userName != null ? 'Velkommen, $userName' : 'Velkommen, Bruger'),
         ),
         ListTile(
           leading: Icon(Icons.apartment),
-          title: Text('All apartments'),
+          title: Text('Alle lejligheder'),
           selected: selectedIndex == 0,
           onTap: () {
             _onItemTapped(0);
@@ -189,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           leading: Icon(Icons.person),
-          title: Text('Profile'),
+          title: Text('Profil'),
           selected: selectedIndex == 1,
           onTap: () {
             _onItemTapped(1);
@@ -198,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           leading: Icon(Icons.settings),
-          title: Text('Account'),
+          title: Text('konto'),
           selected: selectedIndex == 2,
           onTap: () {
             _onItemTapped(2);
@@ -207,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           leading: Icon(Icons.home),
-          title: Text('Home'),
+          title: Text('Hjem'),
           selected: selectedIndex == 3,
           onTap: () {
             _onItemTapped(3);
@@ -218,22 +219,22 @@ class _MyHomePageState extends State<MyHomePage> {
       page = [
         GetRentalsPage(),
         UpdatePage(
-          password: switchToChangePassword,
+          userData: myAppState.user(),
         ),
+        AccountUpdater(
+            onPassword: switchToChangePassword, userData: myAppState.user()),
+        RenterHomepage(),
         PasswordChanger(
           onUpdate: switchToUpdateUser,
         ),
-        RenterHomepage(),
       ];
     } else {
       nav = [
         const DrawerHeader(
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: Color(0xFFCAC3A5),
           ),
-          child: Text(
-              style: TextStyle(color: Colors.white, fontSize: 40),
-              'Noget text her'),
+          child: Text(style: TextStyle(fontSize: 40), 'Velkommen'),
         ),
         ListTile(
           leading: Icon(Icons.login),
@@ -301,8 +302,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 40),
+        backgroundColor: Color(0xFFCAC3A5),
+        titleTextStyle: TextStyle(fontSize: 40),
         centerTitle: true,
         title: Text('SKS Booking'),
       ),
@@ -336,6 +337,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      backgroundColor: Color(0xFFF1EFE7),
       body: Center(
         child: page[selectedIndex],
       ),

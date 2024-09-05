@@ -76,7 +76,20 @@ class PasswordChangerState extends State<PasswordChanger> {
               if (passwordMatch) {
                 String password = passwordController.text;
                 String oldpassword = oldPasswordController.text;
+                try {
+                  // Send det indtastede navn videre til opdateringsmetoden
+                  await appState.updateUserPassword(password, oldpassword);
 
+                  // Hvis opdateringen lykkes, vis en SnackBar
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Password opdateret')),
+                  );
+                } catch (e) {
+                  print('Fejl ved opdatering: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Fejl ved opdatering')),
+                  );
+                }
                 await appState.updateUserPassword(password, oldpassword);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(

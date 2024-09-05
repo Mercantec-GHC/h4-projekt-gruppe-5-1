@@ -31,6 +31,13 @@ class ApiService {
       // Gem token i secure storage
       await secureStorage.write(key: 'token', value: data['token']);
       await secureStorage.write(key: 'id', value: data['id'].toString());
+      await secureStorage.write(key: 'name', value: data['name']);
+      await secureStorage.write(key: 'email', value: data['email']);
+      await secureStorage.write(key: 'phoneNumber', value: data['phoneNumber']);
+      await secureStorage.write(key: 'username', value: data['username']);
+      //await secureStorage.write(key: 'img', value: data['img']);
+      await secureStorage.write(
+          key: 'userType', value: data['userType'].toString());
       return LoginInfo.fromJson(data);
     } else {
       throw Exception(
@@ -44,9 +51,24 @@ class ApiService {
     _isLoggedIn = false;
   }
 
-  Future<String?> getToken() async {
-    // Hent token fra secure storage
-    return await secureStorage.read(key: 'token');
+  Future<Map<String, dynamic>> getUser() async {
+    var id = await secureStorage.read(key: 'id');
+    var name = await secureStorage.read(key: 'name');
+    var email = await secureStorage.read(key: 'email');
+    var phoneNumber = await secureStorage.read(key: 'phoneNumber');
+    var username = await secureStorage.read(key: 'username');
+    var userType = await secureStorage.read(key: 'userType');
+    //var img = await secureStorage.read(key: 'img');
+    var userData = {
+      "id": id,
+      "name": name,
+      "email": email,
+      "phoneNumber": phoneNumber,
+      "username": username,
+      "userType": userType,
+      //"img": img,
+    };
+    return userData;
   }
 
   //String img,
@@ -67,7 +89,7 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return response.body;
+      return jsonDecode(response.body);
     } else {
       throw Exception(
           'Failed to update User: ${response.reasonPhrase} (${response.statusCode})');
@@ -81,7 +103,7 @@ class ApiService {
   ) async {
     var token = await secureStorage.read(key: 'token');
     String id = await secureStorage.read(key: 'id') as String;
-    var uri = Uri.https(baseUrl, 'api/Users/$id');
+    var uri = Uri.https(baseUrl, 'api/Users/account/$id');
     final response = await http.put(
       uri,
       headers: <String, String>{
@@ -109,7 +131,7 @@ class ApiService {
   ) async {
     var token = await secureStorage.read(key: 'token');
     String id = await secureStorage.read(key: 'id') as String;
-    var uri = Uri.https(baseUrl, 'api/Users/$id');
+    var uri = Uri.https(baseUrl, 'api/Users/password/$id');
     final response = await http.put(
       uri,
       headers: <String, String>{

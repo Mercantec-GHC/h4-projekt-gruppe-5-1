@@ -2,22 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../main.dart' as main;
 
-class PasswordChanger extends StatefulWidget {
-  final VoidCallback onUpdate;
-  PasswordChanger({required this.onUpdate});
+class AccountUpdater extends StatefulWidget {
+  final VoidCallback onPassword;
+  final Future<Map<String, dynamic>> userData;
+  AccountUpdater({required this.onPassword, required this.userData});
   @override
-  PasswordChangerState createState() => PasswordChangerState();
+  AccountUpdaterState createState() => AccountUpdaterState();
 }
 
-class PasswordChangerState extends State<PasswordChanger> {
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneNumberController = TextEditingController();
+class AccountUpdaterState extends State<AccountUpdater> {
+  late TextEditingController _usernameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneNumberController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controller with empty text initially
+    _usernameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneNumberController = TextEditingController();
+
+    // Fetch user data and set name
+    widget.userData.then((user) {
+      setState(() {
+        // Hent 'name' fra mappen og opdater feltet
+        _usernameController.text = user['username'] ?? '';
+        _emailController.text = user['email'] ?? '';
+        _phoneNumberController.text = user['phoneNumber'] ?? '';
+      });
+    }).catchError((error) {
+      print("Fejl ved hentning af brugerdata: $error");
+    });
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _phoneNumberController.dispose();
+    super.dispose();
+  }
+
+  void _updateUser() async {
+    final myAppState = Provider.of<main.MyAppState>(context, listen: false);
+
+    try {
+      // Send det indtastede navn videre til opdateringsmetoden
+      myAppState.updateUserAccount(_usernameController.text,
+          _emailController.text, _phoneNumberController.text);
+
+      // Hvis opdateringen lykkes, vis en SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Kontooplysninger opdateret')),
+      );
+    } catch (e) {
+      print('Fejl ved opdatering: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fejl ved opdatering')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<main.MyAppState>();
-    //var storage = main.storage;
-
     return Scaffold(
         body: Center(
       child: Column(
@@ -27,6 +75,7 @@ class PasswordChangerState extends State<PasswordChanger> {
           Padding(
             padding: const EdgeInsets.all(10),
             child: TextFormField(
+              controller: _phoneNumberController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Phone number',
@@ -36,6 +85,7 @@ class PasswordChangerState extends State<PasswordChanger> {
           Padding(
             padding: const EdgeInsets.all(10),
             child: TextFormField(
+              controller: _usernameController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Username',
@@ -45,6 +95,7 @@ class PasswordChangerState extends State<PasswordChanger> {
           Padding(
             padding: const EdgeInsets.all(10),
             child: TextFormField(
+              controller: _emailController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Email',
@@ -52,26 +103,16 @@ class PasswordChangerState extends State<PasswordChanger> {
             ),
           ),
           ElevatedButton.icon(
-            onPressed: () async {
-              String username = usernameController.text;
-              String email = emailController.text;
-              String phoneNumber = phoneNumberController.text;
-
-              await appState.updateUserAccount(username, email, phoneNumber);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Passwords do not match')),
-              );
-            },
+            onPressed: _updateUser,
             icon: Icon(Icons.update),
-            label: Text('Update account'),
+            label: Text('Gem kontooplysninger'),
           ),
           Padding(
             padding: const EdgeInsets.all(20),
             child: ElevatedButton.icon(
-              onPressed: widget.onUpdate,
+              onPressed: widget.onPassword,
               icon: Icon(Icons.person),
-              label: Text('Change password'),
+              label: Text('Skift password'),
             ),
           )
         ],

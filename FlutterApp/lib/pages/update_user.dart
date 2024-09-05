@@ -5,9 +5,9 @@ import 'package:permission_handler/permission_handler.dart';
 import '../main.dart' as main;
 
 class UpdatePage extends StatefulWidget {
-  final VoidCallback password;
+  final Future<Map<String, dynamic>> userData;
 
-  UpdatePage({required this.password});
+  const UpdatePage({required this.userData});
   @override
   UpdatePageState createState() => UpdatePageState();
 }
@@ -15,7 +15,7 @@ class UpdatePage extends StatefulWidget {
 class UpdatePageState extends State<UpdatePage> {
   XFile? profileAvatarCurrentImage;
   bool allowEdit = true;
-  final TextEditingController nameController = TextEditingController();
+  late TextEditingController _nameController;
 
   var getImageSource = (BuildContext context) {
     return showDialog<ImageSource>(
@@ -79,84 +79,124 @@ class UpdatePageState extends State<UpdatePage> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    // Initialize controller with empty text initially
+    _nameController = TextEditingController();
+
+    // Fetch user data and set name
+    widget.userData.then((user) {
+      setState(() {
+        // Hent 'name' fra mappen og opdater feltet
+        _nameController.text = user['name'] ?? '';
+      });
+    }).catchError((error) {
+      print("Fejl ved hentning af brugerdata: $error");
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _updateUser() async {
+    final myAppState = Provider.of<main.MyAppState>(context, listen: false);
+
+    try {
+      // Send det indtastede navn videre til opdateringsmetoden
+      await myAppState.updateUser(_nameController.text);
+
+      // Hvis opdateringen lykkes, vis en SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profil oplysninger opdateret')),
+      );
+    } catch (e) {
+      print('Fejl ved opdatering: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fejl ved opdatering')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var appState = context.watch<main.MyAppState>();
     //var storage = main.storage;
 
     return Scaffold(
+        appBar: AppBar(
+          title: Text('Opdater bruger'),
+        ),
         body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: TextFormField(
-              controller: nameController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Name',
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Name',
+                  ),
+                ),
               ),
-            ),
+              const Center(
+                child: Text(
+                  "Profile Avatar",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              ProfileAvatar(
+                image: profileAvatarCurrentImage,
+                radius: 100,
+                allowEdit: allowEdit,
+                addImageIcon: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Icons.add_a_photo),
+                  ),
+                ),
+                removeImageIcon: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Icons.close),
+                  ),
+                ),
+                onImageChanged: (XFile? image) {
+                  setState(() {
+                    profileAvatarCurrentImage = image;
+                  });
+                },
+                onImageRemoved: () {
+                  setState(() {
+                    profileAvatarCurrentImage = null;
+                  });
+                },
+                getImageSource: () async => await getImageSource(context),
+                getPreferredCameraDevice: () async =>
+                    await getPrefferedCameraDevice(context),
+              ),
+              ElevatedButton.icon(
+                onPressed: _updateUser,
+                icon: Icon(Icons.update),
+                label: Text('Gem bruger oplysninger'),
+              ),
+            ],
           ),
-          const Center(
-            child: Text(
-              "Profile Avatar",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          ProfileAvatar(
-            image: profileAvatarCurrentImage,
-            radius: 100,
-            allowEdit: allowEdit,
-            addImageIcon: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.add_a_photo),
-              ),
-            ),
-            removeImageIcon: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.close),
-              ),
-            ),
-            onImageChanged: (XFile? image) {
-              setState(() {
-                profileAvatarCurrentImage = image;
-              });
-            },
-            onImageRemoved: () {
-              setState(() {
-                profileAvatarCurrentImage = null;
-              });
-            },
-            getImageSource: () async => await getImageSource(context),
-            getPreferredCameraDevice: () async =>
-                await getPrefferedCameraDevice(context),
-          ),
-          ElevatedButton.icon(
-            onPressed: () async {
-              String name = nameController.text;
-
-              await appState.updateUser(name);
-            },
-            icon: Icon(Icons.login),
-            label: Text('Save changes'),
-          ),
-        ],
-      ),
-    ));
+        ));
   }
 }

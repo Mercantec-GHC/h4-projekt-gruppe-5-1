@@ -16,3 +16,6 @@ SKSBookingAPI/AppDBContext.dgml
 *.cmake
 /FlutterApp/linux
 /FlutterApp/linux
+/FlutterApp/macos
+/FlutterApp/windows
+/FlutterApp/windows
