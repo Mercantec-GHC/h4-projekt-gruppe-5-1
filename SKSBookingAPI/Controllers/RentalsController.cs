@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Amazon.Runtime.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -10,15 +11,24 @@ using Microsoft.EntityFrameworkCore;
 using SKSBookingAPI.Context;
 using SKSBookingAPI.Migrations;
 using SKSBookingAPI.Models;
+using SKSBookingAPI.Service;
 
 namespace SKSBookingAPI.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class RentalsController : ControllerBase {
         private readonly AppDBContext _context;
+        private readonly string _accessKey;
+        private readonly string _secretKey;
+        private readonly S3Service _s3Service;
 
-        public RentalsController(AppDBContext context) {
+        public RentalsController(AppDBContext context, S3BucketConfig config) {
             _context = context;
+
+            _accessKey = config.AccessKey;
+            _secretKey = config.SecretKey;
+
+            _s3Service = new S3Service(_accessKey, _secretKey);
         }
 
         // GET: api/Rentals
@@ -31,6 +41,7 @@ namespace SKSBookingAPI.Controllers {
                 PriceDaily = rental.PriceDaily,
                 AvailableFrom = rental.AvailableFrom,
                 AvailableTo = rental.AvailableTo,
+                ImageURL = rental.GalleryURLs.First()
             })
             .ToListAsync();
 
@@ -67,7 +78,8 @@ namespace SKSBookingAPI.Controllers {
                 PriceDaily = rental.PriceDaily,
                 AvailableFrom = rental.AvailableFrom,
                 AvailableTo = rental.AvailableTo,
-                Owner = userdto
+                Owner = userdto,
+                GalleryURLs = rental.GalleryURLs
             };
 
             return rentalDto;
@@ -104,21 +116,24 @@ namespace SKSBookingAPI.Controllers {
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Rental>> PostRental([FromForm] CreateRentalDTO rental) {
-            /*
-            string? pfpURL = null;
-            if (signup.ProfilePicture != null && signup.ProfilePicture.Length > 0) {
+            List<string> rentalImages = new();
 
-                try {
-                    using (var fileStream = signup.ProfilePicture.OpenReadStream()) {
-                        var uid = Guid.NewGuid().ToString("N");
-                        pfpURL = await _s3Service.UploadToS3(fileStream, uid, ImageUploadType.profile);
+            if (rental.GalleryImages != null && rental.GalleryImages.Length > 0) {
+                foreach (IFormFile file in rental.GalleryImages) {
+                    
+                    if (file != null && file.Length > 0) {
+                        try {
+                            using (var fileStream = file.OpenReadStream()) {
+                                var uid = Guid.NewGuid().ToString("N");
+                                rentalImages.Add(await _s3Service.UploadToS3(fileStream, uid, ImageUploadType.rental));
+                            }
+                        }
+                        catch (Exception ex) {
+                            return StatusCode(StatusCodes.Status500InternalServerError, $"Error uploading file: {ex.Message}");
+                        }
                     }
                 }
-                catch (Exception ex) {
-                    return StatusCode(StatusCodes.Status500InternalServerError, $"Error uploading file: {ex.Message}");
-                }
             }
-            */
 
             Rental nyRental = new Rental {
                 Title = rental.Title,
@@ -130,7 +145,8 @@ namespace SKSBookingAPI.Controllers {
                 AvailableTo = rental.AvailableTo,
                 UserID = rental.UserID,
                 CreatedAt = DateTime.UtcNow.AddHours(2),
-                UpdatedAt = DateTime.UtcNow.AddHours(2)
+                UpdatedAt = DateTime.UtcNow.AddHours(2),
+                GalleryURLs = rentalImages.ToArray()
             };
 
             _context.Rental.Add(nyRental);

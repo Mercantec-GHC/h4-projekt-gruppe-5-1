@@ -9,6 +9,7 @@ class RentalApartment extends StatelessWidget {
   final DateTime availableFrom;
   final DateTime availableTo;
   final bool isAvailable;
+  final List<String> galleryURLs;
   final num renterID;
   final String renterName;
   final String renterEmail;
@@ -22,6 +23,7 @@ class RentalApartment extends StatelessWidget {
     required this.availableFrom,
     required this.availableTo,
     required this.isAvailable,
+    required this.galleryURLs,
     required this.renterID,
     required this.renterName,
     required this.renterEmail,
@@ -36,6 +38,7 @@ class RentalApartment extends StatelessWidget {
     availableFrom = DateTime.parse(json['availableFrom']),
     availableTo = DateTime.parse(json['availableTo']),
     isAvailable = DateTime.now().isBefore(DateTime.parse(json['availableTo'])),
+    galleryURLs = json['galleryURLs']?.cast<String>() ?? List<String>.empty(),
     renterID = json['owner']['id'] as num,
     renterName = json['owner']['name'] as String,
     renterEmail = json['owner']['email'] as String,
@@ -59,6 +62,7 @@ class RentalApartmentThumb extends StatelessWidget {
   final DateTime availableTo;
   final bool isAvailable;
   final Function(num) callback;
+  final String? imageURL;
 
   RentalApartmentThumb({
     required this.id,
@@ -67,7 +71,8 @@ class RentalApartmentThumb extends StatelessWidget {
     required this.availableFrom,
     required this.availableTo,
     required this.isAvailable,
-    required this.callback
+    required this.callback,
+    required this.imageURL
   });
 
   RentalApartmentThumb.fromJson(Map<String, dynamic> json, Function(num) cb) :
@@ -77,7 +82,8 @@ class RentalApartmentThumb extends StatelessWidget {
     availableFrom = DateTime.parse(json['availableFrom']),
     availableTo = DateTime.parse(json['availableTo']),
     isAvailable = DateTime.now().isBefore(DateTime.parse(json['availableTo'])),
-    callback = cb;
+    callback = cb,
+    imageURL = json['imageURL'] as String?;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +105,15 @@ class RentalApartmentThumb extends StatelessWidget {
             children: [
               Flexible(
                 flex: 1,
-                child: Icon(
+                child: 
+                imageURL != null ? 
+                SizedBox(
+                  height: 56,
+                  width: 72,
+                  child: Image.network(imageURL!)
+                )
+                :
+                Icon(
                   Icons.rectangle,
                   color: Colors.black,
                   size: 64,
