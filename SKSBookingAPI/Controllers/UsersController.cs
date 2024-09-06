@@ -108,7 +108,7 @@ namespace SKSBookingAPI.Controllers {
                         }
                     }
 
-                    return new ObjectResult("Jeg er en tekande. (Noget andet)") { StatusCode = 200 };
+                    return Ok(user);
                 } else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
@@ -235,7 +235,7 @@ namespace SKSBookingAPI.Controllers {
                         }
                     }
                     
-                    return new ObjectResult(user) { StatusCode = 200 };
+                    return new ObjectResult(new {id}) { StatusCode = 200 };
                 }
                 else
                 {
@@ -346,7 +346,7 @@ namespace SKSBookingAPI.Controllers {
             }
             var token = GenerateJwtToken(user);
 
-            return Ok(new { token, user.Username, user.ID, user.Name, user.Email, user.UserType, user.PhoneNumber });
+            return Ok(new { token, user.Username, user.ID, user.Name, user.Email, user.UserType, user.PhoneNumber, /* user.ProfilePictureURL*/ });
         }
 
         private string GenerateJwtToken(User user) {

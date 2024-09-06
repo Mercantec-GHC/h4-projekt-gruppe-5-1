@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:sks_booking/api.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +27,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Color(0xFFCAC3A5),
+            // TRY THIS: Change to "Brightness.light"
+            //           and see that all colors change
+            //           to better contrast a light background.
+            brightness: Brightness.light,
+          ),
         ),
         home: MyHomePage(),
       ),
@@ -173,9 +178,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (isLoggedIn) {
       nav = [
         DrawerHeader(
-          decoration: const BoxDecoration(
-            color: Color(0xFFCAC3A5),
-          ),
           child: Text(
               userName != null ? 'Velkommen, $userName' : 'Velkommen, Bruger'),
         ),

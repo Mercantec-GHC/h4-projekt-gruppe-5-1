@@ -83,10 +83,10 @@ class UpdatePageState extends State<UpdatePage> {
     super.initState();
     // Initialize controller with empty text initially
     _nameController = TextEditingController();
-
     // Fetch user data and set name
     widget.userData.then((user) {
       setState(() {
+        profileAvatarCurrentImage = user['img'];
         // Hent 'name' fra mappen og opdater feltet
         _nameController.text = user['name'] ?? '';
       });

@@ -35,7 +35,8 @@ class ApiService {
       await secureStorage.write(key: 'email', value: data['email']);
       await secureStorage.write(key: 'phoneNumber', value: data['phoneNumber']);
       await secureStorage.write(key: 'username', value: data['username']);
-      //await secureStorage.write(key: 'img', value: data['img']);
+      await secureStorage.write(
+          key: 'profilePictureURL', value: data['profilePictureURL']);
       await secureStorage.write(
           key: 'userType', value: data['userType'].toString());
       return LoginInfo.fromJson(data);
@@ -58,7 +59,7 @@ class ApiService {
     var phoneNumber = await secureStorage.read(key: 'phoneNumber');
     var username = await secureStorage.read(key: 'username');
     var userType = await secureStorage.read(key: 'userType');
-    //var img = await secureStorage.read(key: 'img');
+    var profilePictureURL = await secureStorage.read(key: 'profilePictureURL');
     var userData = {
       "id": id,
       "name": name,
@@ -66,7 +67,7 @@ class ApiService {
       "phoneNumber": phoneNumber,
       "username": username,
       "userType": userType,
-      //"img": img,
+      "ProfilePictureURL": profilePictureURL,
     };
     return userData;
   }

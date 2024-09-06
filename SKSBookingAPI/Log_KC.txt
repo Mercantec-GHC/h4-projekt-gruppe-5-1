@@ -14,4 +14,8 @@ Uge 35: Kjetil
 	Må logge ind for at sætte favoritter
 	Ændringer af brugerinformation/kontoinformation samlet, ser godt ud og gir bedst brugeropplevelse - mangler profilbillede
 	Søgebar er fast i bunden af navigation og fungerer overens med mappet.
+
+Uge 36: Christian
+	Har fået lavet så man kan lave bedømmelser og give sjterner og så alle kan se bedømmelserne.
+	Er i gang med probilbilleder og vil lave videre på det i næste uge.
 	
