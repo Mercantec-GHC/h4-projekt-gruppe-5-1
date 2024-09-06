@@ -78,19 +78,19 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Flexible(
-                    child: RTop(address: widget.rental.address),
+                    child: RTop(title: widget.rental.title, address: widget.rental.address),
                   ),
                   SizedBox(height: 8),
                   RImageBig(),
                   SizedBox(height: 8),
                   RImagesSmall(), // Hvis billedet bliver lavet til en "carousel", fjern dette
                   SizedBox(height: 12),
-                  //RDescription(text: widget.rental.description),
-                  RDescription(text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
+                  RDescription(text: widget.rental.description),
+                  //RDescription(text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
                   SizedBox(height: 8),
                   RAvailability(priceDaily: widget.rental.priceDaily, availableFrom: widget.rental.availableFrom, availableTo: widget.rental.availableTo, isAvailable: widget.rental.isAvailable),
                   SizedBox(height: 8),
-                  ROwner(name: widget.rental.renterName, email: widget.rental.renterEmail, getUser: () { prepareUserPageByID(widget.rental.renterID); })
+                  ROwner(name: widget.rental.renterName, email: widget.rental.renterEmail, pictureURL: widget.rental.renterPictureURL, getUser: () { prepareUserPageByID(widget.rental.renterID); })
                 ],
               )
             )
@@ -104,9 +104,11 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
 class RTop extends StatelessWidget {
   const RTop({
     super.key,
+    required this.title,
     required this.address,
   });
 
+  final String? title;
   final String address;
 
   @override
@@ -116,14 +118,14 @@ class RTop extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Title!", style: TextStyle(fontSize: 18)), 
+            Text(title ?? "", style: TextStyle(fontSize: 18)), 
             Text(address, style: TextStyle(fontSize: 15))
           ],
         ),
         Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [Icon(
             Icons.map,
             size: 48
@@ -302,11 +304,13 @@ class ROwner extends StatelessWidget {
     super.key,
     required this.name,
     required this.email,
+    required this.pictureURL,
     required this.getUser
   });
 
   final String name;
   final String email;
+  final String? pictureURL;
   final Function() getUser;
 
   @override
@@ -326,11 +330,17 @@ class ROwner extends StatelessWidget {
         iconColor: Colors.grey[800],
         collapsedIconColor: Colors.grey[800],
         
-        leading: Icon(
+        leading: pictureURL != null ? 
+        CircleAvatar(
+          backgroundImage: NetworkImage(pictureURL!),
+        )
+        :
+        Icon(
           Icons.circle,
           color: Colors.grey,
           size: 48
         ),
+
         title: Text(name),
         subtitle: Text(email),
         children: [

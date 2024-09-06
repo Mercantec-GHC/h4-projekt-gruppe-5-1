@@ -56,10 +56,12 @@ namespace SKSBookingAPI.Controllers {
             UserRentingDTO userdto = new UserRentingDTO {
                 ID = user.ID,
                 Name = user.Name,
-                Email = user.Email
+                Email = user.Email,
+                ProfilePictureURL = user.ProfilePictureURL
             };
 
             var rentalDto = new RentalDTO {
+                Title = rental.Title,
                 Address = rental.Address,
                 Description = rental.Description,
                 PriceDaily = rental.PriceDaily,
@@ -101,7 +103,23 @@ namespace SKSBookingAPI.Controllers {
         // POST: api/Rentals
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Rental>> PostRental(CreateRentalDTO rental) {
+        public async Task<ActionResult<Rental>> PostRental([FromForm] CreateRentalDTO rental) {
+            /*
+            string? pfpURL = null;
+            if (signup.ProfilePicture != null && signup.ProfilePicture.Length > 0) {
+
+                try {
+                    using (var fileStream = signup.ProfilePicture.OpenReadStream()) {
+                        var uid = Guid.NewGuid().ToString("N");
+                        pfpURL = await _s3Service.UploadToS3(fileStream, uid, ImageUploadType.profile);
+                    }
+                }
+                catch (Exception ex) {
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"Error uploading file: {ex.Message}");
+                }
+            }
+            */
+
             Rental nyRental = new Rental {
                 Title = rental.Title,
                 Address = rental.Address,

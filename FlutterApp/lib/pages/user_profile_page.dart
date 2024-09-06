@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../models/user_data_model.dart';
 
 class UserProfilePage extends StatelessWidget {
@@ -34,7 +33,10 @@ class UserProfilePage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  UTop(name: user.name),
+                  SizedBox(height: 12),
+                  UTop(name: user.name, pictureURL: user.profilePictureURL),
+                  SizedBox(height: 12),
+                  UBio(bio: user.bio),
                   SizedBox(height: 12),
                   UContact(email: user.email, phone: user.phone)
                 ],
@@ -51,22 +53,57 @@ class UTop extends StatelessWidget {
   const UTop({
     super.key,
     required this.name,
+    required this.pictureURL
   });
 
   final String name;
+  final String? pictureURL;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        pictureURL != null ? 
+        CircleAvatar(
+          radius: 64,
+          backgroundImage: NetworkImage(pictureURL!),
+        )
+        :
         Icon(
           Icons.circle,
           color: Colors.grey,
           size: 160
         ),
+        SizedBox(height: 12),
         Text(name, style: TextStyle(fontSize: 22))
       ],
+    );
+  }
+}
+
+class UBio extends StatelessWidget {
+  const UBio({
+    super.key,
+    required this.bio,
+  });
+
+  final String bio;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+      decoration: BoxDecoration(
+        color: Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(12)
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(bio)
+        ],
+      )
     );
   }
 }

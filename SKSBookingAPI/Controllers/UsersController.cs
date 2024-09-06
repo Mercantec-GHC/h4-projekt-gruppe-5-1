@@ -70,6 +70,7 @@ namespace SKSBookingAPI.Controllers {
 
             var userdto = new UserDTO {
                 ID = user.ID,
+                Biography = user.Biography,
                 Name = user.Name,
                 Email = user.Email,
                 Username = user.Username,
@@ -337,6 +338,7 @@ namespace SKSBookingAPI.Controllers {
             var users = await _context.Users
             .Select(user => new UserDTO {
                 ID = user.ID,
+                Biography = user.Biography,
                 Name = user.Name,
                 Email = user.Email,
                 Username = user.Username,

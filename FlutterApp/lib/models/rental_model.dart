@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RentalApartment extends StatelessWidget {
+  final String? title;
   final String address;
   final num priceDaily;
   final String description;
@@ -11,8 +12,10 @@ class RentalApartment extends StatelessWidget {
   final num renterID;
   final String renterName;
   final String renterEmail;
+  final String? renterPictureURL;
 
   RentalApartment({
+    required this.title,
     required this.address,
     required this.priceDaily,
     required this.description,
@@ -22,9 +25,11 @@ class RentalApartment extends StatelessWidget {
     required this.renterID,
     required this.renterName,
     required this.renterEmail,
+    required this.renterPictureURL
   });
 
   RentalApartment.fromJson(Map<String, dynamic> json) :
+    title = json['title'] as String?,
     address = json['address'] as String,
     priceDaily = json['priceDaily'] as num,
     description = json['description'] as String,
@@ -33,7 +38,8 @@ class RentalApartment extends StatelessWidget {
     isAvailable = DateTime.now().isBefore(DateTime.parse(json['availableTo'])),
     renterID = json['owner']['id'] as num,
     renterName = json['owner']['name'] as String,
-    renterEmail = json['owner']['email'] as String;
+    renterEmail = json['owner']['email'] as String,
+    renterPictureURL = json['owner']['profilePictureURL'] as String?;
 
   @override
   Widget build(BuildContext context) {

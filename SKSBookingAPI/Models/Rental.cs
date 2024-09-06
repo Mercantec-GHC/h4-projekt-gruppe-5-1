@@ -15,7 +15,7 @@ namespace SKSBookingAPI.Models {
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
         public required int UserID { get; set; }
-        //public required User Owner { get; set; }
+        public ICollection<string>? GalleryURLs { get; set; }
     }
 
     public class RentalDTO {
@@ -26,6 +26,7 @@ namespace SKSBookingAPI.Models {
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
         public UserRentingDTO Owner { get; set; }
+        public ICollection<string>? GalleryURLs { get; set; }
         // public ICollection<RentalImage> RentalImages { get; set; }
     }
 
@@ -35,6 +36,7 @@ namespace SKSBookingAPI.Models {
         public float PriceDaily { get; set; }
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
+        public string? ImageURL { get; set; }
         // public ICollection<RentalImage> RentalImages { get; set; }
     }
 
@@ -47,6 +49,7 @@ namespace SKSBookingAPI.Models {
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
         public required int UserID { get; set; }
+        public ICollection<IFormFile>? GalleryImages { get; set; }
     }
 
     //public class RentalImage

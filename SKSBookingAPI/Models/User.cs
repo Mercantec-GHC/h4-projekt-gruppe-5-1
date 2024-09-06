@@ -23,6 +23,7 @@ namespace SKSBookingAPI.Models {
     public class UserDTO {
         public int ID { get; set; }
         public string Name { get; set; }
+        public string Biography { get; set; }
         public string Email { get; set; }
         public string Username { get; set; }
         public string PhoneNumber { get; set; }
@@ -49,6 +50,7 @@ namespace SKSBookingAPI.Models {
         public int ID { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        public string? ProfilePictureURL { get; set; }
     }
 
     public class EditUserProfileDTO {
