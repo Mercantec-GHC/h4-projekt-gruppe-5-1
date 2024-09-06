@@ -83,10 +83,11 @@ class UpdatePageState extends State<UpdatePage> {
     super.initState();
     // Initialize controller with empty text initially
     _nameController = TextEditingController();
+
     // Fetch user data and set name
     widget.userData.then((user) {
       setState(() {
-        profileAvatarCurrentImage = user['img'];
+        profileAvatarCurrentImage = user['profilePictureURL'];
         // Hent 'name' fra mappen og opdater feltet
         _nameController.text = user['name'] ?? '';
       });
@@ -106,7 +107,8 @@ class UpdatePageState extends State<UpdatePage> {
 
     try {
       // Send det indtastede navn videre til opdateringsmetoden
-      await myAppState.updateUser(_nameController.text);
+      await myAppState.updateUser(
+          _nameController.text, profileAvatarCurrentImage!);
 
       // Hvis opdateringen lykkes, vis en SnackBar
       ScaffoldMessenger.of(context).showSnackBar(

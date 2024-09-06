@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_input/image_input.dart';
 import 'package:sks_booking/api.dart';
 import 'package:provider/provider.dart';
 import 'package:sks_booking/pages/admin_homepage.dart';
@@ -29,9 +30,6 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
             seedColor: Color(0xFFCAC3A5),
-            // TRY THIS: Change to "Brightness.light"
-            //           and see that all colors change
-            //           to better contrast a light background.
             brightness: Brightness.light,
           ),
         ),
@@ -67,9 +65,19 @@ class MyAppState extends ChangeNotifier {
     }
   }
 
-  Future<void> updateUser(String name) async {
+  Future<void> updateUser(String name, XFile img) async {
     try {
-      await apiService.updateUser(name);
+      var response = await apiService.updateUser(name, img);
+      return jsonDecode(response);
+    } catch (e) {
+      print('Noget: $e');
+    }
+  }
+
+  Future<void> updateUserBio(String bio) async {
+    try {
+      var response = await apiService.updateUserBio(bio);
+      return jsonDecode(response);
     } catch (e) {
       print('Noget: $e');
     }

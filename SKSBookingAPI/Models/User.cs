@@ -64,9 +64,12 @@ namespace SKSBookingAPI.Models {
         public string PhoneNumber { get; set; }
     }
 
-    public class PasswordDTO
-    {
+    public class PasswordDTO {
         public string Password { get; set; }
         public string OldPassword { get; set; }
+    }
+
+    public class BioDTO {
+        public string Boigrafi { get; set; }
     }
 }

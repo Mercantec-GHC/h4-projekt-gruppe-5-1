@@ -190,6 +190,54 @@ namespace SKSBookingAPI.Controllers {
         }//*/
 
         [Authorize]
+        [HttpPut("biografi/{id}")]
+        public async Task<ActionResult> UserBio(int id, BioDTO userBio)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null) {
+                return NotFound();
+            }
+
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+
+            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
+                authHeader = authHeader.Substring("Bearer ".Length).Trim();
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(authHeader);
+
+                if (jwtSecurityToken.Payload.Sub == id.ToString()) {
+
+                    user.Biografi = userBio.Boigrafi;
+                    user.UpdatedAt = DateTime.UtcNow.AddHours(2);
+
+
+                    _context.Entry(user).State = EntityState.Modified;
+
+                    try {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException) {
+                        if (!UserExists(id)) {
+                            return NotFound();
+                        } else {
+                            throw;
+                        }
+                    }
+
+                    return Ok(userBio);
+                } else {
+                    return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
+                }
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
+
+        [Authorize]
         [HttpPut("password/{id}")]
         public async Task<ActionResult> UserPassword(int id, PasswordDTO editUser)
         {

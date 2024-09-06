@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:image_input/image_input.dart';
 import 'models/user_info_model.dart';
 
 bool _isLoggedIn = false;
@@ -67,13 +68,37 @@ class ApiService {
       "phoneNumber": phoneNumber,
       "username": username,
       "userType": userType,
-      "ProfilePictureURL": profilePictureURL,
+      "profilePictureURL": profilePictureURL,
     };
     return userData;
   }
 
   //String img,
-  Future<String> updateUser(String name) async {
+  Future<String> updateUser(String name, XFile img) async {
+    var token = await secureStorage.read(key: 'token');
+    String id = await secureStorage.read(key: 'id') as String;
+    var uri = Uri.https(baseUrl, 'api/Users/$id');
+    final response = await http.put(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'photo': img,
+        'name': name,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(
+          'Failed to update User: ${response.reasonPhrase} (${response.statusCode})');
+    }
+  }
+
+  Future<String> updateUserBio(String bio) async {
     var token = await secureStorage.read(key: 'token');
     String id = await secureStorage.read(key: 'id') as String;
     var uri = Uri.https(baseUrl, 'api/Users/$id');
@@ -85,7 +110,7 @@ class ApiService {
       },
       body: jsonEncode(<String, String>{
         //'photo': img
-        'name': name,
+        'biografi': bio,
       }),
     );
 
