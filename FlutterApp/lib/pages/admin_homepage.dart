@@ -1,3 +1,6 @@
+import 'package:sks_booking/pages/admin_create_user.dart';
+import 'package:sks_booking/pages/make_ads.dart';
+
 import '../main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,10 +20,13 @@ class AdminHomepage extends StatelessWidget {
             children: [
               ElevatedButton.icon(
                 onPressed: () {
-                  print('hello');
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => AdminRegisterPage()),
+                  );
                 },
                 icon: Icon(Icons.create),
-                label: Text('Create User'),
+                label: Text('Lav Udlejer Bruger'),
               ),
               SizedBox(height: 10),
               ElevatedButton.icon(
@@ -28,23 +34,23 @@ class AdminHomepage extends StatelessWidget {
                   print('Troll');
                 },
                 icon: Icon(Icons.create),
-                label: Text('See Users'),
+                label: Text('Se brugere'),
               ),
               SizedBox(height: 10),
-              ElevatedButton.icon(
-                onPressed: () {
-                  print('Tor');
-                },
-                icon: Icon(Icons.create),
-                label: Text('See reviews'),
-              ),
-              SizedBox(height: 10),
+              // ElevatedButton.icon(
+              //   onPressed: () {
+              //     print('Tor');
+              //   },
+              //   icon: Icon(Icons.create),
+              //   label: Text('See reviews'),
+              // ),
+              // SizedBox(height: 10),
               ElevatedButton.icon(
                 onPressed: () {
                   print('Loke');
                 },
                 icon: Icon(Icons.create),
-                label: Text('See appartments'),
+                label: Text('Se Lejligheder'),
               ),
               SizedBox(height: 10),
               ElevatedButton.icon(
@@ -52,15 +58,18 @@ class AdminHomepage extends StatelessWidget {
                   print('Odin');
                 },
                 icon: Icon(Icons.create),
-                label: Text('See adds'),
+                label: Text('Se Reklamer'),
               ),
               SizedBox(height: 10),
               ElevatedButton.icon(
                 onPressed: () {
-                  print('Frøya');
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => MakeAdsPage()),
+                  );
                 },
                 icon: Icon(Icons.create),
-                label: Text('Make adds'),
+                label: Text('Lav Reklamer'),
               ),
             ],
           ),

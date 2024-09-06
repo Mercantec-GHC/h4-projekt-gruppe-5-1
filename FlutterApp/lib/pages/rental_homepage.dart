@@ -7,7 +7,7 @@ class RentalHomepage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Hjem'),
       ),
       body: SingleChildScrollView(
         child: Padding(
