@@ -55,3 +55,11 @@ Uge 36: Kjetil
 	Kjetil: Utvidelse af maps-kortet
 	Freja: Kikke på cloudflare
 	Christian: Login
+
+	Torsdag:
+	Kjetil: Færdiggøre maps-kortet
+	Freya: Filoplastning
+	Christian: Bruger ændringer
+
+	Fredag:
+	Holde retrospektiv, merge vores kode og holde møder.
