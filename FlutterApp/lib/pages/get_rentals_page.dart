@@ -61,17 +61,17 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
 
   void createRentalPage(RentalApartment rental) {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ViewRentalPage(rental: rental)));
+      context,
+      MaterialPageRoute(
+        builder: (context) => ViewRentalPage(rental: rental)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Fetch Data')),
-        body: Center(
-            child: Column(
+      appBar: AppBar(title: const Text('Fetch Data')),
+      body: Center(
+        child: Column(
           children: [
             /*
             Flexible(
@@ -112,32 +112,37 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                      child: ElevatedButton(
-                          onPressed: () => fetchApartments().then((result) {
-                                setState(() {
-                                  rentalList = result;
-                                });
-                              }),
-                          child: const Text("Fetch all apartments")))
+                    child: ElevatedButton(
+                      onPressed: () => fetchApartments().then((result) {
+                        setState(() {
+                          rentalList = result;
+                        });
+                      }),
+                  child: const Text("Fetch all apartments")))
                 ],
               ),
             ),
             const SizedBox(height: 25),
             Expanded(
-                flex: 8,
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                          child: ListView.builder(
-                        itemCount: rentalList.length,
-                        itemBuilder: (context, index) {
-                          return rentalList[index];
-                        },
-                      ))
-                    ]))
+              flex: 8,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: ListView.builder(
+                      itemCount: rentalList.length,
+                      itemBuilder: (context, index) {
+                        return rentalList[index];
+                      },
+                    )
+                  )
+                ]
+              )
+            )
           ],
-        )));
+        )
+      )
+    );
   }
 }

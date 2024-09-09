@@ -181,7 +181,7 @@ class RImagesSmall extends StatelessWidget {
         //Flexible(child: RImageSmallInstance()),
         //SizedBox(width: 8),
         //Flexible(child: RImageSmallInstance()),
-      ],
+        ],
       )
     );
   }

@@ -70,6 +70,6 @@ namespace SKSBookingAPI.Models {
     }
 
     public class BioDTO {
-        public string Biografi { get; set; }
+        public string Biography { get; set; }
     }
 }

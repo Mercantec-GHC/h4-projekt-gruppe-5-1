@@ -49,9 +49,4 @@ namespace SKSBookingAPI.Models {
         public required int UserID { get; set; }
         public IFormFile[]? GalleryImages { get; set; }
     }
-
-    //public class RentalImage
-    //{
-    //public string Image { get; set; }
-    //}
 }

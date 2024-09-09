@@ -208,8 +208,7 @@ namespace SKSBookingAPI.Controllers {
                 var jwtSecurityToken = handler.ReadJwtToken(authHeader);
 
                 if (jwtSecurityToken.Payload.Sub == id.ToString()) {
-
-                    user.Biography = userBio.Biografi;
+                    user.Biography = userBio.Biography;
                     user.UpdatedAt = DateTime.UtcNow.AddHours(2);
 
 
