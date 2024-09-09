@@ -63,3 +63,7 @@ Uge 36: Kjetil
 
 	Fredag:
 	Holde retrospektiv, merge vores kode og holde møder.
+
+	Retrospektiv:
+	Godt samarbejde og kommunikasjon. 
+	Fortsette med 2 møder pr dag da det har fungert godt for os.
