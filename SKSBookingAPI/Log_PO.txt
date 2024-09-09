@@ -13,3 +13,6 @@ uge 35: Christian
 Uge 36: Freja
 	Mandag: Oprettet og opdateret Spring backlog
 	Fredag: Haft kundemøde med gruppe 4. Fået flyttet kundechat og pushnotifikationer til Nice To Have pga tidsbegrænsninger. Kunde meget optimistisk med produktets fremskridt, efterspørger flere detaljer i thumbnailvisning af lejligheder
+
+Uge 37: Kjetil
+	Mandag: Oprettet og gjort klar Sprint backlog.
