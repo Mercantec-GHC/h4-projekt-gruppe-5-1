@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:expandable_text/expandable_text.dart';
+import 'package:provider/provider.dart';
+import 'package:sks_booking/pages/rental_booking_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../main.dart';
 import '../models/rental_model.dart';
 import '../models/user_data_model.dart';
 import '../pages/user_profile_page.dart';
@@ -38,6 +42,11 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
     }
   }
 
+  Future<String?> getUserType() async {
+    var value = await Provider.of<MyAppState>(context).apiService.secureStorage.read(key: 'userType');
+    return value;
+  }
+
   void prepareUserPageByID(num id) {
     fetchUser(id).then((result) {
       createUserPage(result);
@@ -49,6 +58,15 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
       context,
       MaterialPageRoute(
         builder: (context) => UserProfilePage(user: user)
+      )
+    );
+  }
+
+  void createBookingPage(RentalApartment rental) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RentalBookingPage(rental: rental)
       )
     );
   }
@@ -93,6 +111,7 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
                   SizedBox(height: 8),
                   RAvailability(priceDaily: widget.rental.priceDaily, availableFrom: widget.rental.availableFrom, availableTo: widget.rental.availableTo, isAvailable: widget.rental.isAvailable),
                   SizedBox(height: 8),
+                  RBooking(availableTo: widget.rental.availableTo, userType: getUserType, createBookingPage: () { createBookingPage(widget.rental); }),
                   ROwner(name: widget.rental.renterName, email: widget.rental.renterEmail, pictureURL: widget.rental.renterPictureURL, getUser: () { prepareUserPageByID(widget.rental.renterID); })
                 ],
               )
@@ -306,6 +325,50 @@ class RAvailableFalse extends StatelessWidget {
         Text("Ikke tilgængelig", style: TextStyle(fontSize: 16, color: Colors.red[800])),
         DateTime.now().isBefore(from) ? Text("Kan lejes fra ${DateFormat("d/M").format(from)}") : Container()
       ]
+    );
+  }
+}
+
+class RBooking extends StatefulWidget {
+  const RBooking({
+    super.key,
+    required this.availableTo,
+    required this.userType,
+    required this.createBookingPage
+  });
+
+  final DateTime availableTo;
+  final Function() userType;
+  final Function() createBookingPage;
+
+  @override
+  State<RBooking> createState() => _RBookingState();
+}
+
+class _RBookingState extends State<RBooking> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: widget.userType(),
+      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+        return (snapshot.hasData && DateTime.now().isBefore(widget.availableTo)) ?
+        Column(
+          children: [ 
+            ElevatedButton(
+              onPressed: () { widget.createBookingPage(); },
+              child: Text("Gå til booking")
+            ),
+            SizedBox(height: 8)
+          ]
+        )
+        :
+        Container();
+      }
     );
   }
 }

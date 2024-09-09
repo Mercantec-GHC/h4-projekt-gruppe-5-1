@@ -54,6 +54,7 @@ class ApiService {
   Future<void> logoutUser() async {
     // Slet token fra secure storage
     await secureStorage.delete(key: 'token');
+    await secureStorage.delete(key: 'userType');
     _isLoggedIn = false;
   }
 

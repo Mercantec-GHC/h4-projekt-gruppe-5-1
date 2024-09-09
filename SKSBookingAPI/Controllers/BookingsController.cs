@@ -64,10 +64,8 @@ namespace SKSBookingAPI.Controllers {
         // POST: api/Bookings
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Booking>> PostBooking(CreateBookingDTO booking)
-        {
-            Booking nyBooking = new Booking
-            {
+        public async Task<ActionResult<Booking>> PostBooking(CreateBookingDTO booking) {
+            Booking nyBooking = new Booking {
                 BookingID = booking.BookingID,
                 UserRenting = booking.UserRenting,
                 Rental = booking.Rental,

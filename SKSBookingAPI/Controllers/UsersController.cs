@@ -131,7 +131,7 @@ namespace SKSBookingAPI.Controllers {
             } else {
                 return Unauthorized();
             }
-        }//*/
+        }
 
         [Authorize]
         [HttpPut("biografi/{id}")]
@@ -170,7 +170,7 @@ namespace SKSBookingAPI.Controllers {
 
                     return Ok(userBio);
                 } else {
-                    return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
+                    return new ObjectResult("Jeg er en tekande. (Det er ikke din brugerprofil)") { StatusCode = 418 };
                 }
             } else {
                 return Unauthorized();
