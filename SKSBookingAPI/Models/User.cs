@@ -55,7 +55,8 @@ namespace SKSBookingAPI.Models {
 
     public class EditUserProfileDTO {
         public string Name { get; set; }
-        //public string image { get; set; }
+        public IFormFile? ProfilePicture { get; set; }
+        public string? ProfilePictureURL { get; set; }
     }
 
     public class EditUserAccountDTO {

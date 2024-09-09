@@ -7,6 +7,7 @@ import 'package:sks_booking/pages/admin_homepage.dart';
 import 'package:sks_booking/pages/rental_homepage.dart';
 import 'package:sks_booking/pages/password_change.dart';
 import 'package:sks_booking/pages/renter_homepage.dart';
+import 'package:sks_booking/pages/update_biography.dart';
 import 'api.dart' as api;
 import 'pages/login.dart';
 import 'pages/register.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  final ApiService apiService = ApiService(baseUrl: 'localhost:7014');
+  final ApiService apiService = ApiService(baseUrl: 'https://localhost:7014/api');
   late var success = false;
 
   Future<void> login(String email, String password) async {
@@ -66,9 +67,9 @@ class MyAppState extends ChangeNotifier {
     }
   }
 
-  Future<void> updateUser(String name, XFile img) async {
+  Future<void> updateUser(String name, XFile? img, String? oldImg) async {
     try {
-      var response = await apiService.updateUser(name, img);
+      var response = await apiService.updateUser(name, img, oldImg);
       return jsonDecode(response);
     } catch (e) {
       print('Noget: $e');
@@ -138,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       setState(() {
         // Sæt brugernavn i userName
-        userName = userData['name'] ??
+        userName = userData['username'] ??
             'Bruger'; // Fallback til 'Bruger', hvis name er null
       });
     } catch (e) {
@@ -147,6 +148,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void switchToRegisterPage() {
+    setState(() {
+      selectedIndex = 1;
+    });
+  }
+  void switchToBioUpdatePage() {
+    setState(() {
+      selectedIndex = 5;
+    });
+  }
+
+  void switchToUserUpdatePage() {
     setState(() {
       selectedIndex = 1;
     });
@@ -164,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void switchToUpdateUser() {
+  void switchToUpdateAccount() {
     setState(() {
       selectedIndex = 2;
     });
@@ -225,19 +237,24 @@ class _MyHomePageState extends State<MyHomePage> {
             _onItemTapped(3);
             Navigator.pop(context);
           },
-        )
+        ),
+        ListTile(
+          leading: Icon(Icons.home),
+          title: Text('Hjem'),
+          selected: selectedIndex == 3,
+          onTap: () {
+            _onItemTapped(3);
+            Navigator.pop(context);
+          },
+        ),
       ];
       page = [
         GetRentalsPage(),
-        UpdatePage(
-          userData: myAppState.user(),
-        ),
-        AccountUpdater(
-            onPassword: switchToChangePassword, userData: myAppState.user()),
+        UpdatePage(userData: myAppState.user(), onBio: switchToBioUpdatePage),
+        AccountUpdater(onPassword: switchToChangePassword, userData: myAppState.user()),
         RenterHomepage(),
-        PasswordChanger(
-          onUpdate: switchToUpdateUser,
-        ),
+        PasswordChanger(onUpdate: switchToUpdateAccount),
+        BiographyUpdater(onUser: switchToUserUpdatePage, userData: myAppState.user())
       ];
     } else {
       nav = [

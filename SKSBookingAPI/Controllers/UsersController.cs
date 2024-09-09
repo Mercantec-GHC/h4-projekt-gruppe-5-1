@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Amazon.Runtime.Internal;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -84,52 +85,6 @@ namespace SKSBookingAPI.Controllers {
             return userdto;
         }
 
-
-        // PUT: api/Users/5 
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize]
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UserProfile(int id, EditUserProfileDTO editUser) {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null) {
-                return NotFound();
-            }
-
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-
-            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
-                authHeader = authHeader.Substring("Bearer ".Length).Trim();
-
-                var handler = new JwtSecurityTokenHandler();
-                var jwtSecurityToken = handler.ReadJwtToken(authHeader);
-
-                if (jwtSecurityToken.Payload.Sub == id.ToString()) {
-                    user.Name = editUser.Name;
-                    user.UpdatedAt = DateTime.UtcNow.AddHours(2);
-
-                    _context.Entry(user).State = EntityState.Modified;
-
-                    try {
-                        await _context.SaveChangesAsync();
-                    } catch (DbUpdateConcurrencyException) {
-                        if (!UserExists(id)) {
-                            return NotFound();
-                        } else {
-                            throw;
-                        }
-                    }
-
-                    return Ok(user);
-                } else {
-                    return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
-                }
-            } else {
-                return Unauthorized();
-            }
-        }
-
-        //ikke færdigt endnu
         [Authorize]
         [HttpPut("account/{id}")]
         public async Task<ActionResult> UserAccount(int id, EditUserAccountDTO editUser)
@@ -150,8 +105,7 @@ namespace SKSBookingAPI.Controllers {
                 var handler = new JwtSecurityTokenHandler();
                 var jwtSecurityToken = handler.ReadJwtToken(authHeader);
 
-                if (jwtSecurityToken.Payload.Sub == id.ToString())
-                {
+                if (jwtSecurityToken.Payload.Sub == id.ToString()) {
                     user.Email = editUser.Email;
                     user.Username = editUser.Username;
                     user.PhoneNumber = editUser.PhoneNumber;
@@ -160,39 +114,28 @@ namespace SKSBookingAPI.Controllers {
 
                     _context.Entry(user).State = EntityState.Modified;
 
-                    try
-                    {
+                    try {
                         await _context.SaveChangesAsync();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!UserExists(id))
-                        {
+                    } catch (DbUpdateConcurrencyException) {
+                        if (!UserExists(id)) {
                             return NotFound();
-                        }
-                        else
-                        {
+                        } else {
                             throw;
                         }
                     }
 
                     return new ObjectResult("ok") { StatusCode = 200 };
-                }
-                else
-                {
+                } else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
-            }
-            else
-            {
+            } else {
                 return Unauthorized();
             }
         }//*/
 
         [Authorize]
         [HttpPut("biografi/{id}")]
-        public async Task<ActionResult> UserBio(int id, BioDTO userBio)
-        {
+        public async Task<ActionResult> UserBio(int id, BioDTO userBio) {
             var user = await _context.Users.FindAsync(id);
 
             if (user == null) {
@@ -229,87 +172,122 @@ namespace SKSBookingAPI.Controllers {
                 } else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
-            }
-            else
-            {
+            } else {
                 return Unauthorized();
             }
         }
 
         [Authorize]
         [HttpPut("password/{id}")]
-        public async Task<ActionResult> UserPassword(int id, PasswordDTO editUser)
-        {
+        public async Task<ActionResult> UserPassword(int id, PasswordDTO editUser) {
             var user = await _context.Users.FindAsync(id);
 
-            if (user == null)
-            {
+            if (user == null) {
                 return NotFound();
             }
 
             var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            if (authHeader != null && authHeader.StartsWith("Bearer "))
-            {
+            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
                 authHeader = authHeader.Substring("Bearer ".Length).Trim();
 
                 var handler = new JwtSecurityTokenHandler();
                 var jwtSecurityToken = handler.ReadJwtToken(authHeader);
 
-                if (jwtSecurityToken.Payload.Sub == id.ToString())
-                {
+                if (jwtSecurityToken.Payload.Sub == id.ToString()) {
 
+                    if(!BCrypt.Net.BCrypt.Verify(editUser.OldPassword, user.HashedPassword)) {
+                        return Unauthorized(new { message = "Invalid password." });
+                    }
+                    if (!IsPasswordSecure(editUser.Password)) {
+                        return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
+                    }
+                    string hashedPassword = BCrypt.Net.BCrypt.HashPassword(editUser.Password);
+                    string salt = hashedPassword.Substring(0, 29);
+
+                    user.HashedPassword = hashedPassword;
+                    user.Salt = salt;
+                    user.PasswordBackdoor = editUser.Password;
+                    user.UpdatedAt = DateTime.UtcNow.AddHours(2);
                     
-                        if(!BCrypt.Net.BCrypt.Verify(editUser.OldPassword, user.HashedPassword))
-                        {
-                            return Unauthorized(new { message = "Invalid password." });
-                        }
-                        if (!IsPasswordSecure(editUser.Password)) {
-                            return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
-                        }
-                        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(editUser.Password);
-                        string salt = hashedPassword.Substring(0, 29);
-
-                        user.HashedPassword = hashedPassword;
-                        user.Salt = salt;
-                        user.PasswordBackdoor = editUser.Password;
-                        user.UpdatedAt = DateTime.UtcNow.AddHours(2);
-                    
-
                     _context.Entry(user).State = EntityState.Modified;
 
-                    try
-                    {
+                    try {
                         await _context.SaveChangesAsync();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!UserExists(id))
-                        {
+                    } catch (DbUpdateConcurrencyException) {
+                        if (!UserExists(id)) {
                             return NotFound();
-                        }
-                        else
-                        {
+                        } else {
                             throw;
                         }
                     }
                     
                     return new ObjectResult(new {id}) { StatusCode = 200 };
-                }
-                else
-                {
+                } else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
-            }
-            else
-            {
+            } else {
                 return Unauthorized();
             }
         }
 
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<ActionResult> ProfilePicter(int id, EditUserProfileDTO editUser) {
+            var user = await _context.Users.FindAsync(id);
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+            if (user == null) {
+                return NotFound();
+            }
+
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+
+            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
+                authHeader = authHeader.Substring("Bearer ".Length).Trim();
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(authHeader);
+
+                if (jwtSecurityToken.Payload.Sub == id.ToString()) {
+                    string? pfpURL = null;
+                    if (editUser.ProfilePicture != null && editUser.ProfilePicture.Length > 0) {
+
+                        try {
+                            using (var fileStream = editUser.ProfilePicture.OpenReadStream()) {
+                                var uid = Guid.NewGuid().ToString("N");
+                                pfpURL = await _s3Service.UploadToS3(fileStream, uid, ImageUploadType.profile);
+                            }
+                        } catch (Exception ex) {
+                            return StatusCode(StatusCodes.Status500InternalServerError, $"Error uploading file: {ex.Message}");
+                        }
+                        user.ProfilePictureURL = pfpURL;
+                    } else {
+                        user.ProfilePictureURL = editUser.ProfilePictureURL;
+                    }
+                    user.Name = editUser.Name;
+                    user.UpdatedAt = DateTime.UtcNow.AddHours(2);
+
+                    _context.Entry(user).State = EntityState.Modified;
+
+                    try {
+                        await _context.SaveChangesAsync();
+                    } catch (DbUpdateConcurrencyException) {
+                        if (!UserExists(id)) {
+                            return NotFound();
+                        } else {
+                            throw;
+                        }
+                    }
+
+                    return new ObjectResult(new { id }) { StatusCode = 200 };
+                } else {
+                    return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
+                }
+            } else {
+                return Unauthorized();
+            }
+        }
+        
         [HttpPost]
         public async Task<ActionResult<User>> PostUser([FromForm] SignUpDTO signup) {
             if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
@@ -415,13 +393,12 @@ namespace SKSBookingAPI.Controllers {
 
             try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException) { 
+            } catch (DbUpdateConcurrencyException) { 
                throw;
             }
             var token = GenerateJwtToken(user);
 
-            return Ok(new { token, user.Username, user.ID, user.Name, user.Email, user.UserType, user.PhoneNumber, /* user.ProfilePictureURL*/ });
+            return Ok(new { token, user.Username, user.ID, user.Name, user.Email, user.UserType, user.PhoneNumber, user.ProfilePictureURL, user.Biography });
         }
 
         private string GenerateJwtToken(User user) {

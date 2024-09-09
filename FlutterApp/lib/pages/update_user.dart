@@ -5,9 +5,10 @@ import 'package:permission_handler/permission_handler.dart';
 import '../main.dart' as main;
 
 class UpdatePage extends StatefulWidget {
+  final VoidCallback onBio;
   final Future<Map<String, dynamic>> userData;
 
-  const UpdatePage({required this.userData});
+  const UpdatePage({required this.userData, required this.onBio});
   @override
   UpdatePageState createState() => UpdatePageState();
 }
@@ -15,6 +16,7 @@ class UpdatePage extends StatefulWidget {
 class UpdatePageState extends State<UpdatePage> {
   XFile? profileAvatarCurrentImage;
   bool allowEdit = true;
+  String? imageUrl;
   late TextEditingController _nameController;
 
   var getImageSource = (BuildContext context) {
@@ -87,7 +89,7 @@ class UpdatePageState extends State<UpdatePage> {
     // Fetch user data and set name
     widget.userData.then((user) {
       setState(() {
-        profileAvatarCurrentImage = user['profilePictureURL'];
+        imageUrl = user['profilePictureURL'];
         // Hent 'name' fra mappen og opdater feltet
         _nameController.text = user['name'] ?? '';
       });
@@ -104,12 +106,10 @@ class UpdatePageState extends State<UpdatePage> {
 
   void _updateUser() async {
     final myAppState = Provider.of<main.MyAppState>(context, listen: false);
-
+    
     try {
       // Send det indtastede navn videre til opdateringsmetoden
-      await myAppState.updateUser(
-          _nameController.text, profileAvatarCurrentImage!);
-
+      await myAppState.updateUser(_nameController.text, profileAvatarCurrentImage, imageUrl );
       // Hvis opdateringen lykkes, vis en SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Profil oplysninger opdateret')),
@@ -156,6 +156,7 @@ class UpdatePageState extends State<UpdatePage> {
               ),
               ProfileAvatar(
                 image: profileAvatarCurrentImage,
+                imageUrl: imageUrl,
                 radius: 100,
                 allowEdit: allowEdit,
                 addImageIcon: Container(
@@ -170,22 +171,15 @@ class UpdatePageState extends State<UpdatePage> {
                 ),
                 removeImageIcon: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(1000),
                   ),
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.close),
                   ),
                 ),
                 onImageChanged: (XFile? image) {
                   setState(() {
                     profileAvatarCurrentImage = image;
-                  });
-                },
-                onImageRemoved: () {
-                  setState(() {
-                    profileAvatarCurrentImage = null;
                   });
                 },
                 getImageSource: () async => await getImageSource(context),
@@ -197,6 +191,14 @@ class UpdatePageState extends State<UpdatePage> {
                 icon: Icon(Icons.update),
                 label: Text('Gem bruger oplysninger'),
               ),
+              Padding(
+            padding: const EdgeInsets.all(20),
+            child: ElevatedButton.icon(
+              onPressed: widget.onBio,
+              icon: Icon(Icons.switch_account),
+              label: Text('bruger'),
+            ),
+            )
             ],
           ),
         ));
