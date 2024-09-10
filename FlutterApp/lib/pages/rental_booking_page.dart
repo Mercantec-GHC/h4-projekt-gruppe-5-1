@@ -164,9 +164,6 @@ class RBooking extends StatefulWidget {
 }
 
 class _RBookingState extends State<RBooking> {
-  late DateTime bookingStartDate;
-  late DateTime bookingEndDate;
-
   final TextEditingController _startDateText = TextEditingController();
   final TextEditingController _endDateText = TextEditingController();
 

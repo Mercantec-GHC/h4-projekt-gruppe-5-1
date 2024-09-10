@@ -73,4 +73,9 @@ namespace SKSBookingAPI.Models {
     public class BioDTO {
         public string Biography { get; set; }
     }
+
+    public class AddRentalDTO {
+        public int ID { get; set; }
+        public int RentalID { get; set; }
+    }
 }

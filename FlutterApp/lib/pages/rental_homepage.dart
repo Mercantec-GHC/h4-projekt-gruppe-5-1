@@ -5,6 +5,7 @@ import 'my_rentals_page.dart'; // Import your new page
 import 'update_user.dart';
 import '../main.dart';
 import '../api.dart';
+import '../pages/rental_form_page.dart';
 
 class RentalHomepage extends StatelessWidget {
   final List<String> notifications = [
@@ -29,7 +30,12 @@ class RentalHomepage extends StatelessWidget {
               Center(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    print('ny lejlighed');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RentalFormPage()
+                      )
+                    );
                   },
                   label: Text("Ny Lejlighed"),
                   icon: Icon(Icons.add),
