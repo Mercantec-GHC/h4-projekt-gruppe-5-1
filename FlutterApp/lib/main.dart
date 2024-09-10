@@ -240,10 +240,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           leading: Icon(Icons.home),
-          title: Text('Hjem'),
-          selected: selectedIndex == 3,
+          title: Text('Hjem Udlejer'),
+          selected: selectedIndex == 4,
           onTap: () {
-            _onItemTapped(3);
+            _onItemTapped(4);
             Navigator.pop(context);
           },
         ),
@@ -253,6 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
         UpdatePage(userData: myAppState.user(), onBio: switchToBioUpdatePage),
         AccountUpdater(onPassword: switchToChangePassword, userData: myAppState.user()),
         RenterHomepage(),
+        RentalHomepage(),
         PasswordChanger(onUpdate: switchToUpdateAccount),
         BiographyUpdater(onUser: switchToUserUpdatePage, userData: myAppState.user())
       ];
@@ -324,7 +325,6 @@ class _MyHomePageState extends State<MyHomePage> {
         RegisterPage(onLogin: switchToLoginPage),
         GetRentalsPage(),
         RenterHomepage(),
-        RentalHomepage(),
         AdminHomepage(),
       ];
     }

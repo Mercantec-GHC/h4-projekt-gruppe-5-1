@@ -1,10 +1,21 @@
-import '../main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/user_data_model.dart';
+import 'my_rentals_page.dart'; // Import your new page
+import 'update_user.dart';
+import '../main.dart';
+import '../api.dart';
 
 class RentalHomepage extends StatelessWidget {
+  final List<String> notifications = [
+    'Besked 1',
+    'Besked 2',
+    'Besked 3',
+  ];
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Hjem'),
@@ -15,162 +26,91 @@ class RentalHomepage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container( //finn ut hvordan denne containeren kan gjøres klikkbar. som linker videre til selve oppslaget/listen af leiligheter
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Color(0xffD9D9D9),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Lejligheder',
-                      style: TextStyle(fontSize: 24, color: Colors.black),
-                    ),
-                    SizedBox(height: 15),
-                    // se hvordan man kan gjøre sånn at hvert "instance" kan hentes ut fra en liste. så om en bruker har 1 eller 6 leiligheter i dems liste. så viser den 1 eller 6 leiligheter. men oppsettet lagd under.
-                    Row(
-                      children: [
-                        Image.asset(
-                          'assets/logo.png',
-                          width: 100,
-                          height: 100,
-                        ),
-                        SizedBox(width: 10),
-                        Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Text for Image 1',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                              Text(
-                                'More text for Image 1',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Image.asset(
-                          'assets/logo.png',
-                          width: 100,
-                          height: 100,
-                        ),
-                        SizedBox(width: 10),
-                        Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Text for Image 1',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                              Text(
-                                'More text for Image 1',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          ),
-                      ],
-                    ),
-                  ],
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    print('ny lejlighed');
+                  },
+                  label: Text("Ny Lejlighed"),
+                  icon: Icon(Icons.add),
                 ),
               ),
               SizedBox(height: 20),
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Color(0xffD9D9D9),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Lejligheder reviews',
-                      style: TextStyle(fontSize: 24, color: Colors.black),
-                    ),
-                    SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Image.asset(
-                          'assets/logo.png',
-                          width: 100,
-                          height: 100,
+              notifications.isNotEmpty
+                  ? GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NotificationScreen(notifications: notifications),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                        SizedBox(width: 10),
-                        Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Text for Image 1',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                              Text(
-                                'More text for Image 1',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Image.asset(
-                          'assets/logo.png',
-                          width: 100,
-                          height: 100,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Du har ${notifications.length} beskeder',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 10),
-                        Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Text for Image 1',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                              Text(
-                                'More text for Image 1',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    )
+                  : Container(),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: () { 
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyRentalsPage()),
+                    );
+                  },
+                  label: Text("Mine Lejligheder"),
+                  icon: Icon(Icons.home),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class NotificationScreen extends StatelessWidget {
+  final List<String> notifications;
+
+  NotificationScreen({required this.notifications});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Beskeder'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView.builder(
+          itemCount: notifications.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  print('Opening chat: ${notifications[index]}');
+                },
+                child: Text('Besked ${index + 1}: ${notifications[index]}'),
+              ),
+            );
+          },
         ),
       ),
     );
