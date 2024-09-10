@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -63,20 +65,37 @@ namespace SKSBookingAPI.Controllers {
 
         // POST: api/Bookings
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(CreateBookingDTO booking) {
-            Booking nyBooking = new Booking {
-                BookingID = booking.BookingID,
-                UserRenting = booking.UserRenting,
-                Rental = booking.Rental,
-                BookedFrom = booking.BookedFrom,
-                BookedUntil = booking.BookedUntil,
-            };
+            if (booking.BookedUntil > booking.BookedFrom) {
+                return BadRequest("Booket starttid er før sluttid");
+            }
 
-            _context.Bookings.Add(nyBooking);
-            await _context.SaveChangesAsync();
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            return CreatedAtAction("GetBooking", new { id = nyBooking.BookingID }, nyBooking);
+            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
+                authHeader = authHeader.Substring("Bearer ".Length).Trim();
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(authHeader);
+
+                if (jwtSecurityToken.Payload.Sub == booking.UserID.ToString()) {
+                    Booking nyBooking = new Booking {
+                        UserID = booking.UserID,
+                        RentalID = booking.RentalID,
+                        BookedFrom = booking.BookedFrom,
+                        BookedUntil = booking.BookedUntil,
+                    };
+
+                    _context.Bookings.Add(nyBooking);
+                    await _context.SaveChangesAsync();
+
+                    return CreatedAtAction("GetBooking", new { id = nyBooking.BookingID }, nyBooking);
+                }
+            }
+
+            return Unauthorized();
         }
 
         // DELETE: api/Bookings/5

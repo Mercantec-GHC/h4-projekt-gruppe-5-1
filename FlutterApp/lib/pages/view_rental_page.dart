@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:expandable_text/expandable_text.dart';
 import 'package:provider/provider.dart';
 import 'package:sks_booking/pages/rental_booking_page.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../main.dart';
 import '../models/rental_model.dart';
@@ -14,8 +13,9 @@ import '../models/user_data_model.dart';
 import '../pages/user_profile_page.dart';
 
 class ViewRentalPage extends StatefulWidget {
-  const ViewRentalPage({super.key, required this.rental});
+  const ViewRentalPage({super.key, required this.rental, required this.id});
   final RentalApartment rental;
+  final num id;
 
   @override
   State<ViewRentalPage> createState() => _ViewRentalPageState();
@@ -66,7 +66,7 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RentalBookingPage(rental: rental)
+        builder: (context) => RentalBookingPage(rentalID: widget.id, from: widget.rental.availableFrom, to: widget.rental.availableTo)
       )
     );
   }

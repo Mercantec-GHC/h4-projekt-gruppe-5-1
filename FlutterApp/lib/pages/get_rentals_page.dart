@@ -55,15 +55,15 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
 
   void prepareRentalPageByID(num id) {
     fetchApartment(id).then((result) {
-      createRentalPage(result);
+      createRentalPage(result, id);
     });
   }
 
-  void createRentalPage(RentalApartment rental) {
+  void createRentalPage(RentalApartment rental, num id) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ViewRentalPage(rental: rental)));
+        builder: (context) => ViewRentalPage(rental: rental, id: id)));
   }
 
   @override
