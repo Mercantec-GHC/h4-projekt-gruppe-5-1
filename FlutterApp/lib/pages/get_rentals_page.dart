@@ -72,6 +72,7 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
       appBar: AppBar(title: const Text('Fetch Data')),
       body: Center(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             /*
             Flexible(

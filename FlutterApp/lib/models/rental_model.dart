@@ -119,6 +119,7 @@ class RentalApartmentThumb extends StatelessWidget {
                   size: 64,
                 )
               ),
+              SizedBox(width: 8),
               Flexible(
                 flex: 2,
                 child: Column(
