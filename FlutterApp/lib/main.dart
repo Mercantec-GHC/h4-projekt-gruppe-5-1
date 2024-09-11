@@ -120,6 +120,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+  String? userType;
   String? userName;
 
   @override
@@ -139,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       setState(() {
         // Sæt brugernavn i userName
+        userType = userData['userType'] ?? '0';
         userName = userData['username'] ??
             'Bruger'; // Fallback til 'Bruger', hvis name er null
       });
@@ -152,6 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
       selectedIndex = 1;
     });
   }
+
   void switchToBioUpdatePage() {
     setState(() {
       selectedIndex = 5;
@@ -201,62 +204,79 @@ class _MyHomePageState extends State<MyHomePage> {
         DrawerHeader(
           child: Text(
               userName != null ? 'Velkommen, $userName' : 'Velkommen, Bruger'),
-        ),
+        ), //0
         ListTile(
-          leading: Icon(Icons.apartment),
-          title: Text('Alle lejligheder'),
+          leading: Icon(Icons.home),
+          title: Text('Hjem'),
           selected: selectedIndex == 0,
           onTap: () {
             _onItemTapped(0);
             Navigator.pop(context);
           },
-        ),
+        ), //1
         ListTile(
-          leading: Icon(Icons.person),
-          title: Text('Profil'),
+          leading: Icon(Icons.apartment),
+          title: Text('Alle lejligheder'),
           selected: selectedIndex == 1,
           onTap: () {
             _onItemTapped(1);
             Navigator.pop(context);
           },
-        ),
+        ), //2
         ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('konto'),
+          leading: Icon(Icons.person),
+          title: Text('Profil'),
           selected: selectedIndex == 2,
           onTap: () {
             _onItemTapped(2);
             Navigator.pop(context);
           },
-        ),
+        ), //3
         ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Hjem'),
+          leading: Icon(Icons.settings),
+          title: Text('konto'),
           selected: selectedIndex == 3,
           onTap: () {
             _onItemTapped(3);
             Navigator.pop(context);
           },
-        ),
-        ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Hjem Udlejer'),
-          selected: selectedIndex == 4,
-          onTap: () {
-            _onItemTapped(4);
-            Navigator.pop(context);
-          },
-        ),
+        ), //4
       ];
       page = [
-        GetRentalsPage(),
-        UpdatePage(userData: myAppState.user(), onBio: switchToBioUpdatePage),
-        AccountUpdater(onPassword: switchToChangePassword, userData: myAppState.user()),
-        RenterHomepage(),
-        RentalHomepage(),
-        PasswordChanger(onUpdate: switchToUpdateAccount),
-        BiographyUpdater(onUser: switchToUserUpdatePage, userData: myAppState.user())
+        RenterHomepage(), //0
+        GetRentalsPage(), //1
+        UpdatePage(
+            userData: myAppState.user(), onBio: switchToBioUpdatePage), //2
+        AccountUpdater(
+            onPassword: switchToChangePassword,
+            userData: myAppState.user()), //3
+        PasswordChanger(onUpdate: switchToUpdateAccount), //6
+        BiographyUpdater(
+            onUser: switchToUserUpdatePage, userData: myAppState.user()), //7
       ];
+      if (userType == "1") {
+        page[0] = RentalHomepage();
+        nav[1] = ListTile(
+          leading: Icon(Icons.home),
+          title: Text('Hjem udlejer'),
+          selected: selectedIndex == 0,
+          onTap: () {
+            _onItemTapped(0);
+            Navigator.pop(context);
+          },
+        );
+      } else if (userType == "2") {
+        page[0] = AdminHomepage();
+        nav[1] = ListTile(
+          leading: Icon(Icons.home),
+          title: Text('Admin'),
+          selected: selectedIndex == 0,
+          onTap: () {
+            _onItemTapped(0);
+            Navigator.pop(context);
+          },
+        );
+      }
     } else {
       nav = [
         const DrawerHeader(
@@ -266,8 +286,8 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Text(style: TextStyle(fontSize: 40), 'Velkommen'),
         ),
         ListTile(
-          leading: Icon(Icons.login),
-          title: Text('Login'),
+          leading: Icon(Icons.home),
+          title: Text('Home'),
           selected: selectedIndex == 0,
           onTap: () {
             _onItemTapped(0);
@@ -275,8 +295,8 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         ListTile(
-          leading: Icon(Icons.create),
-          title: Text('New user'),
+          leading: Icon(Icons.login),
+          title: Text('Login'),
           selected: selectedIndex == 1,
           onTap: () {
             _onItemTapped(1);
@@ -284,8 +304,8 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         ListTile(
-          leading: Icon(Icons.apartment),
-          title: Text('All apartments'),
+          leading: Icon(Icons.create),
+          title: Text('New user'),
           selected: selectedIndex == 2,
           onTap: () {
             _onItemTapped(2);
@@ -293,39 +313,20 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Home'),
+          leading: Icon(Icons.apartment),
+          title: Text('All apartments'),
           selected: selectedIndex == 3,
           onTap: () {
             _onItemTapped(3);
             Navigator.pop(context);
           },
         ),
-        ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Rental'),
-          selected: selectedIndex == 4,
-          onTap: () {
-            _onItemTapped(4);
-            Navigator.pop(context);
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Admin'),
-          selected: selectedIndex == 5,
-          onTap: () {
-            _onItemTapped(5);
-            Navigator.pop(context);
-          },
-        ),
       ];
       page = [
+        GetRentalsPage(),
         LoginPage(onCreateUser: switchToRegisterPage),
         RegisterPage(onLogin: switchToLoginPage),
-        GetRentalsPage(),
         RenterHomepage(),
-        AdminHomepage(),
       ];
     }
     return Scaffold(
@@ -351,12 +352,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   if (isLoggedIn) {
                     myAppState.logOut();
+                    _onItemTapped(0);
                   } else {
                     setState(() {
-                      selectedIndex = 0;
+                      selectedIndex = 1;
                     });
+                    _onItemTapped(1);
                   }
-                  _onItemTapped(0);
                   Navigator.pop(context);
                 },
                 child: Icon(isLoggedIn ? Icons.logout : Icons.login),

@@ -39,7 +39,7 @@ Uge 35: Freja
 		arbejde videre på redigering af brugere, login og logout, brug af kortdata, begrænsning af billedestørrelse på lejeboligside
 
 Uge 36: Kjetil
-	Mandag: Scrøm møde og planlagt ugen:
+	Mandag: Scrum møde og planlagt ugen:
 	Kjetil: Focus på admin side
 	Freja: Set boliger ind på udleje side
 	Christian: Edit bruger
@@ -47,7 +47,7 @@ Uge 36: Kjetil
 	Mål for ugen er at få brugerprofilerne færdige, et gennemgående design og mulighed til at lave bolig-opslag, udlejebruger, upload af billeder og justeringer til map-kortet.
 
 	Tirsdag:
-		Christian: Kikke på å sette billede op i frontend
+		Christian: Kikke på at sette billede op i frontend
 		Freja: Lave Brugerprofiler
 		Kjetil: Flere funtioner for admin
 
@@ -67,3 +67,14 @@ Uge 36: Kjetil
 	Retrospektiv:
 	Godt samarbejde og kommunikasjon. 
 	Fortsette med 2 møder pr dag da det har fungert godt for os.
+
+	uge 37: Christian
+	Mandag: Scrum møde og planlagt ugen
+		Kjetil: kigger på opdatering af udlejer
+		Freja: Kigger på booking og bruger rolle
+		Christian: Skift af profil billede og biografi
+
+	Tirsdag:
+		Kjetil: opdatering af udlejer
+		Freja: booking af lejligheder
+		Christian: visning af side efter hvolken rolle man har på frontend
