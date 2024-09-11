@@ -1,3 +1,4 @@
+import 'package:sks_booking/pages/Admin_get_users.dart';
 import 'package:sks_booking/pages/admin_create_user.dart';
 import 'package:sks_booking/pages/make_ads.dart';
 
@@ -31,7 +32,11 @@ class AdminHomepage extends StatelessWidget {
               SizedBox(height: 10),
               ElevatedButton.icon(
                 onPressed: () {
-                  print('Troll');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GetAllUsers()),
+                  );
                 },
                 icon: Icon(Icons.create),
                 label: Text('Se brugere'),

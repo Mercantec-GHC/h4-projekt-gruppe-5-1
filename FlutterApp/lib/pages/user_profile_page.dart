@@ -36,7 +36,7 @@ class UserProfilePage extends StatelessWidget {
                   SizedBox(height: 12),
                   UTop(name: user.name, pictureURL: user.profilePictureURL),
                   SizedBox(height: 12),
-                  UBio(bio: user.bio),
+                  UBio(bio: user.bio!),
                   SizedBox(height: 12),
                   UContact(email: user.email, phone: user.phone)
                 ],

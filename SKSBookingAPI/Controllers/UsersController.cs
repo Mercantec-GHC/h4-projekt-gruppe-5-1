@@ -359,17 +359,35 @@ namespace SKSBookingAPI.Controllers {
 
 
         // DELETE: api/Users/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id) {
             var user = await _context.Users.FindAsync(id);
             if (user == null) {
                 return NotFound();
             }
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            if (authHeader != null && authHeader.StartsWith("Bearer ")){
+                authHeader = authHeader.Substring("Bearer ".Length).Trim();
 
-            return NoContent();
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(authHeader);
+                var userType = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+                if (userType == "2"){
+                    _context.Users.Remove(user);
+                    await _context.SaveChangesAsync();
+
+                    //return NoContent();
+                    return new ObjectResult("bruger slettet") { StatusCode = 200 };
+                } else {
+                    return new ObjectResult("Jeg er en tekande. (Du har ikke bruger rettigheder til dette)") { StatusCode = 418 };
+                }
+            } else {
+                return Unauthorized();
+            }
+            
         }
 
         private bool UserExists(int id) {

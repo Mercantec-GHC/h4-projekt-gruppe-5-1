@@ -76,5 +76,11 @@ Uge 36: Kjetil
 
 	Tirsdag:
 		Kjetil: opdatering af udlejer
-		Freja: booking af lejligheder
+		Freja: booking af lejligheder og formel til oprette lejliheder
 		Christian: visning af side efter hvolken rolle man har på frontend
+
+	Onsdag:
+		Kjetil: oprette bruger på admin side
+		Freja: kigge på billede opload til lejeligheder
+		Christian: kigge på brugerprivilegier og slet bruger
+
