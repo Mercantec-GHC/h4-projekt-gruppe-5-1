@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_input/image_input.dart';
@@ -143,8 +142,6 @@ class _RentalFormPageState extends State<RentalFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    //var appState = context.watch<MyAppState>();
-
     return Scaffold(
       backgroundColor: Color(0xFFF1EFE7),
       appBar: AppBar(
