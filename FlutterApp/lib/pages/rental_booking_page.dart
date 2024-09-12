@@ -171,7 +171,6 @@ class _RBookingState extends State<RBooking> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
-      //initialDate: selectedDate,
       firstDate: widget.availableFrom,
       lastDate: widget.availableTo
     );

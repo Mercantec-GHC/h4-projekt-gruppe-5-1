@@ -4,7 +4,7 @@ using Amazon.S3;
 using System.Diagnostics;
 
 namespace SKSBookingAPI.Service {
-    public enum ImageUploadType {
+    public enum ImageDirectoryType {
         profile,
         rental
     }
@@ -28,7 +28,7 @@ namespace SKSBookingAPI.Service {
             _s3Client = new AmazonS3Client(credentials, config);
         }
 
-        public async Task<string> UploadToS3(Stream fileStream, string uid, ImageUploadType type) {
+        public async Task<string> UploadToS3(Stream fileStream, string uid, ImageDirectoryType type) {
             var request = new PutObjectRequest {
                 InputStream = fileStream,
                 //BucketName = "sks-images",
@@ -46,6 +46,29 @@ namespace SKSBookingAPI.Service {
             //var imageUrl = $"https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/object/public/sks-images/{type}/{uid}.png";
             var imageUrl = $"https://sks.mercantec.tech/sks/{type}/{uid}.png";
             return imageUrl;
+        }
+
+        public async Task DeleteFromS3(string url, ImageDirectoryType type) {
+            string separator = type.ToString();
+            int startIndex = url.IndexOf(separator);
+            string imgKey = url.Substring(startIndex);
+
+            try {
+                var deleteObjectRequest = new DeleteObjectRequest {
+                    BucketName = "sks",
+                    Key = $"{imgKey}"
+                };
+
+                Console.WriteLine($"Attempting to delete at key {imgKey} ...");
+                DeleteObjectResponse response = await _s3Client.DeleteObjectAsync(deleteObjectRequest);
+                Console.WriteLine("Status: " + response.HttpStatusCode);
+            }
+            catch (AmazonS3Exception e) {
+                Console.WriteLine("Error encountered on server. Message:'{0}' when deleting an object", e.Message);
+            }
+            catch (Exception e) {
+                Console.WriteLine("Unknown encountered on server. Message:'{0}' when deleting an object", e.Message);
+            }
         }
     }
 }

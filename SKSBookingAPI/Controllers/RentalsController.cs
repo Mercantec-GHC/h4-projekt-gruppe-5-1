@@ -7,6 +7,7 @@ using Amazon.Runtime.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SKSBookingAPI.Context;
 using SKSBookingAPI.Migrations;
@@ -31,10 +32,11 @@ namespace SKSBookingAPI.Controllers {
             _s3Service = new S3Service(_accessKey, _secretKey);
         }
 
-        // GET: api/Rentals
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AllRentalsDTO>>> GetRental() {
+        // GET: api/Rentals/Guest
+        [HttpGet("Guest")]
+        public async Task<ActionResult<IEnumerable<AllRentalsDTO>>> GetRentalGuest() {
             var rentals = await _context.Rental
+            .Where(r => r.IsVisibleToGuests == true)
             .Select(rental => new AllRentalsDTO {
                 ID = rental.ID,
                 Address = rental.Address,
@@ -46,6 +48,32 @@ namespace SKSBookingAPI.Controllers {
             .ToListAsync();
 
             return Ok(rentals);
+        }
+
+        // GET: api/Rentals
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AllRentalsDTO>>> GetRental() {
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+
+            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
+                var rentals = await _context.Rental
+                .Select(rental => new AllRentalsDTO {
+                    ID = rental.ID,
+                    Address = rental.Address,
+                    PriceDaily = rental.PriceDaily,
+                    AvailableFrom = rental.AvailableFrom,
+                    AvailableTo = rental.AvailableTo,
+                    ImageURL = rental.GalleryURLs.First()
+                })
+                .ToListAsync();
+
+                return Ok(rentals);
+            }
+            else {
+                return Unauthorized();
+            }
+            
         }
 
 
@@ -125,7 +153,7 @@ namespace SKSBookingAPI.Controllers {
                         try {
                             using (var fileStream = file.OpenReadStream()) {
                                 var uid = Guid.NewGuid().ToString("N");
-                                rentalImages.Add(await _s3Service.UploadToS3(fileStream, uid, ImageUploadType.rental));
+                                rentalImages.Add(await _s3Service.UploadToS3(fileStream, uid, ImageDirectoryType.rental));
                             }
                         }
                         catch (Exception ex) {

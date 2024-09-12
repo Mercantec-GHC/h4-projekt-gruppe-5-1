@@ -70,20 +70,17 @@ namespace SKSBookingAPI.Controllers {
                 return NotFound();
             }
 
-            List<Rental> rentals = _context.Rentals.Where(r => r.UserID == user.ID).ToList();
-            List<AllRentalsDTO> rentalDTOList = new();
-
-            foreach (var rental in rentals) {
-                AllRentalsDTO dto = new AllRentalsDTO {
-                    ID = rental.ID,
-                    Address = rental.Address,
-                    PriceDaily = rental.PriceDaily,
-                    AvailableFrom = rental.AvailableFrom,
-                    AvailableTo = rental.AvailableTo,
-                    ImageURL = rental.GalleryURLs.First()
-                };
-                rentalDTOList.Add(dto);
-            }
+            List<AllRentalsDTO> rentals = await _context.Rentals
+            .Where(r => r.UserID == user.ID)
+            .Select(rental => new AllRentalsDTO {
+                ID = rental.ID,
+                Address = rental.Address,
+                PriceDaily = rental.PriceDaily,
+                AvailableFrom = rental.AvailableFrom,
+                AvailableTo = rental.AvailableTo,
+                ImageURL = rental.GalleryURLs.First()
+            })
+            .ToListAsync();
 
             var userdto = new UserDTO {
                 ID = user.ID,
@@ -92,7 +89,7 @@ namespace SKSBookingAPI.Controllers {
                 Email = user.Email,
                 Username = user.Username,
                 PhoneNumber = user.PhoneNumber,
-                Rentals = rentalDTOList,
+                Rentals = rentals,
                 ProfilePictureURL = user.ProfilePictureURL
             };
 
@@ -101,19 +98,16 @@ namespace SKSBookingAPI.Controllers {
 
         [Authorize]
         [HttpPut("account/{id}")]
-        public async Task<ActionResult> UserAccount(int id, EditUserAccountDTO editUser)
-        {
+        public async Task<ActionResult> UserAccount(int id, EditUserAccountDTO editUser) {
             var user = await _context.Users.FindAsync(id);
 
-            if (user == null)
-            {
+            if (user == null) {
                 return NotFound();
             }
 
             var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            if (authHeader != null && authHeader.StartsWith("Bearer "))
-            {
+            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
                 authHeader = authHeader.Substring("Bearer ".Length).Trim();
 
                 var handler = new JwtSecurityTokenHandler();
@@ -124,25 +118,28 @@ namespace SKSBookingAPI.Controllers {
                     user.Username = editUser.Username;
                     user.PhoneNumber = editUser.PhoneNumber;
                     user.UpdatedAt = DateTime.UtcNow.AddHours(2);
-                    
 
                     _context.Entry(user).State = EntityState.Modified;
 
                     try {
                         await _context.SaveChangesAsync();
-                    } catch (DbUpdateConcurrencyException) {
+                    }
+                    catch (DbUpdateConcurrencyException) {
                         if (!UserExists(id)) {
                             return NotFound();
-                        } else {
+                        }
+                        else {
                             throw;
                         }
                     }
 
                     return new ObjectResult("ok") { StatusCode = 200 };
-                } else {
+                }
+                else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
-            } else {
+            }
+            else {
                 return Unauthorized();
             }
         }
@@ -177,16 +174,19 @@ namespace SKSBookingAPI.Controllers {
                     catch (DbUpdateConcurrencyException) {
                         if (!UserExists(id)) {
                             return NotFound();
-                        } else {
+                        }
+                        else {
                             throw;
                         }
                     }
 
                     return Ok(userBio);
-                } else {
+                }
+                else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din brugerprofil)") { StatusCode = 418 };
                 }
-            } else {
+            }
+            else {
                 return Unauthorized();
             }
         }
@@ -210,7 +210,7 @@ namespace SKSBookingAPI.Controllers {
 
                 if (jwtSecurityToken.Payload.Sub == id.ToString()) {
 
-                    if(!BCrypt.Net.BCrypt.Verify(editUser.OldPassword, user.HashedPassword)) {
+                    if (!BCrypt.Net.BCrypt.Verify(editUser.OldPassword, user.HashedPassword)) {
                         return Unauthorized(new { message = "Invalid password." });
                     }
                     if (!IsPasswordSecure(editUser.Password)) {
@@ -223,24 +223,28 @@ namespace SKSBookingAPI.Controllers {
                     user.Salt = salt;
                     user.PasswordBackdoor = editUser.Password;
                     user.UpdatedAt = DateTime.UtcNow.AddHours(2);
-                    
+
                     _context.Entry(user).State = EntityState.Modified;
 
                     try {
                         await _context.SaveChangesAsync();
-                    } catch (DbUpdateConcurrencyException) {
+                    }
+                    catch (DbUpdateConcurrencyException) {
                         if (!UserExists(id)) {
                             return NotFound();
-                        } else {
+                        }
+                        else {
                             throw;
                         }
                     }
-                    
-                    return new ObjectResult(new {id}) { StatusCode = 200 };
-                } else {
+
+                    return new ObjectResult(new { id }) { StatusCode = 200 };
+                }
+                else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
-            } else {
+            }
+            else {
                 return Unauthorized();
             }
         }
@@ -264,19 +268,32 @@ namespace SKSBookingAPI.Controllers {
 
                 if (jwtSecurityToken.Payload.Sub == id.ToString()) {
                     string? pfpURL = null;
-                    if (editUser.ProfilePicture != null && editUser.ProfilePicture.Length > 0) {
+                    string? oldPFPURL = user.ProfilePictureURL;
 
+                    if (editUser.ProfilePicture != null && editUser.ProfilePicture.Length > 0) {
                         try {
                             using (var fileStream = editUser.ProfilePicture.OpenReadStream()) {
                                 var uid = Guid.NewGuid().ToString("N");
-                                pfpURL = await _s3Service.UploadToS3(fileStream, uid, ImageUploadType.profile);
+                                pfpURL = await _s3Service.UploadToS3(fileStream, uid, ImageDirectoryType.profile);
                             }
-                        } catch (Exception ex) {
+                        }
+                        catch (Exception ex) {
                             return StatusCode(StatusCodes.Status500InternalServerError, $"Error uploading file: {ex.Message}");
                         }
                         user.ProfilePictureURL = pfpURL;
-                    } else {
+                    }
+                    else {
                         user.ProfilePictureURL = editUser.ProfilePictureURL;
+                    }
+
+                    if (oldPFPURL != null) {
+                        try {
+                            await _s3Service.DeleteFromS3(oldPFPURL, ImageDirectoryType.profile);
+                        }
+                        catch (Exception ex) {
+                            return StatusCode(StatusCodes.Status500InternalServerError, $"Error deleting file: {ex.Message}");
+                        }
+                        
                     }
                     user.Name = editUser.Name;
                     user.UpdatedAt = DateTime.UtcNow.AddHours(2);
@@ -285,23 +302,27 @@ namespace SKSBookingAPI.Controllers {
 
                     try {
                         await _context.SaveChangesAsync();
-                    } catch (DbUpdateConcurrencyException) {
+                    }
+                    catch (DbUpdateConcurrencyException) {
                         if (!UserExists(id)) {
                             return NotFound();
-                        } else {
+                        }
+                        else {
                             throw;
                         }
                     }
 
                     return new ObjectResult(new { id }) { StatusCode = 200 };
-                } else {
+                }
+                else {
                     return new ObjectResult("Jeg er en tekande. (Det er ikke din bruger profil)") { StatusCode = 418 };
                 }
-            } else {
+            }
+            else {
                 return Unauthorized();
             }
         }
-        
+
         [HttpPost]
         public async Task<ActionResult<User>> PostUser([FromForm] SignUpDTO signup) {
             if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
@@ -320,7 +341,7 @@ namespace SKSBookingAPI.Controllers {
                 try {
                     using (var fileStream = signup.ProfilePicture.OpenReadStream()) {
                         var uid = Guid.NewGuid().ToString("N");
-                        pfpURL = await _s3Service.UploadToS3(fileStream, uid, ImageUploadType.profile);
+                        pfpURL = await _s3Service.UploadToS3(fileStream, uid, ImageDirectoryType.profile);
                     }
                 }
                 catch (Exception ex) {
@@ -382,26 +403,28 @@ namespace SKSBookingAPI.Controllers {
             }
             var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            if (authHeader != null && authHeader.StartsWith("Bearer ")){
+            if (authHeader != null && authHeader.StartsWith("Bearer ")) {
                 authHeader = authHeader.Substring("Bearer ".Length).Trim();
 
                 var handler = new JwtSecurityTokenHandler();
                 var jwtSecurityToken = handler.ReadJwtToken(authHeader);
                 var userType = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
 
-                if (userType == "2"){
+                if (userType == "2") {
                     _context.Users.Remove(user);
                     await _context.SaveChangesAsync();
 
                     //return NoContent();
                     return new ObjectResult("bruger slettet") { StatusCode = 200 };
-                } else {
+                }
+                else {
                     return new ObjectResult("Jeg er en tekande. (Du har ikke bruger rettigheder til dette)") { StatusCode = 418 };
                 }
-            } else {
+            }
+            else {
                 return Unauthorized();
             }
-            
+
         }
 
         private bool UserExists(int id) {
@@ -413,8 +436,7 @@ namespace SKSBookingAPI.Controllers {
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO login) {
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == login.Email);
-            if(user == null)
-            {
+            if (user == null) {
                 return NotFound();
             }
             if (!BCrypt.Net.BCrypt.Verify(login.Password, user.HashedPassword)) {
@@ -425,8 +447,9 @@ namespace SKSBookingAPI.Controllers {
 
             try {
                 await _context.SaveChangesAsync();
-            } catch (DbUpdateConcurrencyException) { 
-               throw;
+            }
+            catch (DbUpdateConcurrencyException) {
+                throw;
             }
             var token = GenerateJwtToken(user);
 
@@ -434,14 +457,14 @@ namespace SKSBookingAPI.Controllers {
         }
 
         private string GenerateJwtToken(User user) {
-            
+
             var claims = new[] {
                 new Claim("role", user.UserType.ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, user.ID.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
             };
-            
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -452,10 +475,65 @@ namespace SKSBookingAPI.Controllers {
                 claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds
-               
+
             );
-            
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        /*
+        [HttpPost("testauth")]
+        public async Task<ActionResult<User>> PostUser(SignUpDTO signup, byte? authID) {
+            
+            if (signup.UserType != 0 && authID != 2) {
+                return Forbid();
+            }
+            if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
+                return new ObjectResult("Jeg er en tekande. (Email allerede i brug.)") { StatusCode = 418 };
+            }
+            if (await _context.Users.AnyAsync(u => u.Username == signup.Username)) {
+                return new ObjectResult("Jeg er en tekande. (Brugernavn allerede i brug.)") { StatusCode = 418 };
+            }
+            if (!IsPasswordSecure(signup.Password)) {
+                return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
+            }
+
+            User user = MapSignUpDTOToUser(signup);
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetUser", new { id = user.ID }, user);
+        }
+
+        [HttpDelete("testauth/{id}")]
+        public async Task<IActionResult> DeleteUser(int id, byte? authID) {
+            if (authID != 2) {
+                return Forbid();
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) {
+                return NotFound();
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpGet("testauthtoken")]
+        public async Task<ActionResult<string>> GetIDFromToken(string token) {
+            //TokenValidationParameters parameters = new TokenValidationParameters();
+            //new JwtSecurityTokenHandler().ValidateToken(token, , out SecurityToken validatedToken);
+
+            // Token skal nok valideres først
+            SecurityToken readToken = new JwtSecurityTokenHandler().ReadToken(token);
+            string attachedID = (readToken as JwtSecurityToken).Claims.First(c => c.Type == "sub").Value;
+
+            return attachedID;
+        }
+        */
     }
 }

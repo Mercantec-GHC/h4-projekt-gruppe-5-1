@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
@@ -21,7 +22,10 @@ class _RenterHomePageState extends State<RenterHomepage> {
   void initState() {
     super.initState();
     _mapController = MapController();
-    _getCurrentLocation();
+
+    if (!Platform.isWindows) { // Midlertidig løsning, fordi jeg hader virkelig at alting låser, når jeg tester ting - Freja
+      _getCurrentLocation();
+    }
   }
 
   Future<void> _getCurrentLocation() async {

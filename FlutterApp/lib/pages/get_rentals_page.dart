@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sks_booking/main.dart';
 
 import '../models/rental_model.dart';
 import '../pages/view_rental_page.dart';
@@ -15,19 +18,23 @@ class GetRentalsPage extends StatefulWidget {
 
 class _GetRentalsPageState extends State<GetRentalsPage> {
   List<RentalApartmentThumb> rentalList = List.empty(growable: true);
-  //final TextEditingController _rentalIDController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
 
+  Future<String?> getUserType() async {
+    var value = await Provider.of<MyAppState>(context, listen: false).apiService.secureStorage.read(key: 'userType');
+    return value;
+  }
+
   Future<RentalApartment> fetchApartment(num id) async {
     final response =
-        await http.get(Uri.parse('https://localhost:7014/api/Rentals/$id'));
+      await http.get(Uri.parse('https://localhost:7014/api/Rentals/$id'));
     if (response.statusCode == 200) {
       final RentalApartment apartment = RentalApartment.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
+        jsonDecode(response.body) as Map<String, dynamic>);
 
       return apartment;
     } else {
@@ -36,19 +43,37 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
   }
 
   Future<List<RentalApartmentThumb>> fetchApartments() async {
-    final response =
-        await http.get(Uri.parse('https://localhost:7014/api/Rentals'));
+    String? userType = await getUserType();
+    late final dynamic response;
+
+    if (userType == null) {
+      response = await http.get(Uri.parse('https://localhost:7014/api/Rentals/Guest'));
+    }
+    else {
+      String? token = await Provider.of<MyAppState>(context, listen: false).apiService.secureStorage.read(key: 'token');
+      
+      if (token != null) {
+        response = await http.get(Uri.parse('https://localhost:7014/api/Rentals'), headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        });
+      }
+      else {
+        throw Exception("Invalid token");
+      }
+    }
+    
     if (response.statusCode == 200) {
       List<dynamic> jsonRentals = jsonDecode(response.body) as List<dynamic>;
       final List<RentalApartmentThumb> rentals = List.empty(growable: true);
 
       for (var i = 0; i < jsonRentals.length; i++) {
         rentals.add(RentalApartmentThumb.fromJson(
-            jsonRentals[i], prepareRentalPageByID));
+          jsonRentals[i], prepareRentalPageByID));
       }
 
       return rentals;
-    } else {
+    } 
+    else {
       throw Exception("Failed to load rental.");
     }
   }
@@ -74,38 +99,6 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            /*
-            Flexible(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: SizedBox(
-                      width: 80,
-                      child: TextField(
-                        textAlign: TextAlign.center,
-                        controller: _rentalIDController
-                      ),
-                    )
-                  ),
-                  const SizedBox(width: 15),
-                  Flexible(
-                    child: ElevatedButton(
-                      onPressed: () => prepareRentalPageByID(num.parse(_rentalIDController.text)),
-                      /*
-                      onPressed: () => fetchApartment(num.parse(_rentalIDController.text)).then((result){
-                        setState(() {
-                          
-                        });
-                      }),
-                      */
-                      child: const Text("Fetch apartment by ID")
-                    )
-                  )
-                ],
-              )
-            ),
-            */
             const SizedBox(height: 15),
             Flexible(
               child: Row(
