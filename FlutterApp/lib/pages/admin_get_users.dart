@@ -11,15 +11,16 @@ class GetAllUsers extends StatefulWidget {
 }
 
 class GetAllUsersState extends State<GetAllUsers> {
-  late Future<List<AllUsersData>> _brugereFuture;
+  List<AllUsersData> _users = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _brugereFuture = _fetchUsers();
+    _fetchUsers();
   }
 
-  Future<List<AllUsersData>> _fetchUsers() async {
+  Future<void> _fetchUsers() async {
     try {
       String? token = await Provider.of<MyAppState>(context, listen: false)
           .apiService
@@ -33,22 +34,58 @@ class GetAllUsersState extends State<GetAllUsers> {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
       });
-      print('API Response Status Code: ${response.statusCode}');
-      print('API Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        print('Parsed data: $data');
-
-        final users = data.map((item) => AllUsersData.fromJson(item)).toList();
-        print('Parsed users: $users');
-        return users;
+        setState(() {
+          _users = data.map((item) => AllUsersData.fromJson(item)).toList();
+          _isLoading = false;
+        });
       } else {
         throw Exception('Failed to load brugere: ${response.reasonPhrase}');
       }
     } catch (e) {
       print('Exception in _fetchUsers: $e');
-      return [];
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<bool> delete(String id) async {
+    try {
+      String? token = await Provider.of<MyAppState>(context, listen: false)
+          .apiService
+          .secureStorage
+          .read(key: 'token');
+      if (token == null) {
+        throw Exception("User ID not found in secure storage");
+      }
+      final response = await http
+          .delete(Uri.parse('https://localhost:7014/api/Users/$id'), headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      });
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('bruger slettet')),
+        );
+        setState(() {
+          _users.removeWhere((user) => user.id == id);
+        });
+        return true;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('der skete en fejl')),
+        );
+        throw Exception('kunne ikke slette brugere: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('der skete en fejl')),
+      );
+      return false;
     }
   }
 
@@ -58,46 +95,39 @@ class GetAllUsersState extends State<GetAllUsers> {
       appBar: AppBar(
         title: Text('Alle brugere'),
       ),
-      body: FutureBuilder<List<AllUsersData>>(
-        future: _brugereFuture,
-        builder: (context, snapshot) {
-          print('Snapshot state: ${snapshot.connectionState}');
-          print('Snapshot has data: ${snapshot.hasData}');
-          print('Snapshot data length: ${snapshot.data?.length}');
-          print('Snapshot data: ${snapshot.data}');
-          print('Snapshot error: ${snapshot.error}');
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            final users = snapshot.data!;
-            return ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                final user = users[index];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(user.name),
-                    Text(user.email),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        print(user.id);
-                      },
-                      icon: Icon(Icons.delete),
-                      label: Text('slet'),
-                    ),
-                  ],
-                );
-              },
-            );
-          } else {
-            return Center(child: Text('No users found'));
-          }
-        },
-      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _users.isEmpty
+              ? Center(child: Text('No users found'))
+              : ListView.builder(
+                  itemCount: _users.length,
+                  itemBuilder: (context, index) {
+                    final user = _users[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Column(
+                              children: [
+                                Text(user.name),
+                                Text(user.email),
+                              ],
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: () async {
+                                await delete(user.id);
+                              },
+                              icon: Icon(Icons.delete),
+                              label: Text('slet'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
     );
   }
 }

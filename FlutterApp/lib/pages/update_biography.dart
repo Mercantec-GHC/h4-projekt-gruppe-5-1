@@ -40,11 +40,11 @@ class BiographyUpdaterState extends State<BiographyUpdater> {
 
     try {
       // Send det indtastede navn videre til opdateringsmetoden
-      myAppState.updateUserBio(_biographyController.text);
-
+      var response = myAppState.updateUserBio(_biographyController.text);
+      print(response);
       // Hvis opdateringen lykkes, vis en SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Kontooplysninger opdateret')),
+        SnackBar(content: Text('Biografi opdateret')),
       );
     } catch (e) {
       print('Fejl ved opdatering: $e');
@@ -84,7 +84,7 @@ class BiographyUpdaterState extends State<BiographyUpdater> {
             child: ElevatedButton.icon(
               onPressed: widget.onUser,
               icon: Icon(Icons.person),
-              label: Text('bruger'),
+              label: Text('Opdater bruger'),
             ),
           )
         ],

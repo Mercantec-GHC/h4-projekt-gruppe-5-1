@@ -43,7 +43,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  final ApiService apiService = ApiService(baseUrl: 'https://localhost:7014/api');
+  final ApiService apiService =
+      ApiService(baseUrl: 'https://localhost:7014/api');
   late var success = false;
 
   Future<void> login(String email, String password) async {
@@ -71,7 +72,7 @@ class MyAppState extends ChangeNotifier {
   Future<void> updateUser(String name, XFile? img, String? oldImg) async {
     try {
       var response = await apiService.updateUser(name, img, oldImg);
-      return jsonDecode(response);
+      return response;
     } catch (e) {
       print('Noget: $e');
     }
@@ -127,8 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
-    // Hent brugerdata og sæt navn i drawer-menuen
     _loadUserData();
   }
 
@@ -152,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void switchToRegisterPage() {
     setState(() {
-      selectedIndex = 1;
+      selectedIndex = 2;
     });
   }
 
@@ -164,13 +163,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void switchToUserUpdatePage() {
     setState(() {
-      selectedIndex = 1;
+      selectedIndex = 2;
     });
   }
 
   void switchToLoginPage() {
     setState(() {
-      selectedIndex = 0;
+      selectedIndex = 1;
     });
   }
 
@@ -182,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void switchToUpdateAccount() {
     setState(() {
-      selectedIndex = 2;
+      selectedIndex = 3;
     });
   }
 
@@ -251,9 +250,9 @@ class _MyHomePageState extends State<MyHomePage> {
         AccountUpdater(
             onPassword: switchToChangePassword,
             userData: myAppState.user()), //3
-        PasswordChanger(onUpdate: switchToUpdateAccount), //6
+        PasswordChanger(onUpdate: switchToUpdateAccount), //4
         BiographyUpdater(
-            onUser: switchToUserUpdatePage, userData: myAppState.user()), //7
+            onUser: switchToUserUpdatePage, userData: myAppState.user()), //5
       ];
       if (userType == "1") {
         page[0] = RentalHomepage();
@@ -288,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           leading: Icon(Icons.home),
-          title: Text('Home'),
+          title: Text('Hjem'),
           selected: selectedIndex == 0,
           onTap: () {
             _onItemTapped(0);
@@ -306,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           leading: Icon(Icons.create),
-          title: Text('New user'),
+          title: Text('Ny bruger'),
           selected: selectedIndex == 2,
           onTap: () {
             _onItemTapped(2);
@@ -315,7 +314,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           leading: Icon(Icons.apartment),
-          title: Text('All apartments'),
+          title: Text('Alle lejligheder'),
           selected: selectedIndex == 3,
           onTap: () {
             _onItemTapped(3);

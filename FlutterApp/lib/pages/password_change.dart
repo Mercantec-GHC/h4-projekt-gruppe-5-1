@@ -93,7 +93,7 @@ class PasswordChangerState extends State<PasswordChanger> {
                 await appState.updateUserPassword(password, oldpassword);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Passwords do not match')),
+                  SnackBar(content: Text('Passwordne er ikke ens')),
                 );
               }
             },

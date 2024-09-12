@@ -26,13 +26,13 @@ class UpdatePageState extends State<UpdatePage> {
         return SimpleDialog(
           children: [
             SimpleDialogOption(
-              child: const Text("Camera"),
+              child: const Text("Kamera"),
               onPressed: () {
                 Navigator.of(context).pop(ImageSource.camera);
               },
             ),
             SimpleDialogOption(
-                child: const Text("Gallery"),
+                child: const Text("Galleri"),
                 onPressed: () {
                   Navigator.of(context).pop(ImageSource.gallery);
                 }),
@@ -60,13 +60,13 @@ class UpdatePageState extends State<UpdatePage> {
         return SimpleDialog(
           children: [
             SimpleDialogOption(
-              child: const Text("Rear"),
+              child: const Text("Bag"),
               onPressed: () {
                 Navigator.of(context).pop(CameraDevice.rear);
               },
             ),
             SimpleDialogOption(
-                child: const Text("Front"),
+                child: const Text("Foran"),
                 onPressed: () {
                   Navigator.of(context).pop(CameraDevice.front);
                 }),
@@ -106,10 +106,11 @@ class UpdatePageState extends State<UpdatePage> {
 
   void _updateUser() async {
     final myAppState = Provider.of<main.MyAppState>(context, listen: false);
-    
+
     try {
       // Send det indtastede navn videre til opdateringsmetoden
-      await myAppState.updateUser(_nameController.text, profileAvatarCurrentImage, imageUrl );
+      await myAppState.updateUser(
+          _nameController.text, profileAvatarCurrentImage, imageUrl);
       // Hvis opdateringen lykkes, vis en SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Profil oplysninger opdateret')),
@@ -147,7 +148,7 @@ class UpdatePageState extends State<UpdatePage> {
               ),
               const Center(
                 child: Text(
-                  "Profile Avatar",
+                  "Profil billede",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -192,13 +193,13 @@ class UpdatePageState extends State<UpdatePage> {
                 label: Text('Gem bruger oplysninger'),
               ),
               Padding(
-            padding: const EdgeInsets.all(20),
-            child: ElevatedButton.icon(
-              onPressed: widget.onBio,
-              icon: Icon(Icons.switch_account),
-              label: Text('bruger'),
-            ),
-            )
+                padding: const EdgeInsets.all(20),
+                child: ElevatedButton.icon(
+                  onPressed: widget.onBio,
+                  icon: Icon(Icons.switch_account),
+                  label: Text('Rediger biografi'),
+                ),
+              )
             ],
           ),
         ));
