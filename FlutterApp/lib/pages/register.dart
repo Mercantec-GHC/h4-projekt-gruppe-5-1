@@ -37,7 +37,7 @@ class RegisterPageState extends State<RegisterPage> {
               controller: nameController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Name',
+                labelText: 'Navn',
               ),
             ),
           ),
@@ -47,7 +47,7 @@ class RegisterPageState extends State<RegisterPage> {
               controller: usernameController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Username',
+                labelText: 'Brugernavn',
               ),
             ),
           ),
@@ -82,7 +82,7 @@ class RegisterPageState extends State<RegisterPage> {
                           ? const Color.fromARGB(255, 0, 0, 0)
                           : Colors.red,
                     )),
-                    labelText: 'Confirm Password',
+                    labelText: 'Bekræft Password',
                     labelStyle: TextStyle(
                       color: passwordMatch
                           ? const Color.fromARGB(255, 0, 0, 0)
@@ -96,7 +96,7 @@ class RegisterPageState extends State<RegisterPage> {
               controller: phoneNumberController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Phone Number',
+                labelText: 'Telefon Nummer',
               ),
             ),
           ),
@@ -113,24 +113,25 @@ class RegisterPageState extends State<RegisterPage> {
                 String email = emailController.text;
                 String password = passwordController.text;
                 String phoneNumber = phoneNumberController.text;
+                int userType = 0;
 
                 await appState.register(
-                    name, email, password, phoneNumber, username);
+                    name, email, password, phoneNumber, username, userType);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Passwords do not match')),
+                  SnackBar(content: Text('Password matcher ikke')),
                 );
               }
             },
             icon: Icon(Icons.login),
-            label: Text('Create User'),
+            label: Text('Lav Bruger'),
           ),
           Padding(
             padding: const EdgeInsets.all(20),
             child: ElevatedButton.icon(
               onPressed: widget.onLogin,
               icon: Icon(Icons.login),
-              label: Text('Log in'),
+              label: Text('Log ind'),
             ),
           )
         ],

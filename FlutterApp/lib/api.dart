@@ -189,7 +189,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> createUser(String name, String email,
-      String password, String phoneNumber, String username) async {
+      String password, String phoneNumber, String username, int userType) async {
     var uri = '$baseUrl/Users';
     final formData = FormData.fromMap({
       'name': name,
@@ -197,7 +197,7 @@ class ApiService {
       'password': password,
       'phoneNumber': phoneNumber,
       'username': username,
-      'userType': 0,
+      'userType': userType,
     });
     final response = await dio.post(
       uri,
@@ -217,32 +217,32 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> createUdlejerUser(String name, String email,
-      String password, String phoneNumber, String username) async {
-    var uri = '$baseUrl/Users';
-    final formData = FormData.fromMap({
-      'name': name,
-      'email': email,
-      'password': password,
-      'phoneNumber': phoneNumber,
-      'username': username,
-      'userType': 1,
-    });
-    final response = await dio.post(
-      uri,
-      data: formData,
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      ),
-    );
+  // Future<Map<String, dynamic>> createUdlejerUser(String name, String email,
+  //     String password, String phoneNumber, String username) async {
+  //   var uri = '$baseUrl/Users';
+  //   final formData = FormData.fromMap({
+  //     'name': name,
+  //     'email': email,
+  //     'password': password,
+  //     'phoneNumber': phoneNumber,
+  //     'username': username,
+  //     'userType': 1,
+  //   });
+  //   final response = await dio.post(
+  //     uri,
+  //     data: formData,
+  //     options: Options(
+  //       headers: {
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //     ),
+  //   );
     
-    if (response.statusCode == 201) {
-      return response.data;
-    } else {
-      throw Exception(
-          'Failed to create user: ${response.statusMessage} (${response.statusCode})');
-    }
-  }
+  //   if (response.statusCode == 201) {
+  //     return response.data;
+  //   } else {
+  //     throw Exception(
+  //         'Failed to create user: ${response.statusMessage} (${response.statusCode})');
+  //   }
+  // }
 }

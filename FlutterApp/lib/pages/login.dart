@@ -86,7 +86,7 @@ class _LoginState extends State<LoginPage> {
                       // Show error message or handle login failure
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                            content: Text('Login failed. Please try again.')),
+                            content: Text('Login fejlet. Prøv igen.')),
                       );
                     }
                   },
@@ -97,7 +97,7 @@ class _LoginState extends State<LoginPage> {
               ElevatedButton.icon(
                 onPressed: onCreateUser,
                 icon: Icon(Icons.create),
-                label: Text('Create User'),
+                label: Text('Lav Bruger'),
               ),
             ],
           ),

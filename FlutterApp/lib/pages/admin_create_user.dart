@@ -11,12 +11,12 @@ class AdminRegisterPage extends StatefulWidget {
 }
 
 class AdminRegisterPageState extends State<AdminRegisterPage> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
-  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController adminnameController = TextEditingController();
+  final TextEditingController adminusernameController = TextEditingController();
+  final TextEditingController adminemailController = TextEditingController();
+  final TextEditingController adminpasswordController = TextEditingController();
+  final TextEditingController adminconfirmPasswordController = TextEditingController();
+  final TextEditingController adminphoneNumberController = TextEditingController();
 
   bool passwordMatch = true;
 
@@ -37,7 +37,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
-                  controller: nameController,
+                  controller: adminnameController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Navn',
@@ -47,7 +47,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
-                  controller: usernameController,
+                  controller: adminusernameController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Brugernavn',
@@ -57,7 +57,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
-                  controller: emailController,
+                  controller: adminemailController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
@@ -67,7 +67,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
               Padding(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
-                    controller: passwordController,
+                    controller: adminpasswordController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Password',
@@ -77,7 +77,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
               Padding(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
-                    controller: confirmPasswordController,
+                    controller: adminconfirmPasswordController,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -96,7 +96,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
-                  controller: phoneNumberController,
+                  controller: adminphoneNumberController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Telefon nummer',
@@ -107,18 +107,19 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
                 onPressed: () async {
                   setState(() {
                     passwordMatch =
-                        passwordController.text == confirmPasswordController.text;
+                        adminpasswordController.text == adminconfirmPasswordController.text;
                   });
 
                   if (passwordMatch) {
-                    String name = nameController.text;
-                    String username = usernameController.text;
-                    String email = emailController.text;
-                    String password = passwordController.text;
-                    String phoneNumber = phoneNumberController.text;
+                    String name = adminnameController.text;
+                    String username = adminusernameController.text;
+                    String email = adminemailController.text;
+                    String password = adminpasswordController.text;
+                    String phoneNumber = adminphoneNumberController.text;
+                    int userType = 1;
 
-                    await appState.udlejerRegister(
-                        email, password, name, username, phoneNumber);
+                    await appState.register(
+                        email, password, name, phoneNumber, username, userType);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Passwords do not match')),

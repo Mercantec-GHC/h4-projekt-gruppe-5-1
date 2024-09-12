@@ -56,23 +56,10 @@ class MyAppState extends ChangeNotifier {
   }
 
   Future<void> register(String name, String email, String password,
-      String phoneNumber, String username) async {
+      String phoneNumber, String username, int userType) async {
     try {
       var response = await apiService.createUser(
-          name, email, password, phoneNumber, username);
-      if (response.containsKey('id')) {
-        print('User created with ID: ${response['id']}');
-      }
-    } catch (e) {
-      print('Registration failed: $e');
-    }
-  }
-
-  Future<void> udlejerRegister(String name, String email, String password,
-      String phoneNumber, String username) async {
-    try {
-      var response = await apiService.createUdlejerUser(
-          name, email, password, phoneNumber, username);
+          name, email, password, phoneNumber, username, userType);
       if (response.containsKey('id')) {
         print('User created with ID: ${response['id']}');
       }
@@ -337,10 +324,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ];
       page = [
-        GetRentalsPage(),
+        RenterHomepage(),
         LoginPage(onCreateUser: switchToRegisterPage),
         RegisterPage(onLogin: switchToLoginPage),
-        RenterHomepage(),
+        GetRentalsPage(),
       ];
     }
     return Scaffold(
