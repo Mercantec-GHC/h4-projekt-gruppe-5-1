@@ -3,7 +3,7 @@ import 'package:sks_booking/models/rental_model.dart';
 
 class UserData extends StatelessWidget {
   final String name;
-  final String? bio;
+  final String bio;
   final String email;
   final String phone;
   final String? profilePictureURL;
