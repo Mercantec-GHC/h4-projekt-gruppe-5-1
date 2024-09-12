@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -24,7 +23,7 @@ class _RentalFormPageState extends State<RentalFormPage> {
   bool isVisibleToGuests = true;
   DateTime? bookingStartDate;
   DateTime? bookingEndDate;
-  List<XFile> imagesToUpload = List.empty(growable: true);
+  List<XFile> localImages = List.empty(growable: true);
   final dio = Dio();
 
   @override
@@ -40,7 +39,7 @@ class _RentalFormPageState extends State<RentalFormPage> {
 
   void updateImagesToUpload(List<XFile> files) {
     setState(() {
-      imagesToUpload = files;
+      localImages = files;
     });
   }
 
@@ -97,18 +96,18 @@ class _RentalFormPageState extends State<RentalFormPage> {
     var uri = '$baseUrl/Rentals';
 
     if (userID == null) {
-      throw Exception('Failed to create booking: User ID is null');
+      throw Exception('Failed to create rental: User ID is null');
     }
 
     if (userType == null || userType == "0") {
-      throw Exception('Failed to create booking: Insufficient privileges');
+      throw Exception('Failed to create rental: Insufficient privileges');
     }
 
     var token = await Provider.of<MyAppState>(context, listen: false).apiService.secureStorage.read(key: 'token');
 
-    List<MultipartFile> filesToUpload = List.empty(growable: true);
-    for (var i = 0; i < imagesToUpload.length; i++) {
-      filesToUpload.add(await MultipartFile.fromFile(imagesToUpload[i].path));
+    List<MultipartFile> imagesToUpload = List.empty(growable: true);
+    for (var i = 0; i < localImages.length; i++) {
+      imagesToUpload.add(await MultipartFile.fromFile(localImages[i].path));
     }
 
     final formData = FormData.fromMap({
@@ -120,7 +119,7 @@ class _RentalFormPageState extends State<RentalFormPage> {
       'availableFrom': availableFrom,
       'availableTo': availableUntil,
       'userID': userID,
-      'galleryImages': filesToUpload
+      'galleryImages': imagesToUpload
     });
 
     final response = await dio.post(

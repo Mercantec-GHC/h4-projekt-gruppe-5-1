@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace SKSBookingAPI.Models {
-    public class User : Common { // Indsæt billede!
+    public class User : Common {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
@@ -28,7 +28,16 @@ namespace SKSBookingAPI.Models {
         public string Username { get; set; }
         public string PhoneNumber { get; set; }
         public string? ProfilePictureURL { get; set; }
-        public ICollection<Rental>? Rentals { get; set; }
+        public ICollection<AllRentalsDTO>? Rentals { get; set; }
+    }
+
+    public class AllUsersDTO {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Username { get; set; }
+        public string PhoneNumber { get; set; }
+        public string? ProfilePictureURL { get; set; }
     }
 
     public class LoginDTO {
@@ -72,10 +81,5 @@ namespace SKSBookingAPI.Models {
 
     public class BioDTO {
         public string Biography { get; set; }
-    }
-
-    public class AddRentalDTO {
-        public int ID { get; set; }
-        public int RentalID { get; set; }
     }
 }

@@ -50,7 +50,36 @@ class RentalApartment extends StatelessWidget {
   }
 }
 
+class RentalApartmentBrief extends StatelessWidget {
+  final num id;
+  final String address;
+  final num priceDaily;
+  final DateTime availableFrom;
+  final DateTime availableTo;
+  final String? imageURL;
 
+  RentalApartmentBrief({
+    required this.id,
+    required this.address,
+    required this.priceDaily,
+    required this.availableFrom,
+    required this.availableTo,
+    required this.imageURL
+  });
+
+  RentalApartmentBrief.fromJson(Map<String, dynamic> json, Function(num) cb) :
+    id = json['id'] as num,
+    address = json['address'] as String,
+    priceDaily = json['priceDaily'] as num,
+    availableFrom = DateTime.parse(json['availableFrom']),
+    availableTo = DateTime.parse(json['availableTo']),
+    imageURL = json['imageURL'] as String?;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
 
 // ---------- THUMB ----------
 
