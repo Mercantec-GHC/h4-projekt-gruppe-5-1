@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
@@ -23,7 +24,10 @@ class _RenterHomePageState extends State<RenterHomepage> {
     super.initState();
     _mapController = MapController();
 
-    if (!Platform.isWindows) { // Midlertidig løsning, fordi jeg hader virkelig at alting låser, når jeg tester ting - Freja
+    if (kIsWeb) { // Midlertidig løsning, fordi jeg hader virkelig at alting låser, når jeg tester ting - Freja
+      _getCurrentLocation();
+    }
+    else if (!Platform.isWindows) {
       _getCurrentLocation();
     }
   }
