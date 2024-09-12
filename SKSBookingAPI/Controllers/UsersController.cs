@@ -251,7 +251,7 @@ namespace SKSBookingAPI.Controllers {
 
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<ActionResult> ProfilePicter(int id, EditUserProfileDTO editUser) {
+        public async Task<ActionResult> ProfilePicture(int id, EditUserProfileDTO editUser) {
             var user = await _context.Users.FindAsync(id);
 
             if (user == null) {

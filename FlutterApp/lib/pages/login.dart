@@ -86,12 +86,12 @@ class _LoginState extends State<LoginPage> {
                       // Show error message or handle login failure
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                            content: Text('Login fejlet. Prøv igen.')),
+                            content: Text('Log ind fejlede.')),
                       );
                     }
                   },
                   icon: Icon(Icons.login),
-                  label: Text('Login'),
+                  label: Text('Log ind'),
                 ),
               ),
               ElevatedButton.icon(

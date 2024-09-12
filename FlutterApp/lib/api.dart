@@ -85,12 +85,14 @@ class ApiService {
     var token = await secureStorage.read(key: 'token');
     String id = await secureStorage.read(key: 'id') as String;
     var uri = '$baseUrl/Users/$id';
-
+    var test = await MultipartFile.fromFile(img!.path);
+    var newImg = img.mimeType == null ? null : test;
+    
     final formData = FormData.fromMap({
-      'name': name,
-      'ProfilePictureURL': oldImg,
-      'ProfilePicture': await MultipartFile.fromFile(img!.path),
-    });
+      'name': name, 
+      'profilePictureURL': oldImg, 
+      'profilePicture': newImg
+      });
     final response = await dio.put(
       uri,
       data: formData,

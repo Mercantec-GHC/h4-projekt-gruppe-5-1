@@ -84,3 +84,8 @@ Uge 36: Kjetil
 		Freja: kigge på billede opload til lejeligheder
 		Christian: kigge på brugerprivilegier og slet bruger
 
+	Torsdag:
+		Kjetil: lave opret bruger færdig  og refaktorering
+		Freja: tilføje lejligheder til brugerne og kigge på slette billeder
+		Christian: lave oprette bruger færdig og refaktorering
+
