@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'admin_homepage.dart';
-
+import '../api.dart';
 import '../main.dart';
 
 class AdminRegisterPage extends StatefulWidget {
@@ -22,7 +22,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    // var appState = context.watch<MyAppState>();
+    var appState = context.watch<MyAppState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -110,20 +110,20 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
                         passwordController.text == confirmPasswordController.text;
                   });
 
-                  // if (passwordMatch) {
-                  //   String name = nameController.text;
-                  //   String username = usernameController.text;
-                  //   String email = emailController.text;
-                  //   String password = passwordController.text;
-                  //   String phoneNumber = phoneNumberController.text;
+                  if (passwordMatch) {
+                    String name = nameController.text;
+                    String username = usernameController.text;
+                    String email = emailController.text;
+                    String password = passwordController.text;
+                    String phoneNumber = phoneNumberController.text;
 
-                  //   await appState.register(
-                  //       email, password);
-                  // } else {
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(content: Text('Passwords do not match')),
-                  //   );
-                  // }
+                    await appState.udlejerRegister(
+                        email, password, name, username, phoneNumber);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Passwords do not match')),
+                    );
+                  }
                 },
                 icon: Icon(Icons.login),
                 label: Text('Lav bruger'),

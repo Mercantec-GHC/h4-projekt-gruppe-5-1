@@ -42,14 +42,6 @@ class AdminHomepage extends StatelessWidget {
                 label: Text('Se brugere'),
               ),
               SizedBox(height: 10),
-              // ElevatedButton.icon(
-              //   onPressed: () {
-              //     print('Tor');
-              //   },
-              //   icon: Icon(Icons.create),
-              //   label: Text('See reviews'),
-              // ),
-              // SizedBox(height: 10),
               ElevatedButton.icon(
                 onPressed: () {
                   print('Loke');

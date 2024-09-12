@@ -14,6 +14,7 @@ import 'pages/register.dart';
 import 'pages/update_user.dart';
 import 'pages/get_rentals_page.dart';
 import 'pages/account_update.dart';
+import 'pages/admin_create_user.dart';
 
 void main() {
   runApp(MyApp());
@@ -58,6 +59,19 @@ class MyAppState extends ChangeNotifier {
       String phoneNumber, String username) async {
     try {
       var response = await apiService.createUser(
+          name, email, password, phoneNumber, username);
+      if (response.containsKey('id')) {
+        print('User created with ID: ${response['id']}');
+      }
+    } catch (e) {
+      print('Registration failed: $e');
+    }
+  }
+
+  Future<void> udlejerRegister(String name, String email, String password,
+      String phoneNumber, String username) async {
+    try {
+      var response = await apiService.createUdlejerUser(
           name, email, password, phoneNumber, username);
       if (response.containsKey('id')) {
         print('User created with ID: ${response['id']}');

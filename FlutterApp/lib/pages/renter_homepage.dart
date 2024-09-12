@@ -226,61 +226,6 @@ class _RenterHomePageState extends State<RenterHomepage> {
     );
   }
 
-  // Widget _buildLejlighederSection() {
-  //   return Container(
-  //     padding: EdgeInsets.all(16),
-  //     decoration: BoxDecoration(
-  //       color: Color(0xffD9D9D9),
-  //       borderRadius: BorderRadius.circular(10),
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           'Lejligheder',
-  //           style: TextStyle(fontSize: 16, color: Colors.black),
-  //         ),
-  //         SizedBox(height: 15),
-  //         _buildApartmentRow(),
-  //         SizedBox(height: 20),
-  //         _buildApartmentRow(),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildApartmentRow() {
-  //   return Row(
-  //     children: [
-  //       Image.asset(
-  //         'assets/logo.png',
-  //         width: 100,
-  //         height: 100,
-  //       ),
-  //       SizedBox(width: 10),
-  //       Container(
-  //         padding: EdgeInsets.all(5),
-  //         decoration: BoxDecoration(
-  //           borderRadius: BorderRadius.circular(5),
-  //         ),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text(
-  //               'Text for Image 1',
-  //               style: TextStyle(fontSize: 16, color: Colors.black),
-  //             ),
-  //             Text(
-  //               'More text for image 1',
-  //               style: TextStyle(fontSize: 16, color: Colors.black),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
   Widget _buildPointsOfInterestSection() {
     return Container(
       padding: EdgeInsets.all(16),
