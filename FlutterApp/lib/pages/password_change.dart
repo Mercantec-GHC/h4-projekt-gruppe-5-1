@@ -33,7 +33,7 @@ class PasswordChangerState extends State<PasswordChanger> {
                 controller: oldPasswordController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Old Password',
+                  labelText: 'Nuværende Password',
                 ),
                 obscureText: true,
               )),
@@ -43,7 +43,7 @@ class PasswordChangerState extends State<PasswordChanger> {
                 controller: passwordController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'New Password',
+                  labelText: 'Nyt Password',
                 ),
                 obscureText: true,
               )),
@@ -58,7 +58,7 @@ class PasswordChangerState extends State<PasswordChanger> {
                           ? const Color.fromARGB(255, 0, 0, 0)
                           : Colors.red,
                     )),
-                    labelText: 'Confirm Password',
+                    labelText: 'Bekræft Password',
                     labelStyle: TextStyle(
                       color: passwordMatch
                           ? const Color.fromARGB(255, 0, 0, 0)
@@ -98,14 +98,14 @@ class PasswordChangerState extends State<PasswordChanger> {
               }
             },
             icon: Icon(Icons.password),
-            label: Text('Change password'),
+            label: Text('Skift password'),
           ),
           Padding(
             padding: const EdgeInsets.all(20),
             child: ElevatedButton.icon(
               onPressed: widget.onUpdate,
               icon: Icon(Icons.person),
-              label: Text('Update User'),
+              label: Text('Opdater bruger'),
             ),
           )
         ],

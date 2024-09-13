@@ -97,7 +97,7 @@ class _LoginState extends State<LoginPage> {
               ElevatedButton.icon(
                 onPressed: onCreateUser,
                 icon: Icon(Icons.create),
-                label: Text('Lav Bruger'),
+                label: Text('Opret Bruger'),
               ),
             ],
           ),

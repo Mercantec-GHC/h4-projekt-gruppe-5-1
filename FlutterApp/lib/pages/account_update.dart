@@ -78,7 +78,7 @@ class AccountUpdaterState extends State<AccountUpdater> {
               controller: _phoneNumberController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Phone number',
+                labelText: 'Telefonnummer',
               ),
             ),
           ),
@@ -88,7 +88,7 @@ class AccountUpdaterState extends State<AccountUpdater> {
               controller: _usernameController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Username',
+                labelText: 'Brugernavn',
               ),
             ),
           ),

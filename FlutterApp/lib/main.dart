@@ -8,13 +8,13 @@ import 'package:sks_booking/pages/rental_homepage.dart';
 import 'package:sks_booking/pages/password_change.dart';
 import 'package:sks_booking/pages/renter_homepage.dart';
 import 'package:sks_booking/pages/update_biography.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart' as api;
 import 'pages/login.dart';
 import 'pages/register.dart';
 import 'pages/update_user.dart';
 import 'pages/get_rentals_page.dart';
 import 'pages/account_update.dart';
-import 'pages/admin_create_user.dart';
 
 void main() {
   runApp(MyApp());
@@ -128,16 +128,30 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    ryd();
     _loadUserData();
   }
 
-  void _loadUserData() async {
-    final myAppState = Provider.of<MyAppState>(context, listen: false);
+  void ryd() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('first_run') ?? true) {
+      await apiTing().apiService.secureStorage.deleteAll();
+      api.loggedIn == false;
+      print('test');
+      prefs.setBool('first_run', false);
+    }
+  }
 
+  MyAppState apiTing() {
+    final myAppState = Provider.of<MyAppState>(context, listen: false);
+    return myAppState;
+  }
+
+  void _loadUserData() async {
     try {
       // Hent brugerdata
-      var userData = await myAppState.user();
-
+      var userData = await apiTing().user();
+      print(userData);
       setState(() {
         // Sæt brugernavn i userName
         userType = userData['userType'] ?? '0';

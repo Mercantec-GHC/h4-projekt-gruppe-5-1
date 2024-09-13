@@ -5,7 +5,6 @@ import '../api.dart';
 import '../main.dart';
 
 class AdminRegisterPage extends StatefulWidget {
-
   @override
   AdminRegisterPageState createState() => AdminRegisterPageState();
 }
@@ -15,8 +14,10 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
   final TextEditingController adminusernameController = TextEditingController();
   final TextEditingController adminemailController = TextEditingController();
   final TextEditingController adminpasswordController = TextEditingController();
-  final TextEditingController adminconfirmPasswordController = TextEditingController();
-  final TextEditingController adminphoneNumberController = TextEditingController();
+  final TextEditingController adminconfirmPasswordController =
+      TextEditingController();
+  final TextEditingController adminphoneNumberController =
+      TextEditingController();
 
   bool passwordMatch = true;
 
@@ -106,8 +107,8 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
               ElevatedButton.icon(
                 onPressed: () async {
                   setState(() {
-                    passwordMatch =
-                        adminpasswordController.text == adminconfirmPasswordController.text;
+                    passwordMatch = adminpasswordController.text ==
+                        adminconfirmPasswordController.text;
                   });
 
                   if (passwordMatch) {
@@ -119,7 +120,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
                     int userType = 1;
 
                     await appState.register(
-                        email, password, name, phoneNumber, username, userType);
+                        name, email, password, phoneNumber, username, userType);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Passwords do not match')),
@@ -131,7 +132,7 @@ class AdminRegisterPageState extends State<AdminRegisterPage> {
               ),
             ],
           ),
-        ), 
+        ),
       ),
     );
   }

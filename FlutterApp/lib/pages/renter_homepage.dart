@@ -178,12 +178,12 @@ class _RenterHomePageState extends State<RenterHomepage> {
     Apartment(
       name: "Apartment 1",
       description: "Description for Apartment 1",
-      imageUrl: "https://example.com/apartment1.jpg",
+      imageUrl: "https://christian.hammervig.dk/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fwelcome.3009bb93.jpg&w=256&q=75",
     ),
     Apartment(
       name: "Apartment 2",
       description: "Description for Apartment 2",
-      imageUrl: "https://example.com/apartment2.jpg",
+      imageUrl: "https://christian.hammervig.dk/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ffaerdigkarrosse.cfd8624a.jpg&w=256&q=75",
     ),
   ];
 

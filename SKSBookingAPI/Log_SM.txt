@@ -94,3 +94,8 @@ Uge 36: Kjetil
 		Freja: lave så når man klikker på et lille billede så kommer et op som stort billede
 		Christian: hjælpe kjetil
 
+		Holde retrospektiv, merge vores kode og holde møder.
+
+		Retrospektiv: Vi har fungeret godt som gruppe.
+		vi har merged kode oftere og det har givet os færre merge "problemmer", 
+		for det var ikke de store merge problemmer vi havde før.
