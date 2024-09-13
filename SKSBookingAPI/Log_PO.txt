@@ -16,3 +16,5 @@ Uge 36: Freja
 
 Uge 37: Kjetil
 	Mandag: Oprettet og gjort klar Sprint backlog.
+	Torsdag: Planlagt møde med kundegruppe (4) kl 10:45 fredag 13.09.24
+	Fredag: Møde med gruppe 4. Kunden er godt fornøyd med produktet, og glade for alle de features vi har fået ind i appet. Efterspurgte også en lille velkomst da man logger ind.
