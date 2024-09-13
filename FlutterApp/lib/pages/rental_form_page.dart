@@ -150,6 +150,7 @@ class _RentalFormPageState extends State<RentalFormPage> {
           style: TextButton.styleFrom(
             padding: EdgeInsets.all(0)
           ),
+          
           onPressed: () { Navigator.pop(context); }, 
           child: Icon(
             Icons.arrow_back,

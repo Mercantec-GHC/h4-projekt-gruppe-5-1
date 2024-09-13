@@ -68,7 +68,7 @@ namespace SKSBookingAPI.Controllers {
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(CreateBookingDTO booking) {
-            if (booking.BookedUntil > booking.BookedFrom) {
+            if (!(booking.BookedFrom.Date < booking.BookedUntil.Date)) {
                 return BadRequest("Booket starttid er før sluttid");
             }
 

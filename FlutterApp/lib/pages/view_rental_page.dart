@@ -22,12 +22,15 @@ class ViewRentalPage extends StatefulWidget {
 }
 
 class _ViewRentalPageState extends State<ViewRentalPage> {
-  late num noOfImages;
+  String bigImageSource = "";
 
   @override
   void initState() {
     super.initState();
-    noOfImages = widget.rental.galleryURLs.length;
+
+    if (widget.rental.galleryURLs.isNotEmpty) {
+      bigImageSource = widget.rental.galleryURLs[0];
+    }
   }
 
   Future<UserData> fetchUser(num id) async {
@@ -40,6 +43,12 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
     else {
       throw Exception("Failed to fetch user with id $id");
     }
+  }
+
+  void setBigImageSource(String url) {
+    setState(() {
+      bigImageSource = url;
+    });
   }
 
   Future<String?> getUserType() async {
@@ -102,12 +111,11 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
                     child: RTop(title: widget.rental.title, address: widget.rental.address),
                   ),
                   SizedBox(height: 8),
-                  RImageBig(),
+                  RImageBig(url: bigImageSource),
                   SizedBox(height: 8),
-                  RImagesSmall(urls: widget.rental.galleryURLs, count: noOfImages), // Hvis billedet bliver lavet til en "carousel", fjern dette
+                  RImagesSmall(urls: widget.rental.galleryURLs, imageCallback: setBigImageSource),
                   SizedBox(height: 12),
                   RDescription(text: widget.rental.description),
-                  //RDescription(text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
                   SizedBox(height: 8),
                   RAvailability(priceDaily: widget.rental.priceDaily, availableFrom: widget.rental.availableFrom, availableTo: widget.rental.availableTo, isAvailable: widget.rental.isAvailable),
                   SizedBox(height: 8),
@@ -158,18 +166,30 @@ class RTop extends StatelessWidget {
   }
 }
 
-class RImageBig extends StatelessWidget {
+class RImageBig extends StatefulWidget {
   const RImageBig({
     super.key,
+    required this.url
   });
 
+  final String url;
+
+  @override
+  State<RImageBig> createState() => _RImageBigState();
+}
+
+class _RImageBigState extends State<RImageBig> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: 350),
       child: AspectRatio(
         aspectRatio: 16/9,
-        child: Container(
+        child: widget.url != "" 
+        ?
+        Image.network(widget.url)
+        :
+        Container(
           color: Colors.grey[800]
         )
       )
@@ -181,25 +201,21 @@ class RImagesSmall extends StatelessWidget {
   const RImagesSmall({
     super.key,
     required this.urls,
-    required this.count
+    required this.imageCallback
   });
 
   final List<String> urls;
-  final num count;
+  final Function(String) imageCallback;
 
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: 350),
       child: Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        for (String url in urls) Flexible(child: RImageSmallInstance(url: url)),
-        //SizedBox(width: 8),
-        //Flexible(child: RImageSmallInstance()),
-        //SizedBox(width: 8),
-        //Flexible(child: RImageSmallInstance()),
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          for (String url in urls) Flexible(child: RImageSmallInstance(url: url, imageCallback: imageCallback)),
         ],
       )
     );
@@ -209,19 +225,21 @@ class RImagesSmall extends StatelessWidget {
 class RImageSmallInstance extends StatelessWidget {
   const RImageSmallInstance({
     super.key,
-    required this.url
+    required this.url,
+    required this.imageCallback
   });
 
   final String url;
+  final Function(String) imageCallback;
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 16/9,
-      child: Image.network(url)
-      //child: Container(
-      //  color: Colors.grey[800],
-      //)
+    return GestureDetector(
+      onTap: () { imageCallback(url); },
+      child: AspectRatio(
+        aspectRatio: 16/9,
+        child: Image.network(url)
+      )
     );
   }
 }
