@@ -67,7 +67,7 @@ class RentalApartmentBrief extends StatelessWidget {
     required this.imageURL
   });
 
-  RentalApartmentBrief.fromJson(Map<String, dynamic> json, Function(num) cb) :
+  RentalApartmentBrief.fromJson(Map<String, dynamic> json) :
     id = json['id'] as num,
     address = json['address'] as String,
     priceDaily = json['priceDaily'] as num,
