@@ -89,3 +89,8 @@ Uge 36: Kjetil
 		Freja: tilføje lejligheder til brugerne og kigge på slette billeder
 		Christian: lave oprette bruger færdig og refaktorering
 
+	Fredag:
+		Kjetil: kigge på hvorfor at opret lejer ikke virker
+		Freja: lave så når man klikker på et lille billede så kommer et op som stort billede
+		Christian: hjælpe kjetil
+
