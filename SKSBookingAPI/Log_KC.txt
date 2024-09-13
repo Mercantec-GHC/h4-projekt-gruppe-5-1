@@ -19,3 +19,7 @@ Uge 36: Christian
 	Har fået lavet så man kan lave bedømmelser og give sjterner og så alle kan se bedømmelserne.
 	Er i gang med probilbilleder og vil lave videre på det i næste uge.
 	
+Uge 37: Freja
+	Tingene falder lidt fra hinanden med fejl
+	Har fået opfyldt godt og vel næsten alle krav
+	Ser rigtigt godt ud på trods af det ovenstående
