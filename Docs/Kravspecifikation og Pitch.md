@@ -4,7 +4,7 @@
 
 Vi vil udvikle en lokal turismeapp for SKSBooking. Vores mål er at skabe en applikation, der kan finde lokale tilbud og lejemål, ved at integrere funktionalitet, der udnytter data indsamlet fra telefonens sensorer.
 
-For at opnå dette, tænker vi at anvende Flutter, .NET og PostgreSQL til henholdsvis applikation, API og database, og benytte os af progammeringssprogene Dart og C\# til at bygge app’en samt API. App’en vil kunne bruge GPS data til at finde lokale interessepunkter og støtte lokale samarbejdspartnere via geodata derfra i forhold til, hvor kunden befinder sig.
+For at opnå dette, tænker vi at anvende Flutter, .NET og PostgreSQL til henholdsvis applikation, API og database, og benytte os af programmeringssprogene Dart og C\# til at bygge app’en samt API. App’en vil kunne bruge GPS data til at finde lokale interessepunkter og støtte lokale samarbejdspartnere via geodata derfra i forhold til, hvor kunden befinder sig.
 
 Vores applikation vil have følgende funktioner:
 
@@ -14,8 +14,10 @@ Vores applikation vil have følgende funktioner:
     
 * **Booking:** Lejere skal være i stand til at finde og leje lejeboliger, samt finde kontaktinformation på udlejere for at gøre processen nemmere.  
     
-* **Oprette og redigere lejeboligopslag:** Udlejere skal have mulighed for at oprette og publicere lejeboliger med adresse, beskrivelse, pris, mm. Derudover skal de kunne uploade et galleri af billeder af disse boliger fra deres telefon.  
-    
+* **Oprette og redigere lejeboligopslag:** Udlejere skal have mulighed for at oprette og publicere lejeboliger med adresse, beskrivelse, pris, mm. Derudover skal de kunne uploade et galleri af billeder af disse boliger fra deres telefon.
+
+Derudover kan applikation have følgende funktion, hvis tid tillader det:
+
 * **(Push-)Notifikationer:** Udlejere skal underrettes om priser i deres område for en given periode eller sæson.
 
 Kunden vil blive involveret i projektarbejdet med regelmæssige møder for at sikre, at vi opfylder deres behov og forventninger. Vi vil også overveje at integrere ekstra funktioner som et bedømmelse/anmeldelsessystem, partnerannoncer, integration med sociale medier, AI-integration med fokus på analyse af pristrends, og geotagging af billeder, afhængig af projektets fremdrift og tidsplan.
@@ -45,7 +47,6 @@ SKSBooking er et nyopstartet firma i turistindustrien med hovedsæde i Budapest.
 * Lejere skal være i stand til at bruge geolokation til at finde restauranter, lejeboliger og andre attraktioner i valgfri radius omkring lokation  
 * Lejere skal være i stand til at søge på lejeboliger efter ledighed i valgt tidsrum  
 * Udlejere skal være i stand til at indtaste lejeboliger og redigere dem  
-* Udlejere skal kunne tilmelde sig notifikationer omkring prisniveauet for lejeboliger i området for en given periode  
 * Administratorer skal være i stand til at ændre eller slette vilkårlig information  
 * Administratorer skal være i stand til at invitere til at lave udlejerkonti
 
@@ -60,8 +61,10 @@ SKSBooking er et nyopstartet firma i turistindustrien med hovedsæde i Budapest.
 * Brugerbedømmelser  
 * One-click reklamering til udlejere på sociale medier  
 * AI-integration mht at udregne pristrends til udlejere  
-* Administrator kan oprette annoncer fra vores samarbejdspartnere så vi har reklameindtægter gennem vores app  
-* Geolokation/geotagging og validering på billeder af lejeboliger
+* Administrator kan oprette annoncer fra vores samarbejdspartnere så vi har reklameindtægter gennem vores app (hvert 5-10 søgeresultat)  
+* Geolokation/geotagging og validering på billeder af lejeboliger  
+* Udlejere skal kunne tilmelde sig notifikationer omkring prisniveauet for lejeboliger i området for en given periode  
+* Brugere skal være i stand til at chatte med udlejere
 
 #### 
 
@@ -78,3 +81,9 @@ A: Admin
 
 **Q: Der nævnes restauranter, events etc. i opgaveteksten. Men kun 1 sted i krav omkring geo lokation. Ville der ikke være behov for noget mere, når der er fokus på promovering af Budapest?**  
 A: Ville være nice (to have)
+
+**Q: Hvad kan man tilføje til en lejerprofil for at gøre den mere spændende?**  
+A: Beskrivelse, hvem er jeg
+
+**Q: Farvevalg**  
+A: Eksperimentér, ikke “final”

@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Amazon.Runtime.Internal;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SKSBookingAPI.Context;
-using SKSBookingAPI.Migrations;
 using SKSBookingAPI.Models;
 using SKSBookingAPI.Service;
 
@@ -50,6 +41,7 @@ namespace SKSBookingAPI.Controllers {
             return Ok(rentals);
         }
 
+
         // GET: api/Rentals
         [Authorize]
         [HttpGet]
@@ -73,7 +65,6 @@ namespace SKSBookingAPI.Controllers {
             else {
                 return Unauthorized();
             }
-            
         }
 
 
@@ -115,7 +106,6 @@ namespace SKSBookingAPI.Controllers {
 
 
         // PUT: api/Rentals/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRental(int id, Rental rental) {
             if (id != rental.ID) {
@@ -141,11 +131,11 @@ namespace SKSBookingAPI.Controllers {
 
 
         // POST: api/Rentals
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Rental>> PostRental([FromForm] CreateRentalDTO rental) {
             List<string> rentalImages = new();
 
+            // Gør igennem sendte billeder, og tilføjer alle gyldige til en liste, hvorefter de uploades til vores S3 bucket
             if (rental.GalleryImages != null && rental.GalleryImages.Length > 0) {
                 foreach (IFormFile file in rental.GalleryImages) {
                     
@@ -203,9 +193,8 @@ namespace SKSBookingAPI.Controllers {
         }
 
 
-
         // AUTH TEST
-
+        /*
         [HttpGet("authtest/{id}")]
         public async Task<ActionResult<RentalDTO>> GetRental(int id, byte? authID) {
             var rental = await _context.Rental.FindAsync(id);
@@ -265,5 +254,6 @@ namespace SKSBookingAPI.Controllers {
 
             return CreatedAtAction("GetRental", new { id = nyRental.ID }, nyRental);
         }
+        */
     }
 }

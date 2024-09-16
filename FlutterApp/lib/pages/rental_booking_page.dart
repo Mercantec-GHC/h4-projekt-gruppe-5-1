@@ -38,10 +38,16 @@ class _RentalBookingPageState extends State<RentalBookingPage> {
     });
   }
 
+  // Tom metode der ellers ville være brugt til at udregne og filtrere allerede bookede tider for en lejlighed
+  // Da DatePicker kan modtage en delegate med tilgængelige datoer, ville en måde at gøre det på være,
+  // at der blev lavet et Set med alle gyldige datoer, og derefter ville alle date ranges fra bookingtabellen
+  // blive trukket fra, hvilket efterlader kun åbne datoer til sidst.
+  // Dette nåede jeg ikke
   void _generateCalendarCatalog() {
 
   }
 
+  // Forbereder og validerer brugerinput inden POST request
   void prepareBooking() {
     if (bookingStartDate == null || bookingEndDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -57,6 +63,7 @@ class _RentalBookingPageState extends State<RentalBookingPage> {
       return;
     }
 
+    // Se kommentar i rental_form_page.dart
     String bookFrom = "${bookingStartDate!.toIso8601String()}Z";
     String bookUntil = "${bookingEndDate!.toIso8601String()}Z";
 
@@ -64,6 +71,7 @@ class _RentalBookingPageState extends State<RentalBookingPage> {
     createBooking(rentalID, bookFrom, bookUntil);
   }
 
+  // POST request til backend, som tilføjer booking til databasen
   Future<void> createBooking(String rentalID, String bookFrom, String bookUntil) async {
     String baseUrl = Provider.of<MyAppState>(context, listen: false).apiService.baseUrl;
     String? userID = await Provider.of<MyAppState>(context, listen: false).apiService.secureStorage.read(key: 'id');

@@ -22,22 +22,25 @@ class ViewRentalPage extends StatefulWidget {
 }
 
 class _ViewRentalPageState extends State<ViewRentalPage> {
-  String bigImageSource = "";
+  String bigImageSource = ""; // Placeholder værdi - tom string betyder intet billede
 
   @override
   void initState() {
     super.initState();
 
+    // Hvis lejebolig har billeder, vis det første på den store plads
     if (widget.rental.galleryURLs.isNotEmpty) {
       bigImageSource = widget.rental.galleryURLs[0];
     }
   }
 
+  // Henter relevant brugerdata på udlejer, hvis man trykker "Vis Profil"
   Future<UserData> fetchUser(num id) async {
-    final response = await http.get(Uri.parse('https://localhost:7014/api/Users/$id'));
+    String baseUrl = Provider.of<MyAppState>(context, listen: false).apiService.baseUrl;
+    final response = await http.get(Uri.parse('$baseUrl/Users/$id'));
+
     if (response.statusCode == 200) {
       final UserData user = UserData.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-
       return user;
     }
     else {
@@ -51,11 +54,13 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
     });
   }
 
+  // Læser brugertype fra SecureStorage for at verificere brugerprivilegier
   Future<String?> getUserType() async {
     var value = await Provider.of<MyAppState>(context).apiService.secureStorage.read(key: 'userType');
     return value;
   }
 
+  // Henter udlejer og viser ny side med deres brugerprofil
   void prepareUserPageByID(num id) {
     fetchUser(id).then((result) {
       createUserPage(result);
@@ -71,6 +76,7 @@ class _ViewRentalPageState extends State<ViewRentalPage> {
     );
   }
 
+  // Viser ny side, hvor man kan booke
   void createBookingPage(RentalApartment rental) {
     Navigator.push(
       context,
@@ -185,8 +191,7 @@ class _RImageBigState extends State<RImageBig> {
       constraints: BoxConstraints(maxWidth: 350),
       child: AspectRatio(
         aspectRatio: 16/9,
-        child: widget.url != "" 
-        ?
+        child: widget.url != "" ?
         Image.network(widget.url)
         :
         Container(

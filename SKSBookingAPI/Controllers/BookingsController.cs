@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SKSBookingAPI.Context;
@@ -26,6 +21,7 @@ namespace SKSBookingAPI.Controllers {
             return await _context.Bookings.ToListAsync();
         }
 
+
         // GET: api/Bookings/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Booking>> GetBooking(int id) {
@@ -38,8 +34,8 @@ namespace SKSBookingAPI.Controllers {
             return booking;
         }
 
+
         // PUT: api/Bookings/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBooking(int id, Booking booking) {
             if (id != booking.BookingID) {
@@ -63,8 +59,8 @@ namespace SKSBookingAPI.Controllers {
             return NoContent();
         }
 
+
         // POST: api/Bookings
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(CreateBookingDTO booking) {

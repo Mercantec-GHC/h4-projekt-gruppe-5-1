@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+// Fuld lejeboligmodel til lejeboligprofiler
 class RentalApartment extends StatelessWidget {
   final String? title;
   final String address;
@@ -50,6 +51,7 @@ class RentalApartment extends StatelessWidget {
   }
 }
 
+// Afkortet lejeboligmodel. Brugt til lister
 class RentalApartmentBrief extends StatelessWidget {
   final num id;
   final String address;
@@ -82,7 +84,7 @@ class RentalApartmentBrief extends StatelessWidget {
 }
 
 // ---------- THUMB ----------
-
+// Afkortet lejeboligmodel med egen visning. Bliver brugt i get_rentals_page til listen
 class RentalApartmentThumb extends StatelessWidget {
   final num id;
   final String address;
@@ -129,7 +131,6 @@ class RentalApartmentThumb extends StatelessWidget {
         }, 
         child: Center(
           child: Row(
-            //mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Flexible(

@@ -4,6 +4,7 @@ using Amazon.S3;
 using System.Diagnostics;
 
 namespace SKSBookingAPI.Service {
+    // Nemmere organisering af billeder
     public enum ImageDirectoryType {
         profile,
         rental
@@ -20,18 +21,16 @@ namespace SKSBookingAPI.Service {
 
             var credentials = new BasicAWSCredentials(accessKey, secretKey);
             var config = new AmazonS3Config {
-                //ServiceURL = "https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/s3",
                 ServiceURL = "https://7edebe7b5106f3bceb95ecd71d962f10.r2.cloudflarestorage.com/sks",
-                //AuthenticationRegion = "eu-north-1",
-                ForcePathStyle = true // Ensure the path style is used
+                ForcePathStyle = true
             };
             _s3Client = new AmazonS3Client(credentials, config);
         }
 
+        // Upload a billedefil til bucket
         public async Task<string> UploadToS3(Stream fileStream, string uid, ImageDirectoryType type) {
             var request = new PutObjectRequest {
                 InputStream = fileStream,
-                //BucketName = "sks-images",
                 BucketName = "sks",
                 Key = $"{type}/{uid}.png",
                 DisablePayloadSigning = true
@@ -43,11 +42,12 @@ namespace SKSBookingAPI.Service {
                 throw new AmazonS3Exception($"Error uploading file to S3. HTTP Status Code: {response.HttpStatusCode}");
             }
 
-            //var imageUrl = $"https://lxhsmtgbazdlwjlwmxme.supabase.co/storage/v1/object/public/sks-images/{type}/{uid}.png";
-            var imageUrl = $"https://sks.mercantec.tech/sks/{type}/{uid}.png";
+            var imageUrl = $"https://sks.mercantec.tech/sks/{type}/{uid}.png"; // Returneret URL til billede, der nu findes på serveren
             return imageUrl;
         }
 
+        // Sletning af billedefil i bucket
+        // Ingen adgang via vores nøgle, så det gør ingenting, men skulle gerne ellers være funktionelt
         public async Task DeleteFromS3(string url, ImageDirectoryType type) {
             string separator = type.ToString();
             int startIndex = url.IndexOf(separator);

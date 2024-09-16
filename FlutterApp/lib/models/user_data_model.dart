@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sks_booking/models/rental_model.dart';
 
+// Brugerdatamodel uden tilhørende lejeboliger
 class UserData extends StatelessWidget {
   final String name;
   final String bio;
@@ -29,6 +30,7 @@ class UserData extends StatelessWidget {
   }
 }
 
+// Brugerdatamodel med tilhørende lejeboliger
 class ExtendedUserData extends StatelessWidget {
   final String name;
   final String bio;

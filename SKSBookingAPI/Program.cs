@@ -53,6 +53,7 @@ namespace SKSBookingAPI {
             var accessKey = Configuration["S3ServiceSettings:AccessKey"] ?? Environment.GetEnvironmentVariable("ACCESS_KEY");
             var secretKey = Configuration["S3ServiceSettings:SecretKey"] ?? Environment.GetEnvironmentVariable("SECRET_KEY");
 
+            // Tilføjer singleton til at holde på vores S3 nøgler igennem runtime
             builder.Services.AddSingleton(new S3BucketConfig {
                 AccessKey = accessKey,
                 SecretKey = secretKey

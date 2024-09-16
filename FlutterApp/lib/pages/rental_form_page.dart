@@ -60,6 +60,7 @@ class _RentalFormPageState extends State<RentalFormPage> {
     );
   }
 
+  // Forbereder og validerer brugerinput, før der laves en POST request
   void prepareRental() {
     // Jeg gider virkelig ikke sætte Forms ordentligt op
     if (titleController.text.isEmpty || addressController.text.isEmpty || priceController.text.isEmpty || descriptionController.text.isEmpty) {
@@ -82,12 +83,19 @@ class _RentalFormPageState extends State<RentalFormPage> {
       return;
     }
 
+    // Lang historie kort, databasen tager kun DateTime i UTC format. Flutters kalendere vælger tid lokalt.
+    // Hvis jeg konverterer til UTC, bliver datoerne ukorrekte, da Danmark befinder sig i UTC+2
+    // Det vil sige, at hvis man vælger fx d. 16/09/2024, er den lokale tid 16/09/2024 00:00:00
+    // Hvis det så oversættes til UTC, bliver det til 15/09/2024 22:00:00
+    // Da regning på tidszoner ikke er relevant her, var det betydeligt nemmere at "snyde" ved at tilføje UTC til tiden (via det ekstra Z)
+    // Så undgås de skæve datoer, da selve timerne ikke er vigtige, og når man står samme sted, kan man sikkert godt blive enige om datoer :)
     String availableFrom = "${bookingStartDate!.toIso8601String()}Z";
     String availableUntil = "${bookingEndDate!.toIso8601String()}Z";
 
     createRental(availableFrom, availableUntil);
   }
 
+  // POST request på oprettelse af lejebolig
   Future<void> createRental(String availableFrom, String availableUntil) async {
     String baseUrl = Provider.of<MyAppState>(context, listen: false).apiService.baseUrl;
     String? userID = await Provider.of<MyAppState>(context, listen: false).apiService.secureStorage.read(key: 'id');
@@ -104,6 +112,7 @@ class _RentalFormPageState extends State<RentalFormPage> {
 
     var token = await Provider.of<MyAppState>(context, listen: false).apiService.secureStorage.read(key: 'token');
 
+    // Konverterer de uploadede, lokale billeder til en anden type, før de sendes med
     List<MultipartFile> imagesToUpload = List.empty(growable: true);
     for (var i = 0; i < localImages.length; i++) {
       imagesToUpload.add(await MultipartFile.fromFile(localImages[i].path));

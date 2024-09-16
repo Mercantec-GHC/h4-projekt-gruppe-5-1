@@ -24,36 +24,43 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
     super.initState();
   }
 
+  // Læser brugertype fra SecureStorage for at verificere brugerprivilegier
   Future<String?> getUserType() async {
     var value = await Provider.of<MyAppState>(context, listen: false).apiService.secureStorage.read(key: 'userType');
     return value;
   }
 
+  // Henter lejeboligdata på lejebolig valgt fra liste
   Future<RentalApartment> fetchApartment(num id) async {
-    final response =
-      await http.get(Uri.parse('https://localhost:7014/api/Rentals/$id'));
-    if (response.statusCode == 200) {
-      final RentalApartment apartment = RentalApartment.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>);
+    String baseUrl = Provider.of<MyAppState>(context, listen: false).apiService.baseUrl;
 
+    final response = await http.get(Uri.parse('$baseUrl/Rentals/$id'));
+
+    if (response.statusCode == 200) {
+      final RentalApartment apartment = RentalApartment.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
       return apartment;
-    } else {
+    } 
+    else {
       throw Exception("Failed to fetch rental with id $id");
     }
   }
 
+  // Henter kort lejeboligdata på relevante lejeboliger
   Future<List<RentalApartmentThumb>> fetchApartments() async {
+    String baseUrl = Provider.of<MyAppState>(context, listen: false).apiService.baseUrl;
     String? userType = await getUserType();
     late final dynamic response;
 
+    // Hvis bruger ikke har en userType, er de ikke logget ind, og de fetcher fra et alternativt endpoint
+    // Dette endpoint har ikke authentication på sig, og henter ikke skjulte lejligheder
     if (userType == null) {
-      response = await http.get(Uri.parse('https://localhost:7014/api/Rentals/Guest'));
+      response = await http.get(Uri.parse('$baseUrl/Rentals/Guest'));
     }
     else {
       String? token = await Provider.of<MyAppState>(context, listen: false).apiService.secureStorage.read(key: 'token');
       
       if (token != null) {
-        response = await http.get(Uri.parse('https://localhost:7014/api/Rentals'), headers: {
+        response = await http.get(Uri.parse('$baseUrl/Rentals'), headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
         });
       }
@@ -78,6 +85,7 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
     }
   }
 
+  // Henter lejeboligdata på valgt lejebolig og viser tilhørende lejeboligside
   void prepareRentalPageByID(num id) {
     fetchApartment(id).then((result) {
       createRentalPage(result, id);
@@ -88,7 +96,9 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ViewRentalPage(rental: rental, id: id)));
+        builder: (context) => ViewRentalPage(rental: rental, id: id)
+      )
+    );
   }
 
   @override
@@ -112,7 +122,9 @@ class _GetRentalsPageState extends State<GetRentalsPage> {
                           rentalList = result;
                         });
                       }),
-                  child: const Text("Fetch all apartments")))
+                      child: const Text("Fetch all apartments")
+                    )
+                  )
                 ],
               ),
             ),

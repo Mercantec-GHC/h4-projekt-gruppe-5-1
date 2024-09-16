@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Amazon.Runtime.Internal;
-using BCrypt.Net;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
-using NuGet.Common;
-using NuGet.Protocol;
 using SKSBookingAPI.Context;
-using SKSBookingAPI.Migrations;
 using SKSBookingAPI.Models;
 using SKSBookingAPI.Service;
 
@@ -96,6 +84,7 @@ namespace SKSBookingAPI.Controllers {
             return userdto;
         }
 
+
         [Authorize]
         [HttpPut("account/{id}")]
         public async Task<ActionResult> UserAccount(int id, EditUserAccountDTO editUser) {
@@ -144,6 +133,7 @@ namespace SKSBookingAPI.Controllers {
             }
         }
 
+
         [Authorize]
         [HttpPut("biografi/{id}")]
         public async Task<ActionResult> UserBio(int id, BioDTO userBio) {
@@ -190,6 +180,7 @@ namespace SKSBookingAPI.Controllers {
                 return Unauthorized();
             }
         }
+
 
         [Authorize]
         [HttpPut("password/{id}")]
@@ -249,6 +240,7 @@ namespace SKSBookingAPI.Controllers {
             }
         }
 
+
         [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> ProfilePicture(int id, EditUserProfileDTO editUser) {
@@ -270,6 +262,7 @@ namespace SKSBookingAPI.Controllers {
                     string? pfpURL = null;
                     string? oldPFPURL = user.ProfilePictureURL;
 
+                    // Hvis profilbillede er sendt med, uploades det til vores S3 bucket
                     if (editUser.ProfilePicture != null && editUser.ProfilePicture.Length > 0) {
                         try {
                             using (var fileStream = editUser.ProfilePicture.OpenReadStream()) {
@@ -286,6 +279,7 @@ namespace SKSBookingAPI.Controllers {
                         user.ProfilePictureURL = editUser.ProfilePictureURL;
                     }
 
+                    // Hvis brugeren allerede havde et profilbillede, slettes det fra vores S3 bucket
                     if (oldPFPURL != null) {
                         try {
                             await _s3Service.DeleteFromS3(oldPFPURL, ImageDirectoryType.profile);
@@ -323,6 +317,7 @@ namespace SKSBookingAPI.Controllers {
             }
         }
 
+
         [HttpPost]
         public async Task<ActionResult<User>> PostUser([FromForm] SignUpDTO signup) {
             if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
@@ -357,6 +352,7 @@ namespace SKSBookingAPI.Controllers {
             return CreatedAtAction("GetUser", new { id = user.ID }, user);
         }
 
+        // Oversætter indsendt brugerinformation til anden, udvidet type
         private User MapSignUpDTOToUser(SignUpDTO signUpDTO, ref string? pfpURL) {
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signUpDTO.Password);
             string salt = hashedPassword.Substring(0, 29);
