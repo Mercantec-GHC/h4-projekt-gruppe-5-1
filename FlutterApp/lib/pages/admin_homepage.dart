@@ -6,6 +6,8 @@ import '../main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// side for admin brugere
+
 class AdminHomepage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

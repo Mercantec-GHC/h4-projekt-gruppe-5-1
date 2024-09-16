@@ -7,6 +7,8 @@ import '../main.dart';
 import '../api.dart';
 import '../pages/rental_form_page.dart';
 
+// side for udlejer til at poste lejligheder der kan lejes
+
 class RentalHomepage extends StatelessWidget {
   final List<String> notifications = [
     'Besked 1',

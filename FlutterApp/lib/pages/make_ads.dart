@@ -12,18 +12,14 @@ class MakeAdsPage extends StatefulWidget {
 
 class MakeAdsPageState extends State<MakeAdsPage> {
   final TextEditingController titleController = TextEditingController();
-  // final TextEditingController usernameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController linkController = TextEditingController();
-  final TextEditingController imageController =
-      TextEditingController();
-  // final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController imageController = TextEditingController();
 
   bool passwordMatch = true;
 
   @override
   Widget build(BuildContext context) {
-    // var appState = context.watch<MyAppState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -45,16 +41,6 @@ class MakeAdsPageState extends State<MakeAdsPage> {
                   ),
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(10),
-              //   child: TextFormField(
-              //     controller: usernameController,
-              //     decoration: InputDecoration(
-              //       border: OutlineInputBorder(),
-              //       labelText: 'Username',
-              //     ),
-              //   ),
-              // ),
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(

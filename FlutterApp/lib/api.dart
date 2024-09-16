@@ -218,33 +218,4 @@ class ApiService {
           'Failed to create user: ${response.statusMessage} (${response.statusCode})');
     }
   }
-
-  // Future<Map<String, dynamic>> createUdlejerUser(String name, String email,
-  //     String password, String phoneNumber, String username) async {
-  //   var uri = '$baseUrl/Users';
-  //   final formData = FormData.fromMap({
-  //     'name': name,
-  //     'email': email,
-  //     'password': password,
-  //     'phoneNumber': phoneNumber,
-  //     'username': username,
-  //     'userType': 1,
-  //   });
-  //   final response = await dio.post(
-  //     uri,
-  //     data: formData,
-  //     options: Options(
-  //       headers: {
-  //         'Content-Type': 'application/json; charset=UTF-8',
-  //       },
-  //     ),
-  //   );
-    
-  //   if (response.statusCode == 201) {
-  //     return response.data;
-  //   } else {
-  //     throw Exception(
-  //         'Failed to create user: ${response.statusMessage} (${response.statusCode})');
-  //   }
-  // }
 }

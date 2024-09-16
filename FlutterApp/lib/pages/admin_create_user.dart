@@ -4,6 +4,8 @@ import 'admin_homepage.dart';
 import '../api.dart';
 import '../main.dart';
 
+// Side der admins kan lave udlejer brugere da ikke alle skal kunne gøre det
+
 class AdminRegisterPage extends StatefulWidget {
   @override
   AdminRegisterPageState createState() => AdminRegisterPageState();

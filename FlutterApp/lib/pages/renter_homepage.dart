@@ -7,6 +7,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_map/flutter_map.dart';
 
+// side for almindelige brugere der skal leje en lejlighed
+
 class RenterHomepage extends StatefulWidget {
   @override
   _RenterHomePageState createState() => _RenterHomePageState();
@@ -90,6 +92,7 @@ class _RenterHomePageState extends State<RenterHomepage> {
     }
   }
 
+  // Finder "interesser" indenfor en radius af kordinaterne til brugere. Radius et rektangel og ikke en sirkel.
   Future<void> _getPointsOfInterest() async {
   if (_currentLocation != null) {
     final query = """
@@ -152,6 +155,7 @@ class _RenterHomePageState extends State<RenterHomepage> {
 
   double _searchRadius = 0.01;
 
+  // justerer radiuset for openstreetmaps til at finde de specifike tyber "interesser" der er definert tidligere i koden.
   Widget _buildRadiusSlider() {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,6 +303,7 @@ class _RenterHomePageState extends State<RenterHomepage> {
       ),
     ];
 
+    // ville være en videre udviddelse med kordinater til lejlighederne men gik tom for tid
     // final List<Marker> lejlighedskordinater = [
     //   Marker(
     //     width: 80.0,
