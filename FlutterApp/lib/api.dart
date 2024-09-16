@@ -31,8 +31,7 @@ class ApiService {
     if (response.statusCode == 200) {
       _isLoggedIn = true;
       var data = jsonDecode(response.body) as Map<String, dynamic>;
-      // Gem token i secure storage
-      print(data);
+      // Gemmer data i secure storage
       await secureStorage.write(key: 'token', value: data['token']);
       await secureStorage.write(key: 'id', value: data['id'].toString());
       await secureStorage.write(key: 'name', value: data['name']);
@@ -86,13 +85,11 @@ class ApiService {
     String id = await secureStorage.read(key: 'id') as String;
     var uri = '$baseUrl/Users/$id';
     var test = await MultipartFile.fromFile(img!.path);
-    var newImg = img.mimeType == null ? null : test;
-    
-    final formData = FormData.fromMap({
-      'name': name, 
-      'profilePictureURL': oldImg, 
-      'profilePicture': newImg
-      });
+    //ser om der er en fil sendt med ellers er den null
+    var newImg = test.filename == null ? null : test;
+
+    final formData = FormData.fromMap(
+        {'name': name, 'profilePictureURL': oldImg, 'profilePicture': newImg});
     final response = await dio.put(
       uri,
       data: formData,
@@ -190,8 +187,13 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> createUser(String name, String email,
-      String password, String phoneNumber, String username, int userType) async {
+  Future<Map<String, dynamic>> createUser(
+      String name,
+      String email,
+      String password,
+      String phoneNumber,
+      String username,
+      int userType) async {
     var uri = '$baseUrl/Users';
     final formData = FormData.fromMap({
       'name': name,

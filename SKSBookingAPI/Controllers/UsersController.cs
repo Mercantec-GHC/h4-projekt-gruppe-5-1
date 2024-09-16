@@ -262,7 +262,9 @@ namespace SKSBookingAPI.Controllers {
                     string? pfpURL = null;
                     string? oldPFPURL = user.ProfilePictureURL;
 
+                    // ser om der bliver sendt et nyt billede med ellers bruger den det gamle
                     // Hvis profilbillede er sendt med, uploades det til vores S3 bucket
+
                     if (editUser.ProfilePicture != null && editUser.ProfilePicture.Length > 0) {
                         try {
                             using (var fileStream = editUser.ProfilePicture.OpenReadStream()) {

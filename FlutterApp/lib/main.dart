@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   final ApiService apiService =
-      ApiService(baseUrl: 'https://localhost:7014/api');
+      ApiService(baseUrl: 'https://h4-g5.onrender.com/api');
   late var success = false;
 
   Future<void> login(String email, String password) async {
@@ -161,10 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
       reset();
       prefs.setBool('first_run', false);
     }
-    if (prefs.getBool('restart') ?? true) {
+    if (prefs.getBool('reload') ?? true) {
       print('test 3');
       reset();
-      prefs.setBool('restart', false);
+      prefs.setBool('reload', false);
     }
   }
 

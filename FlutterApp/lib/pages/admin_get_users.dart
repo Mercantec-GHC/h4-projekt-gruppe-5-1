@@ -30,7 +30,7 @@ class GetAllUsersState extends State<GetAllUsers> {
         throw Exception("User ID not found in secure storage");
       }
       final response = await http
-          .get(Uri.parse('https://localhost:7014/api/Users'), headers: {
+          .get(Uri.parse('https://h4-g5.onrender.com/api/Users'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
       });
@@ -62,7 +62,7 @@ class GetAllUsersState extends State<GetAllUsers> {
         throw Exception("User ID not found in secure storage");
       }
       final response = await http
-          .delete(Uri.parse('https://localhost:7014/api/Users/$id'), headers: {
+          .delete(Uri.parse('https://h4-g5.onrender.com/api/Users/$id'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
       });

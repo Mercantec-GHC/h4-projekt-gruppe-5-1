@@ -109,6 +109,7 @@ class UpdatePageState extends State<UpdatePage> {
 
     try {
       // Send det indtastede navn videre til opdateringsmetoden
+      //print(profileAvatarCurrentImage);
       await myAppState.updateUser(
           _nameController.text, profileAvatarCurrentImage, imageUrl);
       // Hvis opdateringen lykkes, vis en SnackBar
@@ -142,7 +143,7 @@ class UpdatePageState extends State<UpdatePage> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Name',
+                    labelText: 'Navn',
                   ),
                 ),
               ),
