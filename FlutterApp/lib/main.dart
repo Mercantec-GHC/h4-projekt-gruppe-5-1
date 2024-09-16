@@ -134,11 +134,37 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void ryd() async {
     final prefs = await SharedPreferences.getInstance();
+    var keys = [
+      'id',
+      'token',
+      'userType',
+      'name',
+      'userName',
+      'email',
+      'phoneNumber',
+      'id',
+      'biography',
+      'profilePictureURL'
+    ];
+    Future<void> reset() async {
+      for (var element in keys) {
+        await apiTing().apiService.secureStorage.delete(key: element);
+      }
+      apiTing().logOut();
+      print('test 2');
+    }
+
+    //reset();
+
     if (prefs.getBool('first_run') ?? true) {
-      await apiTing().apiService.secureStorage.deleteAll();
-      api.loggedIn == false;
       print('test');
+      reset();
       prefs.setBool('first_run', false);
+    }
+    if (prefs.getBool('restart') ?? true) {
+      print('test 3');
+      reset();
+      prefs.setBool('restart', false);
     }
   }
 
