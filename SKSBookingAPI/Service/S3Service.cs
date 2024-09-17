@@ -42,8 +42,10 @@ namespace SKSBookingAPI.Service {
                 throw new AmazonS3Exception($"Error uploading file to S3. HTTP Status Code: {response.HttpStatusCode}");
             }
 
-            //var imageUrl = $"https://sks.mercantec.tech/sks/{type}/{uid}.png"; // Returneret URL til billede, der nu findes på serveren
-            var imageUrl = $"https://sks.magsapi.com/sks/{type}/{uid}.png";
+            // Domæne giver CORS-fejl på web, virker på andre platforme
+            //var imageUrl = $"https://sks.mercantec.tech/sks/{type}/{uid}.png"; 
+
+            var imageUrl = $"https://sks.magsapi.com/sks/{type}/{uid}.png"; // Returneret URL til billede, der nu findes på serveren
             return imageUrl;
         }
 
