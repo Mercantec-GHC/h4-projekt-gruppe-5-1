@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../main.dart' as main;
+import 'package:sks_booking/api.dart';
 
 class AccountUpdater extends StatefulWidget {
   final VoidCallback onPassword;
@@ -45,11 +45,11 @@ class AccountUpdaterState extends State<AccountUpdater> {
   }
 
   void _updateUser() async {
-    final myAppState = Provider.of<main.MyAppState>(context, listen: false);
+    final myAppState = Provider.of<ApiService>(context, listen: false);
 
     try {
       // Send det indtastede navn videre til opdateringsmetoden
-      myAppState.updateUserAccount(_usernameController.text,
+      myAppState.updateAccount(_usernameController.text,
           _emailController.text, _phoneNumberController.text);
 
       // Hvis opdateringen lykkes, vis en SnackBar

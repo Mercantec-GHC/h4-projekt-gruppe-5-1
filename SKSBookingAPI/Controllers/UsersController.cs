@@ -84,7 +84,7 @@ namespace SKSBookingAPI.Controllers {
             return userdto;
         }
 
-
+        // ændrer brugerens email, brugernavn og telefon nummer
         [Authorize]
         [HttpPut("account/{id}")]
         public async Task<ActionResult> UserAccount(int id, EditUserAccountDTO editUser) {
@@ -133,7 +133,7 @@ namespace SKSBookingAPI.Controllers {
             }
         }
 
-
+        // ændrer brugerens biografi
         [Authorize]
         [HttpPut("biografi/{id}")]
         public async Task<ActionResult> UserBio(int id, BioDTO userBio) {
@@ -181,7 +181,7 @@ namespace SKSBookingAPI.Controllers {
             }
         }
 
-
+        // andrer brugerens password
         [Authorize]
         [HttpPut("password/{id}")]
         public async Task<ActionResult> UserPassword(int id, PasswordDTO editUser) {
@@ -200,7 +200,7 @@ namespace SKSBookingAPI.Controllers {
                 var jwtSecurityToken = handler.ReadJwtToken(authHeader);
 
                 if (jwtSecurityToken.Payload.Sub == id.ToString()) {
-
+                    // ser om det gamle password der er sendt med passer med det i databasen inden det ændrers
                     if (!BCrypt.Net.BCrypt.Verify(editUser.OldPassword, user.HashedPassword)) {
                         return Unauthorized(new { message = "Invalid password." });
                     }
@@ -240,7 +240,7 @@ namespace SKSBookingAPI.Controllers {
             }
         }
 
-
+        // ændrer brugerens billede og navn
         [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> ProfilePicture(int id, EditUserProfileDTO editUser) {
@@ -262,9 +262,9 @@ namespace SKSBookingAPI.Controllers {
                     string? pfpURL = null;
                     string? oldPFPURL = user.ProfilePictureURL;
 
-                    // ser om der bliver sendt et nyt billede med ellers bruger den det gamle
-                    // Hvis profilbillede er sendt med, uploades det til vores S3 bucket
-
+                    /* ser om der bliver sendt et nyt billede med ellers bruger den det gamle
+                       Hvis profilbillede er sendt med, uploades det til vores S3 bucket
+                    */
                     if (editUser.ProfilePicture != null && editUser.ProfilePicture.Length > 0) {
                         try {
                             using (var fileStream = editUser.ProfilePicture.OpenReadStream()) {
@@ -291,6 +291,7 @@ namespace SKSBookingAPI.Controllers {
                         }
                         
                     }
+                    // sætter navn som også er sendt med for at sikre at værdien ikke bliver null
                     user.Name = editUser.Name;
                     user.UpdatedAt = DateTime.UtcNow.AddHours(2);
 
@@ -319,7 +320,7 @@ namespace SKSBookingAPI.Controllers {
             }
         }
 
-
+        // opretter en ny bruger
         [HttpPost]
         public async Task<ActionResult<User>> PostUser([FromForm] SignUpDTO signup) {
             if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
@@ -375,7 +376,7 @@ namespace SKSBookingAPI.Controllers {
                 LastLogin = DateTime.UtcNow.AddHours(2)
             };
         }
-
+        //tjekker om password passer vores kriterier
         private bool IsPasswordSecure(string password) {
             var hasUpperCase = new Regex(@"[A-Z]+");
             var hasLowerCase = new Regex(@"[a-z]+");
@@ -390,8 +391,8 @@ namespace SKSBookingAPI.Controllers {
                    && hasMinimum8Chars.IsMatch(password);
         }
 
-
-        // DELETE: api/Users/5
+        /* sletter brugeren
+        // DELETE: api/Users/5*/
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id) {
@@ -406,16 +407,15 @@ namespace SKSBookingAPI.Controllers {
 
                 var handler = new JwtSecurityTokenHandler();
                 var jwtSecurityToken = handler.ReadJwtToken(authHeader);
+                //finder bruger typen som blev sat ind ved login
                 var userType = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
-
+                // tjekker om det er bruger type 2 som er Admin
                 if (userType == "2") {
                     _context.Users.Remove(user);
                     await _context.SaveChangesAsync();
 
-                    //return NoContent();
                     return new ObjectResult("bruger slettet") { StatusCode = 200 };
-                }
-                else {
+                } else {
                     return new ObjectResult("Jeg er en tekande. (Du har ikke bruger rettigheder til dette)") { StatusCode = 418 };
                 }
             }
@@ -429,7 +429,7 @@ namespace SKSBookingAPI.Controllers {
             return _context.Users.Any(e => e.ID == id);
         }
 
-
+        // logger brugeren ind
         // POST: api/Users/login
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO login) {
@@ -453,11 +453,11 @@ namespace SKSBookingAPI.Controllers {
 
             return Ok(new { token, user.Username, user.ID, user.Name, user.Email, user.UserType, user.PhoneNumber, user.ProfilePictureURL, user.Biography });
         }
-
+        // laver en en ny JWT
         private string GenerateJwtToken(User user) {
 
             var claims = new[] {
-                new Claim("role", user.UserType.ToString()),
+                new Claim("role", user.UserType.ToString()),//laver en ny claim til payload så vi kan få bruger typen se slet bruger
                 new Claim(JwtRegisteredClaimNames.Sub, user.ID.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
@@ -479,59 +479,5 @@ namespace SKSBookingAPI.Controllers {
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        /*
-        [HttpPost("testauth")]
-        public async Task<ActionResult<User>> PostUser(SignUpDTO signup, byte? authID) {
-            
-            if (signup.UserType != 0 && authID != 2) {
-                return Forbid();
-            }
-            if (await _context.Users.AnyAsync(u => u.Email == signup.Email)) {
-                return new ObjectResult("Jeg er en tekande. (Email allerede i brug.)") { StatusCode = 418 };
-            }
-            if (await _context.Users.AnyAsync(u => u.Username == signup.Username)) {
-                return new ObjectResult("Jeg er en tekande. (Brugernavn allerede i brug.)") { StatusCode = 418 };
-            }
-            if (!IsPasswordSecure(signup.Password)) {
-                return new ObjectResult("Jeg er en tekande. (Adgangskoder skal indholde store og små bogstaver, tal, specielle karakerer og være mindst 8 tegn langt.)") { StatusCode = 418 };
-            }
-
-            User user = MapSignUpDTOToUser(signup);
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.ID }, user);
-        }
-
-        [HttpDelete("testauth/{id}")]
-        public async Task<IActionResult> DeleteUser(int id, byte? authID) {
-            if (authID != 2) {
-                return Forbid();
-            }
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        [HttpGet("testauthtoken")]
-        public async Task<ActionResult<string>> GetIDFromToken(string token) {
-            //TokenValidationParameters parameters = new TokenValidationParameters();
-            //new JwtSecurityTokenHandler().ValidateToken(token, , out SecurityToken validatedToken);
-
-            // Token skal nok valideres først
-            SecurityToken readToken = new JwtSecurityTokenHandler().ReadToken(token);
-            string attachedID = (readToken as JwtSecurityToken).Claims.First(c => c.Type == "sub").Value;
-
-            return attachedID;
-        }
-        */
     }
 }
