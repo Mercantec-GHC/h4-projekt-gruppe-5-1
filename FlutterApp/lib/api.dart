@@ -13,7 +13,7 @@ class ApiService {
   final String baseUrl;
   // Initialiser secure storage
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
-
+  String? token;
   ApiService({required this.baseUrl});
 
   Future<LoginInfo> loginUser(String email, String password) async {
@@ -81,7 +81,7 @@ class ApiService {
 
   //String img,
   Future<dynamic> updateUser(String name, XFile? img, String? oldImg) async {
-    var token = await secureStorage.read(key: 'token');
+    token = await secureStorage.read(key: 'token');
     String id = await secureStorage.read(key: 'id') as String;
     var uri = '$baseUrl/Users/$id';
     var test = await MultipartFile.fromFile(img!.path);
@@ -109,7 +109,7 @@ class ApiService {
   }
 
   Future<String> updateUserBio(String bio) async {
-    var token = await secureStorage.read(key: 'token');
+    token = await secureStorage.read(key: 'token');
     String id = await secureStorage.read(key: 'id') as String;
     var uri = Uri.parse('$baseUrl/Users/biografi/$id');
     final response = await http.put(
@@ -136,7 +136,7 @@ class ApiService {
     String username,
     String phoneNumber,
   ) async {
-    var token = await secureStorage.read(key: 'token');
+    token = await secureStorage.read(key: 'token');
     String id = await secureStorage.read(key: 'id') as String;
     var uri = Uri.parse('$baseUrl/Users/account/$id');
     final response = await http.put(

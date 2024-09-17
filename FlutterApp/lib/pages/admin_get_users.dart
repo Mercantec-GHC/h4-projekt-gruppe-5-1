@@ -6,7 +6,6 @@ import 'package:sks_booking/models/all_users_model.dart';
 import '../main.dart';
 
 class GetAllUsers extends StatefulWidget {
-  
   @override
   GetAllUsersState createState() => GetAllUsersState();
 }
@@ -22,6 +21,7 @@ class GetAllUsersState extends State<GetAllUsers> {
   }
 
   Future<void> _fetchUsers() async {
+    String baseUrl = Provider.of<MyAppState>(context, listen: false).apiService.baseUrl;
     try {
       String? token = await Provider.of<MyAppState>(context, listen: false)
           .apiService
@@ -31,7 +31,7 @@ class GetAllUsersState extends State<GetAllUsers> {
         throw Exception("User ID not found in secure storage");
       }
       final response = await http
-          .get(Uri.parse('https://h4-g5.onrender.com/api/Users'), headers: {
+          .get(Uri.parse('$baseUrl/Users'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
       });
@@ -54,6 +54,7 @@ class GetAllUsersState extends State<GetAllUsers> {
   }
 
   Future<bool> delete(String id) async {
+    String baseUrl = Provider.of<MyAppState>(context, listen: false).apiService.baseUrl;
     try {
       String? token = await Provider.of<MyAppState>(context, listen: false)
           .apiService
@@ -62,11 +63,12 @@ class GetAllUsersState extends State<GetAllUsers> {
       if (token == null) {
         throw Exception("User ID not found in secure storage");
       }
-      final response = await http
-          .delete(Uri.parse('https://h4-g5.onrender.com/api/Users/$id'), headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token',
-      });
+      final response = await http.delete(
+          Uri.parse('$baseUrl/Users/$id'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $token',
+          });
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
